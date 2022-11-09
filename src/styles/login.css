@@ -1,0 +1,15 @@
+.form {
+    width: 60%;
+    margin:auto;
+    background: #81d4fa;
+    padding: 20px;
+    border-radius: 5px;
+}
+.form__group {
+    margin-bottom: 20px;
+}
+.form__group input, .form__group textarea {
+    width: 100%;
+    background: transparent;
+    padding: 7px 20px;
+}

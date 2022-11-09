@@ -1,0 +1,92 @@
+.footer {
+    padding-top: 50px;
+    padding-bottom: 30px;
+    background: #212245;
+}
+
+.footer__logo img {
+    width: calc(100% - 80%);
+    margin-bottom: 5px;
+}
+.footer__logo h5{
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #fff;
+}
+.footer h5{
+    color: #fff;
+}
+.footer__logo p {
+    font-size: 0.9rem;
+    color: #fff;
+    line-height: 28px;
+}
+
+.delivery__time-item {
+    background: transparent !important;
+}
+
+.delivery__time-item span{
+    font-weight: 600;
+    font-size: 1rem;
+    color: #fff;
+}
+.delivery__time-item p{
+    color: #fff;
+}
+.footer_title {
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: 600;
+}
+.newsletter   {
+    padding: 7px 10px;
+    background: transparent;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.newsletter input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+}
+.newsletter input:focus{
+    outline: none;
+}
+.newsletter span{
+    background: #fff;
+    padding: 3px 1px;
+    border-radius: 5px;
+}
+.sub {
+    color: #fff;
+}
+.newsletter span i {
+    color: #212245;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.newsletter input::placeholder {
+    color: #fff;
+}
+.social__links p {
+    color: #fff;
+}
+.social__links span i {
+    padding: 5px;
+    font-size: 1.1rem;
+    background: #fff;
+    color: #212245;
+    border-radius: 50%;
+}
+.copyright__text {
+    font-size: 0.8rem;
+    color:#fff;
+}
