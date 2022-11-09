@@ -6,7 +6,7 @@ const CommonSection = (props) => {
     return (
         <section className="common__section">
             <Container>
-                <h2>{props.title}</h2>
+                <h1 style={{color: "#212245"}}>{props.title}</h1>
             </Container>
         </section>
     )

@@ -5,7 +5,8 @@ import Routes from '../../routes/Routers'
 
 const Layout = () => {
   return <div>
-    <Header/>
+    {window.location.pathname !== "/login" && "/register"? <Header /> : null}{" "}
+    {/* <Header/> */}
     <div>
         <Routes/>
     </div>

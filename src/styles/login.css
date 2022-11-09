@@ -1,9 +1,11 @@
 .form {
-    width: 60%;
+    width: 75%;
+    height: 75%;
     margin:auto;
-    background: #81d4fa;
-    padding: 20px;
-    border-radius: 5px;
+    background: #a1e1ffb2;
+    padding: 75px 75px;
+    border-radius: 10px;
+    font-size: 1rem;
 }
 .form__group {
     margin-bottom: 20px;
@@ -12,4 +14,14 @@
     width: 100%;
     background: transparent;
     padding: 7px 20px;
+}
+
+.add__btn {
+    border: none;
+    margin-top: 20px;
+    padding: 7px 25px;
+    background: #df2020;
+    color: #fff;
+    border-radius: 15px;
+    font-size: 1.1rem;
 }

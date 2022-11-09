@@ -1,8 +1,8 @@
 .common__section {
-    background: linear-gradient(#212245b2, #212245b2),
-    url("../assets/banner.webp");
+    background: linear-gradient(#a1e1ffb2, #a1e1ffb2),
+    url("../assets/banner.png");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    padding: 250px 0px;
+    padding: 120px 10px;
 }
