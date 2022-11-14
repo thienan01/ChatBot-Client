@@ -32,21 +32,21 @@ let nodeId = 0;
 function Flow() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
-  const reactFlowInstance = useReactFlow();
-  const onClick = useCallback(() => {
-    const id = `${++nodeId}`;
-    const newNode = {
-      id,
-      position: {
-        x: Math.random() * 500,
-        y: Math.random() * 500,
-      },
-      data: {
-        label: `Node ${id}`,
-      },
-    };
-    reactFlowInstance.addNodes(newNode);
-  }, []);
+  // const reactFlowInstance = useReactFlow();
+  // const onClick = useCallback(() => {
+  //   const id = `${++nodeId}`;
+  //   const newNode = {
+  //     id,
+  //     position: {
+  //       x: Math.random() * 500,
+  //       y: Math.random() * 500,
+  //     },
+  //     data: {
+  //       label: `Node ${id}`,
+  //     },
+  //   };
+  //   reactFlowInstance.addNodes(newNode);
+  // }, []);
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [setNodes]
@@ -74,9 +74,6 @@ function Flow() {
         nodeTypes={nodeTypes}
         style={rfStyle}
       >
-              <button onClick={onClick} className="btn-add">
-        add node
-      </button>
         <MiniMap />
       <Controls />
       </ReactFlow>
