@@ -43,6 +43,7 @@ function Flow() {
 
   const reactFlowInstance = useReactFlow();
   const handleCreateNode = useCallback(() => {
+    console.log(reactFlowInstance);
     const id = `${++nodeId}`;
     const newNode = {
       id,
@@ -52,14 +53,21 @@ function Flow() {
         y: 180,
       },
       data: {
+        id,
         label: `Node ${id}`,
+        delete: deleteNode,
       },
     };
     reactFlowInstance.addNodes(newNode);
   }, [reactFlowInstance]);
 
-  const deleteEdge = useCallback((id) => {
+  const deleteNode = useCallback((id) => {
+    console.log(id);
     setNodes((nds) => nds.filter((node) => node.id !== id));
+  }, []);
+
+  const deleteEdge = useCallback((id) => {
+    setEdges((eds) => eds.filter((e) => e.id !== id));
   }, []);
 
   const onNodesChange = useCallback(
@@ -73,7 +81,10 @@ function Flow() {
   const onConnect = useCallback(
     (params) =>
       setEdges((eds) =>
-        addEdge({ ...params, deleteEdge, type: "buttonedge" }, eds)
+        addEdge(
+          { ...params, type: "buttonedge", data: { delete: deleteEdge } },
+          eds
+        )
       ),
     []
   );

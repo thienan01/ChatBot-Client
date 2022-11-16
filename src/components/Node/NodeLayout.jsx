@@ -16,7 +16,7 @@ function NodeLayout({ data }) {
           padding: "5px",
         }}
       >
-        <button
+        {/* <button
           type="button"
           value={data.id}
           className="btn-close"
@@ -27,7 +27,21 @@ function NodeLayout({ data }) {
             left: "170px",
             width: "20px",
           }}
-        ></button>
+        ></button> */}
+        <div
+          style={{
+            position: "absolute",
+            top: "-4px",
+            left: "185px",
+          }}
+        >
+          <i
+            className="fa fa-trash"
+            style={{ fontSize: "10px" }}
+            aria-hidden="true"
+            onClick={() => data.delete(data.id)}
+          ></i>
+        </div>
         <Handle
           id="0"
           type="target"
@@ -54,18 +68,6 @@ function NodeLayout({ data }) {
           <div className="condition-mapping">
             <div className="condition-intent">
               <label style={{ fontSize: "10px" }}>Customer's response</label>
-              {/* <input
-                className="form-control border-0"
-                type="text"
-                style={{
-                  height: "25px",
-                  marginTop: "5px",
-                  background: "#f4f4f6",
-                  fontSize: "10px",
-                }}
-                value="Intent"
-                readOnly
-              ></input> */}
               <ConditionMapping background="#f4f4f6" readOnly={false} />
               <Handle
                 id="1"

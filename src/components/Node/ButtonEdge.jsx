@@ -20,7 +20,7 @@ export default function CustomEdge({
   targetPosition,
   style = {},
   markerEnd,
-  deleteEdge,
+  data,
 }) {
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
@@ -47,11 +47,9 @@ export default function CustomEdge({
         className="edgebutton-foreignobject"
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
-        <body>
-          <button className="edgebutton" onClick={(event) => deleteEdge(id)}>
-            ×
-          </button>
-        </body>
+        <button className="edgebutton" onClick={() => data.delete(id)}>
+          ×
+        </button>
       </foreignObject>
     </>
   );
