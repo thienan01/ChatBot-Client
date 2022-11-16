@@ -27,9 +27,9 @@ const Header = () => {
     const toggleMenu = () => menuRef.current.classList.toggle('show__menu')
     return <header className='header'>
     <Container>
-        <div className="nav__wrapper d-flex align-items-center justify-content-between">
+        <div className="nav__wrapper d-flex align-items-center justify-content-between" style={{height:"50px"}}>
         <div className='logo'>
-            <img src={logo} alt="logo"/>
+            <img src={logo}  className="w-50" alt="logo"/>
             {/* <h5>Chatbot Training</h5> */}
         </div>
 
@@ -53,11 +53,11 @@ const Header = () => {
 
         <div className="nav__right d-flex align-items-center gap-4">
             <span className="user">
-                <Link to='/accountprofile'><i class="ri-user-line"></i></Link>
+            <Link to='/login'><i className="ri-user-line"></i></Link>
             </span>
 
             <span className="mobile__menu" onClick={toggleMenu}>
-                <i class="ri-menu-line"></i>
+                <i className="ri-menu-line"></i>
             </span>
             
         </div>

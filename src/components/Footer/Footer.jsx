@@ -65,10 +65,10 @@ const Footer = () => {
         <Col lg='6' md='6'>
           <div className="social__links d-flex align-items-center gap-4 justify-content-end">
             <p className='m-0'>Follow me: </p>
-            <span> <i class="ri-facebook-line"></i></span>
-            <span> <i class="ri-github-line"></i></span>
-            <span> <i class="ri-instagram-line"></i></span>
-            <span> <i class="ri-linkedin-line"></i></span>
+            <span> <i className="ri-facebook-line"></i></span>
+            <span> <i className="ri-github-line"></i></span>
+            <span> <i className="ri-instagram-line"></i></span>
+            <span> <i className="ri-linkedin-line"></i></span>
           </div>
         </Col>
       </Row>
