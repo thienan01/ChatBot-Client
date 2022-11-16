@@ -1,30 +1,38 @@
-import { useCallback,useState } from 'react';
+import { useCallback, useState } from "react";
 import ReactFlow, {
   MiniMap,
   Controls,
-  addEdge, 
-  applyEdgeChanges, 
+  addEdge,
+  applyEdgeChanges,
   applyNodeChanges,
   ReactFlowProvider,
-  useReactFlow
-} from 'reactflow';
-import TextUpdaterNode from '../components/Node/TextUpdaterNode'
-// 👇 you need to import the reactflow styles
-import 'reactflow/dist/style.css';
+  useReactFlow,
+} from "reactflow";
+import TextUpdaterNode from "../components/Node/TextUpdaterNode";
+import NodeLayout from "../components/Node/NodeLayout";
+import CustomEdge from "../components/Node/ButtonEdge";
+import "reactflow/dist/style.css";
 
 const initialNodes = [
-  { id: '1',type:'textUpdater', position: { x: 0, y: 0 }, data: { value: 123 } },
-  { id: '2',type:'textUpdater', position: { x: 0, y: 100 }, data: { label: '2' } },
-  { id: '3',type:'textUpdater', position: { x: 0, y:200 }, data: { label: 'test' } },
-  { id: '4',type:'textUpdater', position: { x: 0, y: 300 }, data: { label: '3' } },
+  {
+    id: "1",
+    type: "nodeLayout",
+    position: { x: 90, y: 90 },
+    data: { value: 123, id: "1" },
+  },
 ];
 
-const initialEdges = [
-];
-const nodeTypes = { textUpdater: TextUpdaterNode };
+const initialEdges = [];
+const nodeTypes = {
+  textUpdater: TextUpdaterNode,
+  nodeLayout: NodeLayout,
+};
+const edgeType = {
+  buttonedge: CustomEdge,
+};
 
 const rfStyle = {
-  backgroundColor: '#F8F8F8',
+  backgroundColor: "#f5f6fa",
 };
 
 let nodeId = 0;
@@ -32,21 +40,28 @@ let nodeId = 0;
 function Flow() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
-  // const reactFlowInstance = useReactFlow();
-  // const onClick = useCallback(() => {
-  //   const id = `${++nodeId}`;
-  //   const newNode = {
-  //     id,
-  //     position: {
-  //       x: Math.random() * 500,
-  //       y: Math.random() * 500,
-  //     },
-  //     data: {
-  //       label: `Node ${id}`,
-  //     },
-  //   };
-  //   reactFlowInstance.addNodes(newNode);
-  // }, []);
+
+  const reactFlowInstance = useReactFlow();
+  const handleCreateNode = useCallback(() => {
+    const id = `${++nodeId}`;
+    const newNode = {
+      id,
+      type: "nodeLayout",
+      position: {
+        x: 500,
+        y: 180,
+      },
+      data: {
+        label: `Node ${id}`,
+      },
+    };
+    reactFlowInstance.addNodes(newNode);
+  }, [reactFlowInstance]);
+
+  const deleteEdge = useCallback((id) => {
+    setNodes((nds) => nds.filter((node) => node.id !== id));
+  }, []);
+
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [setNodes]
@@ -56,29 +71,46 @@ function Flow() {
     [setEdges]
   );
   const onConnect = useCallback(
-    (connection) => setEdges((eds) => addEdge(connection, eds)),
-    [setEdges]
+    (params) =>
+      setEdges((eds) =>
+        addEdge({ ...params, deleteEdge, type: "buttonedge" }, eds)
+      ),
+    []
   );
   const defaultEdgeOptions = { animated: true };
 
   return (
-    <div style={{ height: '90vh' }}>
+    <div style={{ height: "90vh" }}>
       <ReactFlow
         nodes={nodes}
         onNodesChange={onNodesChange}
         edges={edges}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        fitView
         defaultEdgeOptions={defaultEdgeOptions}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeType}
         style={rfStyle}
       >
         <MiniMap />
-      <Controls />
+        <Controls />
       </ReactFlow>
+      <button
+        onClick={handleCreateNode}
+        className="btn-add"
+        style={{ position: "relative", top: "-45px", left: "45px" }}
+      >
+        add node
+      </button>
     </div>
   );
 }
 
-export default Flow
+function FlowContainer() {
+  return (
+    <ReactFlowProvider>
+      <Flow />
+    </ReactFlowProvider>
+  );
+}
+export default FlowContainer;
