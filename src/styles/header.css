@@ -19,8 +19,8 @@
 .logo img{
     width: calc(100%-30%);
     object-fit: contain;
-    margin-top: 50px;
-    z-index: 101;
+    margin-top: 3px;
+    z-index: 10;
     position: sticky;
     top: 0;
 

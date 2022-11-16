@@ -53,7 +53,7 @@ const Header = () => {
 
         <div className="nav__right d-flex align-items-center gap-4">
             <span className="user">
-            <Link to='/login'><i className="ri-user-line"></i></Link>
+            <Link to='/profile'><i className="ri-user-line"></i></Link>
             </span>
 
             <span className="mobile__menu" onClick={toggleMenu}>
