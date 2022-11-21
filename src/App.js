@@ -1,6 +1,11 @@
 import Layout from "./components/Layout/Layout";
+import {MantineProvider} from '@mantine/core';
 
 function App() {
-  return <Layout/>;
+  return (
+  <MantineProvider withGlobalStyles withNormalizeCSS>
+    <Layout/>
+  </MantineProvider>
+  )
 }
 export default App;
