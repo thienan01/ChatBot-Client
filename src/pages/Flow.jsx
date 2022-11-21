@@ -1,4 +1,6 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
+import $ from "jquery";
+import { GET } from "../functionHelper/APIFunction";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -7,24 +9,17 @@ import ReactFlow, {
   applyNodeChanges,
   ReactFlowProvider,
   useReactFlow,
+  useNodes,
 } from "reactflow";
-import TextUpdaterNode from "../components/Node/TextUpdaterNode";
 import NodeLayout from "../components/Node/NodeLayout";
 import CustomEdge from "../components/Node/ButtonEdge";
+import FormModal from "../components/Modal/FormModal";
 import "reactflow/dist/style.css";
 
-const initialNodes = [
-  {
-    id: "1",
-    type: "nodeLayout",
-    position: { x: 90, y: 90 },
-    data: { value: 123, id: "1" },
-  },
-];
-
+const initialNodes = [];
 const initialEdges = [];
+let lstIntent = [];
 const nodeTypes = {
-  textUpdater: TextUpdaterNode,
   nodeLayout: NodeLayout,
 };
 const edgeType = {
@@ -40,10 +35,82 @@ let nodeId = 0;
 function Flow() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
-
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const reactFlowInstance = useReactFlow();
+  useEffect(() => {
+    Promise.all([
+      GET("https://chatbot-vapt.herokuapp.com/api/intent"),
+      GET(
+        "https://chatbot-vapt.herokuapp.com/api/node?script_id=637b7d9b4e532158d255a434"
+      ),
+    ])
+      .then((res) => {
+        lstIntent = res[0].intents;
+        res[1].nodes.forEach((item) => {
+          const newNode = {
+            id: item.id,
+            type: "nodeLayout",
+            position: {
+              x: Math.random() * 500,
+              y: Math.random() * 500,
+            },
+            data: {
+              id: item.id,
+              value: item.message,
+              intents: res[0].intents,
+              conditionMapping: item.condition_mappings,
+              delete: handleDeleteNode,
+              openModal: handleOpenModal,
+            },
+          };
+          reactFlowInstance.addNodes(newNode);
+          item.condition_mappings.forEach((condition) => {
+            if (condition.next_node_ids != null) {
+              const newEdge = {
+                id: condition.id,
+                source: item.id,
+                target: condition.next_node_ids[0],
+                type: "buttonedge",
+                data: { delete: handleDeleteEdge },
+              };
+              reactFlowInstance.addEdges(newEdge);
+            }
+          });
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    // GET("https://chatbot-vapt.herokuapp.com/api/intent").then((ress) => {
+    //   GET(
+    //     "https://chatbot-vapt.herokuapp.com/api/node?script_id=6377996e83776577e56c24ea"
+    //   )
+    //     .then((res) => {
+    //       res.nodes.forEach((item) => {
+    //         const newNode = {
+    //           id: item.id,
+    //           type: "nodeLayout",
+    //           position: {
+    //             x: Math.random() * 500,
+    //             y: Math.random() * 500,
+    //           },
+    //           data: {
+    //             id: item.id,
+    //             value: item.message,
+    //             intents: ress.intents,
+    //             delete: handleDeleteNode,
+    //             openModal: handleOpenModal,
+    //           },
+    //         };
+    //         reactFlowInstance.addNodes(newNode);
+    //       });
+    //     })
+    //     .catch((err) => console.log(err));
+    // });
+  }, []);
+
   const handleCreateNode = useCallback(() => {
-    console.log(reactFlowInstance);
     const id = `${++nodeId}`;
     const newNode = {
       id,
@@ -54,24 +121,32 @@ function Flow() {
       },
       data: {
         id,
-        label: `Node ${id}`,
-        delete: deleteNode,
+        value: "",
+        intents: lstIntent,
+        conditionMapping: [],
+        delete: handleDeleteNode,
+        openModal: handleOpenModal,
       },
     };
     reactFlowInstance.addNodes(newNode);
-  }, [reactFlowInstance]);
-
-  const deleteNode = useCallback((id) => {
-    console.log(id);
-    setNodes((nds) => nds.filter((node) => node.id !== id));
   }, []);
 
-  const deleteEdge = useCallback((id) => {
+  const handleDeleteNode = useCallback((id) => {
+    setNodes((nds) => nds.filter((node) => node.id !== id));
+  }, []);
+  const handleDeleteEdge = useCallback((id) => {
+    alert(id);
     setEdges((eds) => eds.filter((e) => e.id !== id));
   }, []);
 
+  const handleOpenModal = useCallback(() => {
+    setIsOpenModal(!isOpenModal);
+  }, []);
+
   const onNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    (changes) => {
+      setNodes((nds) => applyNodeChanges(changes, nds));
+    },
     [setNodes]
   );
   const onEdgesChange = useCallback(
@@ -82,7 +157,7 @@ function Flow() {
     (params) =>
       setEdges((eds) =>
         addEdge(
-          { ...params, type: "buttonedge", data: { delete: deleteEdge } },
+          { ...params, type: "buttonedge", data: { delete: handleDeleteEdge } },
           eds
         )
       ),
@@ -113,6 +188,12 @@ function Flow() {
       >
         add node
       </button>
+      <FormModal
+        isOpen={isOpenModal}
+        onClick={() => {
+          setIsOpenModal(!isOpenModal);
+        }}
+      />
     </div>
   );
 }

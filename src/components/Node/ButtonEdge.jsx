@@ -1,7 +1,7 @@
 import React from "react";
 import { getBezierPath } from "reactflow";
 
-import "../../styles/buttonEdge.css";
+import "../../styles/Node.css";
 
 const foreignObjectSize = 40;
 
@@ -47,9 +47,11 @@ export default function CustomEdge({
         className="edgebutton-foreignobject"
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
-        <button className="edgebutton" onClick={() => data.delete(id)}>
-          ×
-        </button>
+        <div>
+          <button className="edgebutton" onClick={() => data.delete(id)}>
+            ×
+          </button>
+        </div>
       </foreignObject>
     </>
   );

@@ -1,105 +1,87 @@
-import { useState, Fragment } from "react";
+import { Fragment, memo, useState } from "react";
 import { Handle, Position } from "reactflow";
 import ConditionMapping from "./ConditionMapping";
-
+import { Button } from "reactstrap";
+import "../../styles/Node.css";
+const textSize = {
+  fontSize: "15px",
+};
 function NodeLayout({ data }) {
-  const [nodeName, setNodeName] = useState(data.value);
+  console.log("data", data);
+  const [conditions, setConditions] = useState(data.conditionMapping);
+  console.log("condi", conditions);
+  const handleAddCondition = () => {
+    conditions.push({ id: "123" });
+    setConditions(conditions);
+    console.log("condi after", conditions);
+  };
+
   return (
     <Fragment>
+      {console.log("t")}
       <div
-        className="shadow p-3 mb-5 bg-white rounded"
+        className="shadow bg-white rounded"
         style={{
-          height: "200px",
-          width: "200px",
+          width: "250px",
           background: "white",
           borderRadius: "15px",
-          padding: "5px",
+          padding: "12px",
         }}
       >
-        {/* <button
-          type="button"
-          value={data.id}
-          className="btn-close"
-          aria-label="Close"
-          style={{
-            position: "absolute",
-            top: "2px",
-            left: "170px",
-            width: "20px",
-          }}
-        ></button> */}
         <div
           style={{
             position: "absolute",
-            top: "-4px",
-            left: "185px",
+            top: "5px",
+            left: "227px",
           }}
         >
           <i
             className="fa fa-trash"
-            style={{ fontSize: "10px" }}
+            style={{ fontSize: "13px" }}
             aria-hidden="true"
             onClick={() => data.delete(data.id)}
           ></i>
         </div>
-        <Handle
-          id="0"
-          type="target"
-          position={Position.Left}
-          style={{
-            top: "20px",
-            width: "8px",
-            height: "8px",
-            border: "1.5px solid black",
-            background: "none",
-          }}
-        />
+
         <div>
           <div className="node-name">
-            <label>Enter text:</label>
+            <label style={textSize}>Enter text:</label>
             <input
               className="form-control form-control-sm border-0"
               type="text"
-              value={nodeName}
-              onChange={(e) => setNodeName(e.target.value)}
               style={{ background: "#F2F3F4" }}
+              readOnly={true}
+              value={data.value}
+              onClick={() => {
+                data.openModal();
+              }}
             ></input>
           </div>
-          <div className="condition-mapping">
-            <div className="condition-intent">
-              <label style={{ fontSize: "10px" }}>Customer's response</label>
-              <ConditionMapping background="#f4f4f6" readOnly={false} />
-              <Handle
-                id="1"
-                type="source"
-                position={Position.Right}
-                style={{
-                  top: "113px",
-                  width: "8px",
-                  height: "8px",
-                  border: "1.5px solid black",
-                  background: "none",
-                }}
-              />
-            </div>
-            <div className="condition-incorrect">
+
+          <div className="condition-mapping" style={{ alignItems: "center" }}>
+            <label style={textSize}>Customer's response</label>
+            {conditions.map((item) => {
+              console.log("re");
+              return (
+                <div className="condition-intent" key={item.id}>
+                  <ConditionMapping
+                    background="#f4f4f6"
+                    color="#060504"
+                    data={{
+                      intents: data.intents,
+                      conditionMapping: item,
+                    }}
+                  />
+                </div>
+              );
+            })}
+
+            {/* <div className="condition-incorrect">
               <ConditionMapping
                 background="#FEF9E7"
-                color="#E67E22"
+                color="#fea220"
                 value="Customer response incorrectly"
                 readOnly={true}
-              />
-              <Handle
-                id="2"
-                type="source"
-                position={Position.Right}
-                style={{
-                  top: "141px",
-                  width: "8px",
-                  height: "8px",
-                  border: "1.5px solid #E67E22",
-                  background: "none",
-                }}
               />
             </div>
             <div className="condition-no-response">
@@ -109,24 +91,59 @@ function NodeLayout({ data }) {
                 value="Customer does not response"
                 readOnly={true}
               />
-              <Handle
-                id=""
-                type="source"
-                position={Position.Right}
-                style={{
-                  top: "172px",
-                  width: "8px",
-                  height: "8px",
-                  border: "1.5px solid #E74C3C",
-                  background: "none",
-                }}
-              />
-            </div>
+            </div> */}
           </div>
+          <Button
+            outline
+            color="success"
+            style={{ border: "dashed" }}
+            onClick={handleAddCondition}
+          >
+            Add intent
+          </Button>
+          <div></div>
+          <>
+            <Handle
+              id="0"
+              type="target"
+              position={Position.Left}
+              style={{
+                top: "50px",
+                width: "10px",
+                height: "10px",
+                border: "2px solid black",
+                background: "none",
+              }}
+            />
+            {/* <Handle
+              id="2"
+              type="source"
+              position={Position.Right}
+              style={{
+                top: "138px",
+                width: "10px",
+                height: "10px",
+                border: "2px  solid #E67E22",
+                background: "none",
+              }}
+            />
+            <Handle
+              id=""
+              type="source"
+              position={Position.Right}
+              style={{
+                top: "168px",
+                width: "10px",
+                height: "10px",
+                border: "2px solid #E74C3C",
+                background: "none",
+              }}
+            /> */}
+          </>
         </div>
       </div>
     </Fragment>
   );
 }
 
-export default NodeLayout;
+export default memo(NodeLayout);
