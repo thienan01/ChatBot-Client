@@ -7,18 +7,14 @@ const textSize = {
   fontSize: "15px",
 };
 function NodeLayout({ data }) {
-  console.log("data", data);
   const [conditions, setConditions] = useState(data.conditionMapping);
-  console.log("condi", conditions);
   const handleAddCondition = () => {
-    conditions.push({ id: "123" });
+    conditions.push({ id: "123", intent_id: "637794ac517b8943db4d9181" });
     setConditions(conditions);
-    console.log("condi after", conditions);
   };
 
   return (
     <Fragment>
-      {console.log("t")}
       <div
         className="shadow bg-white rounded"
         style={{
@@ -61,7 +57,7 @@ function NodeLayout({ data }) {
           <div className="condition-mapping" style={{ alignItems: "center" }}>
             <label style={textSize}>Customer's response</label>
             {conditions.map((item) => {
-              console.log("re");
+              console.log("render");
               return (
                 <div className="condition-intent" key={item.id}>
                   <ConditionMapping

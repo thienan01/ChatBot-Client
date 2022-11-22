@@ -8,7 +8,7 @@ const GET = async (_url) => {
       Authorization:
         "Token eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7InBhc3N3b3JkIjoiMTIzNDU2Iiwic2VjcmV0S2V5IjoiQTRGQUI5RjktNjY0Qi00NDZELTgwQjUtRTlCMDg5RjNGNTAwIiwiaHR0cFN0YXR1cyI6Ik9LIiwiaWQiOm51bGwsImZ1bGxuYW1lIjoiQURNSU4iLCJleGNlcHRpb25Db2RlIjpudWxsLCJ1c2VybmFtZSI6ImFkbWluIiwidG9rZW4iOiIxNjY4NzY1MTA4OTE2In19.NZueH_vbCwHSByqalbdOosM31tkqrfJ5su03-Hwh3c4",
     },
-    "Content-Type": "application/json",
+    contentType: "application/json",
   });
   return res;
 };
@@ -18,10 +18,12 @@ const POST = async (_url, _body) => {
     type: "POST",
     url: _url,
     data: _body,
+    dataType: "json",
     headers: {
       Authorization:
         "Token eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7InBhc3N3b3JkIjoiMTIzNDU2Iiwic2VjcmV0S2V5IjoiQTRGQUI5RjktNjY0Qi00NDZELTgwQjUtRTlCMDg5RjNGNTAwIiwiaHR0cFN0YXR1cyI6Ik9LIiwiaWQiOm51bGwsImZ1bGxuYW1lIjoiQURNSU4iLCJleGNlcHRpb25Db2RlIjpudWxsLCJ1c2VybmFtZSI6ImFkbWluIiwidG9rZW4iOiIxNjY4NzY1MTA4OTE2In19.NZueH_vbCwHSByqalbdOosM31tkqrfJ5su03-Hwh3c4",
     },
+    contentType: "application/json; charset=utf-8",
   });
   return res;
 };

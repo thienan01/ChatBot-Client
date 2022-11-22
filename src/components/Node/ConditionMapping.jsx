@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Handle, Position } from "reactflow";
 
 function ConditionMapping({ background, color, data }) {
+  console.log("condition", data);
   // return (
   //   <>
   //     <div style={{ margin: "5px 0px" }}>

@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect, useMemo } from "react";
 import $ from "jquery";
-import { GET } from "../functionHelper/APIFunction";
+import { GET, POST } from "../functionHelper/APIFunction";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -31,7 +31,10 @@ const rfStyle = {
 };
 
 let nodeId = 0;
-
+const data = {
+  username: "admin",
+  password: "123456",
+};
 function Flow() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
@@ -81,33 +84,6 @@ function Flow() {
       .catch((err) => {
         console.log(err);
       });
-
-    // GET("https://chatbot-vapt.herokuapp.com/api/intent").then((ress) => {
-    //   GET(
-    //     "https://chatbot-vapt.herokuapp.com/api/node?script_id=6377996e83776577e56c24ea"
-    //   )
-    //     .then((res) => {
-    //       res.nodes.forEach((item) => {
-    //         const newNode = {
-    //           id: item.id,
-    //           type: "nodeLayout",
-    //           position: {
-    //             x: Math.random() * 500,
-    //             y: Math.random() * 500,
-    //           },
-    //           data: {
-    //             id: item.id,
-    //             value: item.message,
-    //             intents: ress.intents,
-    //             delete: handleDeleteNode,
-    //             openModal: handleOpenModal,
-    //           },
-    //         };
-    //         reactFlowInstance.addNodes(newNode);
-    //       });
-    //     })
-    //     .catch((err) => console.log(err));
-    // });
   }, []);
 
   const handleCreateNode = useCallback(() => {
