@@ -1,6 +1,7 @@
-import { useCallback, useState, useEffect, useMemo } from "react";
-import $ from "jquery";
-import { GET, POST } from "../functionHelper/APIFunction";
+import { useCallback, useState, useEffect } from "react";
+import { Spinner } from "reactstrap";
+import uniqueID from "../functionHelper/GenerateID";
+import { GET } from "../functionHelper/APIFunction";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -9,7 +10,6 @@ import ReactFlow, {
   applyNodeChanges,
   ReactFlowProvider,
   useReactFlow,
-  useNodes,
 } from "reactflow";
 import NodeLayout from "../components/Node/NodeLayout";
 import CustomEdge from "../components/Node/ButtonEdge";
@@ -18,7 +18,6 @@ import "reactflow/dist/style.css";
 
 const initialNodes = [];
 const initialEdges = [];
-let lstIntent = [];
 const nodeTypes = {
   nodeLayout: NodeLayout,
 };
@@ -30,16 +29,14 @@ const rfStyle = {
   backgroundColor: "#f5f6fa",
 };
 
-let nodeId = 0;
-const data = {
-  username: "admin",
-  password: "123456",
-};
 function Flow() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [loading, isLoading] = useState(true);
+  const [intents, setIntents] = useState([]);
   const reactFlowInstance = useReactFlow();
+
   useEffect(() => {
     Promise.all([
       GET("https://chatbot-vapt.herokuapp.com/api/intent"),
@@ -48,70 +45,122 @@ function Flow() {
       ),
     ])
       .then((res) => {
-        lstIntent = res[0].intents;
-        res[1].nodes.forEach((item) => {
-          const newNode = {
-            id: item.id,
-            type: "nodeLayout",
-            position: {
-              x: Math.random() * 500,
-              y: Math.random() * 500,
-            },
-            data: {
-              id: item.id,
-              value: item.message,
-              intents: res[0].intents,
-              conditionMapping: item.condition_mappings,
-              delete: handleDeleteNode,
-              openModal: handleOpenModal,
-            },
-          };
-          reactFlowInstance.addNodes(newNode);
-          item.condition_mappings.forEach((condition) => {
-            if (condition.next_node_ids != null) {
-              const newEdge = {
-                id: condition.id,
-                source: item.id,
-                target: condition.next_node_ids[0],
-                type: "buttonedge",
-                data: { delete: handleDeleteEdge },
-              };
-              reactFlowInstance.addEdges(newEdge);
-            }
-          });
-        });
+        isLoading(false);
+        setIntents(res[0].intents);
+        let data = nodeObject(res[1].nodes, res[0].intents);
+        setNodes(data.lstNode);
+        setEdges(data.lstEdge);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
 
-  const handleCreateNode = useCallback(() => {
-    const id = `${++nodeId}`;
-    const newNode = {
-      id,
-      type: "nodeLayout",
-      position: {
-        x: 500,
-        y: 180,
-      },
-      data: {
-        id,
-        value: "",
-        intents: lstIntent,
-        conditionMapping: [],
-        delete: handleDeleteNode,
-        openModal: handleOpenModal,
-      },
-    };
-    reactFlowInstance.addNodes(newNode);
-  }, []);
+  const nodeObject = useCallback((nodes, intents) => {
+    let lstNode = [];
+    let lstEdge = [];
+    nodes.forEach((node) => {
+      lstNode.push({
+        id: node.id,
+        type: "nodeLayout",
+        position: {
+          x: Math.random() * 500,
+          y: Math.random() * 500,
+        },
+        data: {
+          id: node.id,
+          value: node.message,
+          intents: intents,
+          conditionMapping: node.condition_mappings,
+          delete: handleDeleteNode,
+          openModal: handleOpenModal,
+        },
+      });
+
+      node.condition_mappings.forEach((condition) => {
+        if (condition.next_node_ids != null) {
+          lstEdge.push({
+            id: condition.id,
+            source: node.id,
+            target: condition.next_node_ids[0],
+            type: "buttonedge",
+            data: { delete: handleDeleteEdge },
+          });
+        }
+      });
+    });
+    return { lstNode, lstEdge };
+  });
+
+  const handleCreateNode = () => {
+    let data = nodeObject(
+      [
+        {
+          id: uniqueID().toString(),
+          message: "",
+          condition_mappings: [{ id: "1", intent_id: null }],
+        },
+      ],
+      intents
+    );
+    reactFlowInstance.addNodes(data.lstNode[0]);
+    let all = reactFlowInstance.toObject();
+    console.log("all", all);
+    let newNodeLst = all.nodes.map((node) => {
+      return {
+        id: node.id,
+        message: node.data.value,
+        conditionMapping: node.data.conditionMapping,
+        position: node.position,
+      };
+    });
+    let lstSaveObj = [];
+    newNodeLst.forEach((node) => {
+      if (all.edges.length > 0) {
+        all.edges.forEach((eds) => {
+          if (node.id === eds.source) {
+            lstSaveObj.push({
+              id: node.id,
+              message: node.message,
+              condition_mapping: [
+                {
+                  intent_id: node.conditionMapping[0].intent_id,
+                  next_node_ids: [eds.target],
+                },
+              ],
+            });
+          } else {
+            lstSaveObj.push({
+              id: node.id,
+              message: node.message,
+              condition_mapping: [
+                {
+                  intent_id: node.conditionMapping[0].intent_id,
+                },
+              ],
+            });
+          }
+        });
+      } else {
+        lstSaveObj.push({
+          id: node.id,
+          message: node.message,
+          condition_mapping: [
+            {
+              intent_id: node.conditionMapping[0].intent_id,
+            },
+          ],
+        });
+      }
+    });
+    console.log("lst", lstSaveObj);
+    console.log("newarr", newNodeLst);
+  };
 
   const handleDeleteNode = useCallback((id) => {
     setNodes((nds) => nds.filter((node) => node.id !== id));
   }, []);
   const handleDeleteEdge = useCallback((id) => {
-    alert(id);
     setEdges((eds) => eds.filter((e) => e.id !== id));
   }, []);
 
@@ -168,6 +217,17 @@ function Flow() {
         isOpen={isOpenModal}
         onClick={() => {
           setIsOpenModal(!isOpenModal);
+        }}
+      />
+      <Spinner
+        animation="border"
+        variant="primary"
+        className="text-primary"
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          display: loading ? "block" : "none",
         }}
       />
     </div>

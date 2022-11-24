@@ -5,11 +5,6 @@ import "../../styles/Node.css";
 
 const foreignObjectSize = 40;
 
-const onEdgeClick = (evt, id) => {
-  evt.stopPropagation();
-  alert(`remove ${id}`);
-};
-
 export default function CustomEdge({
   id,
   sourceX,

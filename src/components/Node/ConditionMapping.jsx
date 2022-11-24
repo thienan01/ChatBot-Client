@@ -7,49 +7,16 @@ import {
 import { useState } from "react";
 import { Handle, Position } from "reactflow";
 
-function ConditionMapping({ background, color, data }) {
-  console.log("condition", data);
-  // return (
-  //   <>
-  //     <div style={{ margin: "5px 0px" }}>
-  //       {/* <input
-  //         className="form-control border-0"
-  //         type="text"
-  //         style={{
-  //           height: "25px",
-  //           background,
-  //           color,
-  //           fontSize: "13px",
-  //           fontWeight: "500",
-  //           borderRadius: "10px",
-  //         }}
-  //         value={value}
-  //         readOnly={readOnly}
-  //       ></input> */}
-  //       <Dropdown
-  //         style={{
-  //           height: "25px",
-  //           background,
-  //           color,
-  //           fontSize: "13px",
-  //           fontWeight: "500",
-  //           borderRadius: "10px",
-  //         }}
-  //         isOpen={true}
-  //       >
-  //         <DropdownToggle>s</DropdownToggle>
-  //         <DropdownMenu>
-  //           <DropdownItem>test</DropdownItem>
-  //         </DropdownMenu>
-  //       </Dropdown>
-  //     </div>
-  //   </>
-  // );
-
+function ConditionMapping({ background, color, data, intentInfo }) {
   const [dropdownOpen, setOpen] = useState(false);
   const [value, setValue] = useState({
     id: data.conditionMapping.intent_id,
-    name: "de",
+    name:
+      data.conditionMapping.intent_id === null
+        ? "Choose intent"
+        : data.intents.filter(
+            (items) => items.id === data.conditionMapping.intent_id
+          )[0].name,
   });
   return (
     <div style={{ margin: "5px 0px" }}>
@@ -80,6 +47,7 @@ function ConditionMapping({ background, color, data }) {
               <DropdownItem
                 onClick={() => {
                   setValue({ id: item.id, name: item.name });
+                  intentInfo(item.id);
                 }}
                 key={item.id}
                 value={item.id}
@@ -95,11 +63,13 @@ function ConditionMapping({ background, color, data }) {
         type="source"
         position={Position.Right}
         style={{
-          top: "108px",
+          top: "-12px",
+          left: "233px",
           width: "10px",
           height: "10px",
           border: "2px solid black",
           background: "none",
+          position: "relative",
         }}
       />
     </div>

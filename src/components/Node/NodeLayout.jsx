@@ -1,16 +1,19 @@
-import { Fragment, memo, useState } from "react";
+import { Fragment, memo, useState, useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import ConditionMapping from "./ConditionMapping";
-import { Button } from "reactstrap";
 import "../../styles/Node.css";
 const textSize = {
   fontSize: "15px",
 };
 function NodeLayout({ data }) {
   const [conditions, setConditions] = useState(data.conditionMapping);
-  const handleAddCondition = () => {
-    conditions.push({ id: "123", intent_id: "637794ac517b8943db4d9181" });
-    setConditions(conditions);
+  const [value, setValue] = useState(data.value);
+  data.value = value;
+  useEffect(() => {
+    data.conditionMapping = [{ id: "", intent_id: "" }];
+  }, []);
+  const getIntentInfo = (intent) => {
+    data.conditionMapping = [{ id: "", intent_id: intent }];
   };
 
   return (
@@ -46,10 +49,9 @@ function NodeLayout({ data }) {
               className="form-control form-control-sm border-0"
               type="text"
               style={{ background: "#F2F3F4" }}
-              readOnly={true}
-              value={data.value}
-              onClick={() => {
-                data.openModal();
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
               }}
             ></input>
           </div>
@@ -57,7 +59,6 @@ function NodeLayout({ data }) {
           <div className="condition-mapping" style={{ alignItems: "center" }}>
             <label style={textSize}>Customer's response</label>
             {conditions.map((item) => {
-              console.log("render");
               return (
                 <div className="condition-intent" key={item.id}>
                   <ConditionMapping
@@ -67,37 +68,12 @@ function NodeLayout({ data }) {
                       intents: data.intents,
                       conditionMapping: item,
                     }}
+                    intentInfo={getIntentInfo}
                   />
                 </div>
               );
             })}
-
-            {/* <div className="condition-incorrect">
-              <ConditionMapping
-                background="#FEF9E7"
-                color="#fea220"
-                value="Customer response incorrectly"
-                readOnly={true}
-              />
-            </div>
-            <div className="condition-no-response">
-              <ConditionMapping
-                background="#FDEDEC"
-                color="#E74C3C"
-                value="Customer does not response"
-                readOnly={true}
-              />
-            </div> */}
           </div>
-          <Button
-            outline
-            color="success"
-            style={{ border: "dashed" }}
-            onClick={handleAddCondition}
-          >
-            Add intent
-          </Button>
-          <div></div>
           <>
             <Handle
               id="0"
@@ -111,30 +87,6 @@ function NodeLayout({ data }) {
                 background: "none",
               }}
             />
-            {/* <Handle
-              id="2"
-              type="source"
-              position={Position.Right}
-              style={{
-                top: "138px",
-                width: "10px",
-                height: "10px",
-                border: "2px  solid #E67E22",
-                background: "none",
-              }}
-            />
-            <Handle
-              id=""
-              type="source"
-              position={Position.Right}
-              style={{
-                top: "168px",
-                width: "10px",
-                height: "10px",
-                border: "2px solid #E74C3C",
-                background: "none",
-              }}
-            /> */}
           </>
         </div>
       </div>
