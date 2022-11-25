@@ -1,10 +1,10 @@
 
 import React, {useRef} from 'react'
 import { Container, Row, Col } from "reactstrap"
-import { NavLink, Link } from 'react-router-dom'
+import { NavLink} from 'react-router-dom'
 import "../styles/home.css"
 import Background from '../assets/Background.png';
-import Logo from '../assets/Logo50.svg';
+// import Logo from '../assets/Logo50.svg';
 
 
 const nav__links = [

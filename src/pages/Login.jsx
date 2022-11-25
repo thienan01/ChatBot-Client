@@ -4,6 +4,7 @@ import CommonSection from '../components/UI/common-section/CommonSection'
 import { Container, Row, Col} from "reactstrap"
 import { Link } from 'react-router-dom'
 import "../styles/login.css"
+import Welcome from '../components/Welcome/Welcome'
 
 const Login = () => {
 
@@ -19,6 +20,9 @@ const Login = () => {
     <section>
       <Container>
         <Row>
+        <Col>
+          <Welcome/>
+          </Col>
           <Col lg="6" md="6" sm="12" className="m-auto text-center">
           <form className="form mb-10" onSubmit={submitHandler}>
             <div className="form__group">
