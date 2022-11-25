@@ -1,6 +1,8 @@
 import { Fragment, memo, useState, useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import ConditionMapping from "./ConditionMapping";
+import { Button } from "reactstrap";
+import uniqueID from "../../functionHelper/GenerateID";
 import "../../styles/Node.css";
 const textSize = {
   fontSize: "15px",
@@ -12,8 +14,18 @@ function NodeLayout({ data }) {
   useEffect(() => {
     data.conditionMapping = [{ id: "", intent_id: "" }];
   }, []);
-  const getIntentInfo = (intent) => {
-    data.conditionMapping = [{ id: "", intent_id: intent }];
+  const setCondition = ({ src, handle, target }) => {
+    console.log("s", src);
+    console.log("ha", handle);
+    console.log("t", target);
+    data.conditionMapping = [
+      {
+        id: "",
+        intent_id: src,
+        source: handle,
+        target: target,
+      },
+    ];
   };
 
   return (
@@ -68,12 +80,22 @@ function NodeLayout({ data }) {
                       intents: data.intents,
                       conditionMapping: item,
                     }}
-                    intentInfo={getIntentInfo}
+                    setCondition={setCondition}
                   />
                 </div>
               );
             })}
           </div>
+          <Button
+            onClick={() => {
+              setConditions([
+                ...conditions,
+                { id: uniqueID().toString(), intent_id: null },
+              ]);
+            }}
+          >
+            +
+          </Button>
           <>
             <Handle
               id="0"

@@ -1,17 +1,22 @@
-import React from 'react'
-import Footer from '../Footer/Footer'
-import Header from '../Header/Header'
-import Routes from '../../routes/Routers'
+import React from "react";
+import Footer from "../Footer/Footer";
+import Header from "../Header/Header";
+import Routes from "../../routes/Routers";
+import { useLocation } from "react-router-dom";
 
 const Layout = () => {
-  return <div>
-    {window.location.pathname !== "/" && "/login" && "/register"? <Header /> : null}{" "}
-    {/* <Header/> */}
+  const { pathname } = useLocation();
+  console.log(pathname);
+  return (
     <div>
-        <Routes/>
+      {pathname !== "/login" && pathname !== "/register" && <Header />}
+      {/* <Header/> */}
+      <div>
+        <Routes />
+      </div>
+      {pathname !== "/login" && pathname !== "/register1" && <Footer />}
     </div>
-    <Footer/>
-  </div>
-}
+  );
+};
 
-export default Layout
+export default Layout;

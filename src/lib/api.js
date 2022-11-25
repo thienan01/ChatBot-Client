@@ -1,15 +1,15 @@
 import axios from "axios";
 
-const URL = "http://localhost:8080";
+const URL = "https://chatbot-vapt.herokuapp.com";
 
 export const PostAPI = ({ params, data }) => {
   // console.log('URL', URL + params);
   return axios
     .post(URL + params, {
-      header: {
+      header: {   
         "Content-Type": "application/json",
       },
-      data: JSON.stringify(data),
+      data: data,
     })
     .then((respone) => {
       console.log("respone >>>", respone);

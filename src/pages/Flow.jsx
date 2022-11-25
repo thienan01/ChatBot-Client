@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect } from "react";
 import { Spinner } from "reactstrap";
+import { BASE_URL } from "../global/globalVar";
 import uniqueID from "../functionHelper/GenerateID";
 import { GET } from "../functionHelper/APIFunction";
 import ReactFlow, {
@@ -13,7 +14,6 @@ import ReactFlow, {
 } from "reactflow";
 import NodeLayout from "../components/Node/NodeLayout";
 import CustomEdge from "../components/Node/ButtonEdge";
-import FormModal from "../components/Modal/FormModal";
 import "reactflow/dist/style.css";
 
 const initialNodes = [];
@@ -38,22 +38,34 @@ function Flow() {
   const reactFlowInstance = useReactFlow();
 
   useEffect(() => {
-    Promise.all([
-      GET("https://chatbot-vapt.herokuapp.com/api/intent"),
-      GET(
-        "https://chatbot-vapt.herokuapp.com/api/node?script_id=637b7d9b4e532158d255a434"
-      ),
-    ])
-      .then((res) => {
-        isLoading(false);
-        setIntents(res[0].intents);
-        let data = nodeObject(res[1].nodes, res[0].intents);
-        setNodes(data.lstNode);
-        setEdges(data.lstEdge);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (true) {
+      Promise.all([
+        GET(BASE_URL + "api/intent/get_all/by_user_id"),
+        GET(BASE_URL + "api/node?script_id=637b7d9b4e532158d255a434"),
+      ])
+        .then((res) => {
+          isLoading(false);
+          setIntents(res[0].intents);
+          let data = nodeObject(res[1].nodes, res[0].intents);
+          setNodes(data.lstNode);
+          setEdges(data.lstEdge);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      GET(BASE_URL + "api/intent/get_all/by_user_id")
+        .then((res) => {
+          isLoading(false);
+          if (res.http_status !== "OK") {
+            throw res.exception_code;
+          }
+          setIntents(res.intents);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, []);
 
   const nodeObject = useCallback((nodes, intents) => {
@@ -98,12 +110,14 @@ function Flow() {
         {
           id: uniqueID().toString(),
           message: "",
-          condition_mappings: [{ id: "1", intent_id: null }],
+          condition_mappings: [{ id: uniqueID().toString(), intent_id: null }],
         },
       ],
       intents
     );
     reactFlowInstance.addNodes(data.lstNode[0]);
+  };
+  const handleSaveScript = () => {
     let all = reactFlowInstance.toObject();
     console.log("all", all);
     let newNodeLst = all.nodes.map((node) => {
@@ -115,44 +129,19 @@ function Flow() {
       };
     });
     let lstSaveObj = [];
-    newNodeLst.forEach((node) => {
-      if (all.edges.length > 0) {
+    if (all.edges.length > 0) {
+      newNodeLst.forEach((node) => {
+        let condition = [];
         all.edges.forEach((eds) => {
-          if (node.id === eds.source) {
+          if (eds.source === node.id) {
             lstSaveObj.push({
-              id: node.id,
+              node_id: node.id,
               message: node.message,
-              condition_mapping: [
-                {
-                  intent_id: node.conditionMapping[0].intent_id,
-                  next_node_ids: [eds.target],
-                },
-              ],
-            });
-          } else {
-            lstSaveObj.push({
-              id: node.id,
-              message: node.message,
-              condition_mapping: [
-                {
-                  intent_id: node.conditionMapping[0].intent_id,
-                },
-              ],
             });
           }
         });
-      } else {
-        lstSaveObj.push({
-          id: node.id,
-          message: node.message,
-          condition_mapping: [
-            {
-              intent_id: node.conditionMapping[0].intent_id,
-            },
-          ],
-        });
-      }
-    });
+      });
+    }
     console.log("lst", lstSaveObj);
     console.log("newarr", newNodeLst);
   };
@@ -213,12 +202,13 @@ function Flow() {
       >
         add node
       </button>
-      <FormModal
-        isOpen={isOpenModal}
-        onClick={() => {
-          setIsOpenModal(!isOpenModal);
-        }}
-      />
+      <button
+        onClick={handleSaveScript}
+        className="btn-add"
+        style={{ position: "relative", top: "-45px", left: "45px" }}
+      >
+        update
+      </button>
       <Spinner
         animation="border"
         variant="primary"
