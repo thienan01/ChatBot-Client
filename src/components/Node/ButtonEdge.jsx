@@ -43,7 +43,10 @@ export default function CustomEdge({
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
         <div>
-          <button className="edgebutton" onClick={() => data.delete(id)}>
+          <button
+            className="edgebutton"
+            onClick={() => data.delete(id, data.nodeID, data.sourceHandle)}
+          >
             ×
           </button>
         </div>

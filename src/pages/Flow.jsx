@@ -11,13 +11,14 @@ import ReactFlow, {
   applyNodeChanges,
   ReactFlowProvider,
   useReactFlow,
+  useNodesState,
+  useEdgesState,
 } from "reactflow";
 import NodeLayout from "../components/Node/NodeLayout";
 import CustomEdge from "../components/Node/ButtonEdge";
 import "reactflow/dist/style.css";
+import { param } from "jquery";
 
-const initialNodes = [];
-const initialEdges = [];
 const nodeTypes = {
   nodeLayout: NodeLayout,
 };
@@ -30,9 +31,9 @@ const rfStyle = {
 };
 
 function Flow() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const defaultEdgeOptions = { animated: true };
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [loading, isLoading] = useState(true);
   const [intents, setIntents] = useState([]);
   const reactFlowInstance = useReactFlow();
@@ -85,7 +86,6 @@ function Flow() {
           intents: intents,
           conditionMapping: node.condition_mappings,
           delete: handleDeleteNode,
-          openModal: handleOpenModal,
         },
       });
 
@@ -108,9 +108,9 @@ function Flow() {
     let data = nodeObject(
       [
         {
-          id: uniqueID().toString(),
+          id: uniqueID(),
           message: "",
-          condition_mappings: [{ id: uniqueID().toString(), intent_id: null }],
+          condition_mappings: [],
         },
       ],
       intents
@@ -120,7 +120,8 @@ function Flow() {
   const handleSaveScript = () => {
     let all = reactFlowInstance.toObject();
     console.log("all", all);
-    let newNodeLst = all.nodes.map((node) => {
+
+    let lstNode = all.nodes.map((node) => {
       return {
         id: node.id,
         message: node.data.value,
@@ -128,56 +129,70 @@ function Flow() {
         position: node.position,
       };
     });
-    let lstSaveObj = [];
-    if (all.edges.length > 0) {
-      newNodeLst.forEach((node) => {
-        let condition = [];
-        all.edges.forEach((eds) => {
-          if (eds.source === node.id) {
-            lstSaveObj.push({
-              node_id: node.id,
-              message: node.message,
-            });
-          }
-        });
+
+    let lstEdge = all.edges.map((eds) => {
+      let edges = [];
+      all.edges.forEach((edsIn) => {
+        if (eds.source === edsIn.source) {
+          edges.push(edsIn);
+        }
       });
-    }
+      return edges;
+    });
+
+    let lstSaveObj = [];
+    lstNode.forEach((node) => {
+      lstEdge.forEach((eds) => {
+        if (node.id === eds.nodeSrc) {
+          lstSaveObj.push({});
+        }
+      });
+    });
     console.log("lst", lstSaveObj);
-    console.log("newarr", newNodeLst);
+    console.log("newarr", lstNode);
   };
 
   const handleDeleteNode = useCallback((id) => {
     setNodes((nds) => nds.filter((node) => node.id !== id));
   }, []);
-  const handleDeleteEdge = useCallback((id) => {
+
+  const handleDeleteEdge = useCallback((id, nodeID, sourceHandle) => {
+    console.log("node", nodeID);
+    console.log("handle", sourceHandle);
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === nodeID) {
+          node.data.conditionMapping.forEach((condition) => {
+            if (condition.sourceHandle === sourceHandle) {
+              delete condition.source;
+              delete condition.sourceHandle;
+              delete condition.target;
+            }
+          });
+        }
+        return node;
+      })
+    );
+    console.log(reactFlowInstance.getNodes());
     setEdges((eds) => eds.filter((e) => e.id !== id));
   }, []);
 
-  const handleOpenModal = useCallback(() => {
-    setIsOpenModal(!isOpenModal);
+  const onConnect = useCallback((params) => {
+    setEdges((eds) =>
+      addEdge(
+        {
+          ...params,
+          type: "buttonedge",
+          data: {
+            delete: handleDeleteEdge,
+            nodeID: params.source,
+            sourceHandle: params.sourceHandle,
+          },
+        },
+        eds
+      )
+    );
   }, []);
-
-  const onNodesChange = useCallback(
-    (changes) => {
-      setNodes((nds) => applyNodeChanges(changes, nds));
-    },
-    [setNodes]
-  );
-  const onEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  );
-  const onConnect = useCallback(
-    (params) =>
-      setEdges((eds) =>
-        addEdge(
-          { ...params, type: "buttonedge", data: { delete: handleDeleteEdge } },
-          eds
-        )
-      ),
-    []
-  );
-  const defaultEdgeOptions = { animated: true };
 
   return (
     <div style={{ height: "90vh" }}>

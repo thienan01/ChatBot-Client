@@ -1,6 +1,7 @@
 import { Fragment, memo, useState, useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import ConditionMapping from "./ConditionMapping";
+import Keyword from "./Keyword";
 import { Button } from "reactstrap";
 import uniqueID from "../../functionHelper/GenerateID";
 import "../../styles/Node.css";
@@ -8,26 +9,36 @@ const textSize = {
   fontSize: "15px",
 };
 function NodeLayout({ data }) {
+  console.log("check condi", data.conditionMapping);
   const [conditions, setConditions] = useState(data.conditionMapping);
   const [value, setValue] = useState(data.value);
-  data.value = value;
   useEffect(() => {
-    data.conditionMapping = [{ id: "", intent_id: "" }];
-  }, []);
-  const setCondition = ({ src, handle, target }) => {
-    console.log("s", src);
-    console.log("ha", handle);
-    console.log("t", target);
-    data.conditionMapping = [
-      {
-        id: "",
-        intent_id: src,
-        source: handle,
-        target: target,
-      },
-    ];
-  };
+    data.value = value;
+  }, [value, data]);
+  useEffect(() => {
+    data.conditionMapping = conditions;
+    console.log("after", data.conditionMapping);
+  }, [conditions, data]);
 
+  const setConditionMapping = (data) => {
+    console.log("dd", data);
+    console.log("cc", conditions);
+    setConditions(
+      conditions.map((cnd) => {
+        if (cnd.id === data.conditionId) {
+          cnd.intent_id = data.intentId;
+          return cnd;
+        } else {
+          if (cnd.id === data.sourceHandle) {
+            cnd.source = data.source;
+            cnd.sourceHandle = data.sourceHandle;
+            cnd.target = data.target;
+          }
+          return cnd;
+        }
+      })
+    );
+  };
   return (
     <Fragment>
       <div
@@ -67,35 +78,56 @@ function NodeLayout({ data }) {
               }}
             ></input>
           </div>
-
           <div className="condition-mapping" style={{ alignItems: "center" }}>
             <label style={textSize}>Customer's response</label>
-            {conditions.map((item) => {
-              return (
-                <div className="condition-intent" key={item.id}>
-                  <ConditionMapping
-                    background="#f4f4f6"
-                    color="#060504"
-                    data={{
-                      intents: data.intents,
-                      conditionMapping: item,
-                    }}
-                    setCondition={setCondition}
-                  />
-                </div>
-              );
-            })}
+            <div className="intent">
+              {conditions.map((item) => {
+                if (item.predict_type === "INTENT") {
+                  return (
+                    <div className="condition-intent" key={item.id}>
+                      <ConditionMapping
+                        background="#f4f4f6"
+                        color="#060504"
+                        data={{
+                          intents: data.intents,
+                          conditionMapping: item,
+                          setCondition: setConditionMapping,
+                        }}
+                      />
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div className="condition-intent" key={item.id}>
+                      <Keyword
+                        background="#f4f4f6"
+                        color="#060504"
+                        data={{
+                          intents: data.intents,
+                          conditionMapping: item,
+                          setCondition: setConditionMapping,
+                        }}
+                      />
+                    </div>
+                  );
+                }
+              })}
+            </div>
+            <div className="keyword"></div>
           </div>
-          <Button
-            onClick={() => {
-              setConditions([
-                ...conditions,
-                { id: uniqueID().toString(), intent_id: null },
-              ]);
-            }}
-          >
-            +
-          </Button>
+          <div className="addCondition">
+            <Button
+              onClick={() => {
+                setConditions([
+                  ...conditions,
+                  { id: uniqueID(), intent_id: null },
+                ]);
+              }}
+            >
+              + intent
+            </Button>
+            <Button>+ key work</Button>
+          </div>
           <>
             <Handle
               id="0"

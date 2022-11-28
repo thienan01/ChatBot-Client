@@ -6,8 +6,7 @@ import {
 } from "reactstrap";
 import { useState } from "react";
 import { Handle, Position } from "reactflow";
-import uniqueID from "../../functionHelper/GenerateID";
-function ConditionMapping({ background, color, data, setCondition }) {
+function ConditionMapping({ background, color, data }) {
   const [dropdownOpen, setOpen] = useState(false);
   const [value, setValue] = useState({
     id: data.conditionMapping.intent_id,
@@ -18,10 +17,6 @@ function ConditionMapping({ background, color, data, setCondition }) {
             (items) => items.id === data.conditionMapping.intent_id
           )[0].name,
   });
-  const [source, setSource] = useState("");
-  const [handle, setHandle] = useState("");
-  const [target, setTarget] = useState("");
-
   return (
     <div style={{ margin: "5px 0px" }}>
       <ButtonDropdown
@@ -51,12 +46,11 @@ function ConditionMapping({ background, color, data, setCondition }) {
               <DropdownItem
                 onClick={() => {
                   setValue({ id: item.id, name: item.name });
-                  // setHandle(item.id);
-                  // setCondition({
-                  //   src: source,
-                  //   handle: item.id,
-                  //   target: target,
-                  // });
+                  data.setCondition({
+                    conditionId: data.conditionMapping.id,
+                    intentId: item.id,
+                    intentName: item.name,
+                  });
                 }}
                 key={item.id}
                 value={item.id}
@@ -68,9 +62,12 @@ function ConditionMapping({ background, color, data, setCondition }) {
         </DropdownMenu>
       </ButtonDropdown>
       <Handle
-        id={value.id}
+        id={data.conditionMapping.id}
         type="source"
         position={Position.Right}
+        onConnect={(param) => {
+          data.setCondition(param);
+        }}
         style={{
           top: "-12px",
           left: "233px",
