@@ -2,13 +2,11 @@ import { useCallback, useState, useEffect } from "react";
 import { Spinner } from "reactstrap";
 import { BASE_URL } from "../global/globalVar";
 import uniqueID from "../functionHelper/GenerateID";
-import { GET } from "../functionHelper/APIFunction";
+import { GET, POST } from "../functionHelper/APIFunction";
 import ReactFlow, {
   MiniMap,
   Controls,
   addEdge,
-  applyEdgeChanges,
-  applyNodeChanges,
   ReactFlowProvider,
   useReactFlow,
   useNodesState,
@@ -17,7 +15,6 @@ import ReactFlow, {
 import NodeLayout from "../components/Node/NodeLayout";
 import CustomEdge from "../components/Node/ButtonEdge";
 import "reactflow/dist/style.css";
-import { param } from "jquery";
 
 const nodeTypes = {
   nodeLayout: NodeLayout,
@@ -42,12 +39,14 @@ function Flow() {
     if (true) {
       Promise.all([
         GET(BASE_URL + "api/intent/get_all/by_user_id"),
-        GET(BASE_URL + "api/node?script_id=637b7d9b4e532158d255a434"),
+        GET(BASE_URL + "api/node?script_id=6385c673e327384e29b96744"),
       ])
         .then((res) => {
+          console.log("res", res);
           isLoading(false);
           setIntents(res[0].intents);
           let data = nodeObject(res[1].nodes, res[0].intents);
+          console.log("fi", data);
           setNodes(data.lstNode);
           setEdges(data.lstEdge);
         })
@@ -69,19 +68,39 @@ function Flow() {
     }
   }, []);
 
+  const saveScript = useCallback((nodes) => {
+    let body = {
+      id: "6385c673e327384e29b96744",
+      name: "new script pos",
+      nodes: nodes,
+    };
+    console.log("post", body);
+
+    POST(BASE_URL + "api/script/update", JSON.stringify(body))
+      .then((res) => {
+        console.loh(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   const nodeObject = useCallback((nodes, intents) => {
     let lstNode = [];
     let lstEdge = [];
     nodes.forEach((node) => {
+      node.condition_mappings.forEach((cnd) => {
+        cnd.target = cnd.next_node_ids[0];
+      });
       lstNode.push({
-        id: node.id,
+        id: node.node_id,
         type: "nodeLayout",
         position: {
-          x: Math.random() * 500,
-          y: Math.random() * 500,
+          x: node.position[0],
+          y: node.position[1],
         },
         data: {
-          id: node.id,
+          id: node.node_id,
           value: node.message,
           intents: intents,
           conditionMapping: node.condition_mappings,
@@ -93,7 +112,8 @@ function Flow() {
         if (condition.next_node_ids != null) {
           lstEdge.push({
             id: condition.id,
-            source: node.id,
+            source: node.node_id,
+            sourceHandle: condition.id,
             target: condition.next_node_ids[0],
             type: "buttonedge",
             data: { delete: handleDeleteEdge },
@@ -108,8 +128,9 @@ function Flow() {
     let data = nodeObject(
       [
         {
-          id: uniqueID(),
+          node_id: uniqueID(),
           message: "",
+          position: [Math.random() * 500, Math.random() * 500],
           condition_mappings: [],
         },
       ],
@@ -117,39 +138,27 @@ function Flow() {
     );
     reactFlowInstance.addNodes(data.lstNode[0]);
   };
-  const handleSaveScript = () => {
-    let all = reactFlowInstance.toObject();
-    console.log("all", all);
 
-    let lstNode = all.nodes.map((node) => {
+  const handleSaveScript = () => {
+    let lstNode = reactFlowInstance.getNodes();
+    let lstSaveObj = lstNode.map((node) => {
       return {
-        id: node.id,
+        node_id: node.id,
         message: node.data.value,
-        conditionMapping: node.data.conditionMapping,
-        position: node.position,
+        position: [node.position.x, node.position.y],
+        condition_mappings: node.data.conditionMapping.map((condition) => {
+          return {
+            next_node_ids: [condition.target],
+            intent_id: condition.intent_id ? condition.intent_id : "",
+            predict_type: condition.predict_type,
+            keyword: condition.keyword ? condition.keyword : "",
+          };
+        }),
       };
     });
+    console.log("lst", reactFlowInstance.getNodes());
 
-    let lstEdge = all.edges.map((eds) => {
-      let edges = [];
-      all.edges.forEach((edsIn) => {
-        if (eds.source === edsIn.source) {
-          edges.push(edsIn);
-        }
-      });
-      return edges;
-    });
-
-    let lstSaveObj = [];
-    lstNode.forEach((node) => {
-      lstEdge.forEach((eds) => {
-        if (node.id === eds.nodeSrc) {
-          lstSaveObj.push({});
-        }
-      });
-    });
-    console.log("lst", lstSaveObj);
-    console.log("newarr", lstNode);
+    saveScript(lstSaveObj);
   };
 
   const handleDeleteNode = useCallback((id) => {
@@ -157,8 +166,6 @@ function Flow() {
   }, []);
 
   const handleDeleteEdge = useCallback((id, nodeID, sourceHandle) => {
-    console.log("node", nodeID);
-    console.log("handle", sourceHandle);
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === nodeID) {

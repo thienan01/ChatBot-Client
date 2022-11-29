@@ -1,27 +1,50 @@
 import React from "react";
 import { Handle, Position } from "reactflow";
+import { useState } from "react";
 
-function Keyword(background, color, data) {
+function Keyword({ color, background, border, data }) {
+  const [key, setKey] = useState(data.conditionMapping.keyword);
   return (
     <>
-      <div className="inputKeyword">
+      <div className="inputKeyword" style={{ margin: "5px 0px" }}>
         <input
-          className="form-control form-control-sm border-0"
+          id="keyword"
+          className="form-control form-control-sm"
+          style={{
+            width: "100%",
+            height: "40px",
+            background,
+            color,
+            fontSize: "15px",
+            fontWeight: "600",
+            borderRadius: "12px",
+            textAlign: "left",
+          }}
+          placeholder="Keyword"
           type="text"
-          style={{ background: "#F2F3F4" }}
+          value={key}
+          onChange={(e) => {
+            setKey(e.target.value);
+            data.setCondition({
+              conditionId: data.conditionMapping.id,
+              keyword: e.target.value,
+            });
+          }}
         />
       </div>
       <Handle
-        id="sds"
+        id={data.conditionMapping.id}
         type="source"
         position={Position.Right}
-        onConnect={(param) => {}}
+        onConnect={(param) => {
+          data.setCondition(param);
+        }}
         style={{
-          top: "-12px",
-          left: "233px",
-          width: "10px",
-          height: "10px",
-          border: "2px solid black",
+          top: "-17px",
+          left: "275px",
+          width: "15px",
+          height: "15px",
+          border: "3px solid #E74C3C ",
           background: "none",
           position: "relative",
         }}

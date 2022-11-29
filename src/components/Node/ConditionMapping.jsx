@@ -6,8 +6,9 @@ import {
 } from "reactstrap";
 import { useState } from "react";
 import { Handle, Position } from "reactflow";
-function ConditionMapping({ background, color, data }) {
+function ConditionMapping({ background, color, border, data }) {
   const [dropdownOpen, setOpen] = useState(false);
+
   const [value, setValue] = useState({
     id: data.conditionMapping.intent_id,
     name:
@@ -15,8 +16,13 @@ function ConditionMapping({ background, color, data }) {
         ? "Choose intent"
         : data.intents.filter(
             (items) => items.id === data.conditionMapping.intent_id
+          ).length === 0
+        ? "Choose intent"
+        : data.intents.filter(
+            (items) => items.id === data.conditionMapping.intent_id
           )[0].name,
   });
+
   return (
     <div style={{ margin: "5px 0px" }}>
       <ButtonDropdown
@@ -24,16 +30,19 @@ function ConditionMapping({ background, color, data }) {
           setOpen(!dropdownOpen);
         }}
         isOpen={dropdownOpen}
+        style={{ width: "100%" }}
       >
         <DropdownToggle
-          caret
+          id="intent"
           style={{
-            height: "25px",
+            width: "100%",
+            height: "40px",
             background,
             color,
-            fontSize: "13px",
-            fontWeight: "500",
-            borderRadius: "10px",
+            fontSize: "15px",
+            fontWeight: "600",
+            borderRadius: "12px",
+            textAlign: "left",
           }}
           value={value.id}
         >
@@ -69,11 +78,11 @@ function ConditionMapping({ background, color, data }) {
           data.setCondition(param);
         }}
         style={{
-          top: "-12px",
-          left: "233px",
-          width: "10px",
-          height: "10px",
-          border: "2px solid black",
+          top: "-17px",
+          left: "275px",
+          width: "15px",
+          height: "15px",
+          border: "3px solid #F39C12",
           background: "none",
           position: "relative",
         }}

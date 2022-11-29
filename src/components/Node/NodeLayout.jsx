@@ -6,10 +6,9 @@ import { Button } from "reactstrap";
 import uniqueID from "../../functionHelper/GenerateID";
 import "../../styles/Node.css";
 const textSize = {
-  fontSize: "15px",
+  fontSize: "16px",
 };
 function NodeLayout({ data }) {
-  console.log("check condi", data.conditionMapping);
   const [conditions, setConditions] = useState(data.conditionMapping);
   const [value, setValue] = useState(data.value);
   useEffect(() => {
@@ -20,9 +19,7 @@ function NodeLayout({ data }) {
     console.log("after", data.conditionMapping);
   }, [conditions, data]);
 
-  const setConditionMapping = (data) => {
-    console.log("dd", data);
-    console.log("cc", conditions);
+  const setConditionMappingIntent = (data) => {
     setConditions(
       conditions.map((cnd) => {
         if (cnd.id === data.conditionId) {
@@ -39,73 +36,127 @@ function NodeLayout({ data }) {
       })
     );
   };
+  const setConditionMappingKeyword = (data) => {
+    setConditions(
+      conditions.map((cnd) => {
+        if (cnd.id === data.conditionId) {
+          cnd.keyword = data.keyword;
+          return cnd;
+        } else {
+          if (cnd.id === data.sourceHandle) {
+            cnd.source = data.source;
+            cnd.sourceHandle = data.sourceHandle;
+            cnd.target = data.target;
+          }
+          return cnd;
+        }
+      })
+    );
+  };
   return (
     <Fragment>
       <div
-        className="shadow bg-white rounded"
+        id="node"
+        className="shadow bg-white"
         style={{
-          width: "250px",
+          width: "300px",
           background: "white",
           borderRadius: "15px",
-          padding: "12px",
+          padding: "18px",
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            top: "5px",
-            left: "227px",
-          }}
-        >
+        <div className="hoverSession"></div>
+        <div id="deleteIcon" className="shadow bg-white">
           <i
             className="fa fa-trash"
-            style={{ fontSize: "13px" }}
+            style={{ fontSize: "16px", margin: "10px", color: "red" }}
             aria-hidden="true"
             onClick={() => data.delete(data.id)}
           ></i>
         </div>
-
         <div>
           <div className="node-name">
-            <label style={textSize}>Enter text:</label>
+            <div style={{ margin: "0px 0px 10px 0px" }}>
+              <div className="textIcon">
+                <i className="fa-solid fa-font text-white"></i>
+              </div>
+              <label
+                style={{
+                  ...textSize,
+                  fontWeight: "600",
+                  position: "absolute",
+                  top: "15px",
+                }}
+              >
+                Your message
+              </label>
+            </div>
             <input
-              className="form-control form-control-sm border-0"
+              id="message"
+              className="form-control form-control-sm "
               type="text"
-              style={{ background: "#F2F3F4" }}
               value={value}
               onChange={(e) => {
                 setValue(e.target.value);
               }}
             ></input>
           </div>
-          <div className="condition-mapping" style={{ alignItems: "center" }}>
-            <label style={textSize}>Customer's response</label>
+          <div
+            className="condition-mapping"
+            style={{ alignItems: "center", marginTop: "20px" }}
+          >
+            <div className="replyIcon">
+              <i class="fa-solid fa-reply text-white"></i>
+            </div>
+            <label
+              style={{
+                ...textSize,
+                fontWeight: "600",
+                position: "absolute",
+                top: "114 px",
+              }}
+            >
+              Customer's response
+            </label>
             <div className="intent">
               {conditions.map((item) => {
-                if (item.predict_type === "INTENT") {
+                if (
+                  item.predict_type === "INTENT" ||
+                  item.predict_type === undefined
+                ) {
                   return (
-                    <div className="condition-intent" key={item.id}>
+                    <div
+                      className="condition-intent"
+                      key={item.id}
+                      style={{ height: "48px" }}
+                    >
                       <ConditionMapping
-                        background="#f4f4f6"
-                        color="#060504"
+                        background="#fffaf4"
+                        color="#F39C12"
+                        border="0.5px solid #FCF3CF "
                         data={{
                           intents: data.intents,
                           conditionMapping: item,
-                          setCondition: setConditionMapping,
+                          setCondition: setConditionMappingIntent,
                         }}
                       />
                     </div>
                   );
                 } else {
                   return (
-                    <div className="condition-intent" key={item.id}>
+                    <div
+                      className="condition-intent"
+                      key={item.id}
+                      style={{ height: "48px" }}
+                    >
                       <Keyword
-                        background="#f4f4f6"
-                        color="#060504"
+                        id="keyword"
+                        background="#FDEDEC  "
+                        color=" #E74C3C"
+                        border="0.2px solid #FADBD8"
                         data={{
-                          intents: data.intents,
                           conditionMapping: item,
-                          setCondition: setConditionMapping,
+                          setCondition: setConditionMappingKeyword,
                         }}
                       />
                     </div>
@@ -115,18 +166,31 @@ function NodeLayout({ data }) {
             </div>
             <div className="keyword"></div>
           </div>
-          <div className="addCondition">
+          <div id="addCondition" className="addCondition">
             <Button
+              className="btn bg-primary"
+              style={{ width: "48%", border: "none" }}
               onClick={() => {
                 setConditions([
                   ...conditions,
-                  { id: uniqueID(), intent_id: null },
+                  { id: uniqueID(), intent_id: null, predict_type: "INTENT" },
                 ]);
               }}
             >
               + intent
             </Button>
-            <Button>+ key work</Button>
+            <Button
+              className="btn bg-primary"
+              style={{ width: "48%", border: "none" }}
+              onClick={() => {
+                setConditions([
+                  ...conditions,
+                  { id: uniqueID(), predict_type: "KEYWORD", keyword: "" },
+                ]);
+              }}
+            >
+              + key work
+            </Button>
           </div>
           <>
             <Handle
@@ -134,10 +198,11 @@ function NodeLayout({ data }) {
               type="target"
               position={Position.Left}
               style={{
-                top: "50px",
-                width: "10px",
-                height: "10px",
-                border: "2px solid black",
+                top: "65px",
+                left: "-9px",
+                width: "15px",
+                height: "15px",
+                border: "3px solid black",
                 background: "none",
               }}
             />
