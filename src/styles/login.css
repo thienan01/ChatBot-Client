@@ -1,8 +1,9 @@
 .login__section {
   /* background: linear-gradient(45deg, #141e30, #243b55); */
-  background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHZVKueiv7GP4GFeAS09pclFtlM_RYxNAphMqQQv6Rb_5YB9GBMHEYXo9a6NsmQGE0Qj0&usqp=CAU");
+  /* background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHZVKueiv7GP4GFeAS09pclFtlM_RYxNAphMqQQv6Rb_5YB9GBMHEYXo9a6NsmQGE0Qj0&usqp=CAU"); */
   height: 100vh;
   background-size: cover;
+  background: #f2f2f2;
   /* opacity: 0.6; */
 }
 
@@ -27,7 +28,7 @@
   width: 75%;
   height: 75%;
   margin: auto;
-  background-color: rgba(60, 60, 60, 0.5);
+  background-color: white;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(6px);
   padding: 75px 75px;
