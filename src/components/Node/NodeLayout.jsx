@@ -168,7 +168,7 @@ function NodeLayout({ data }) {
           </div>
           <div id="addCondition" className="addCondition">
             <Button
-              className="btn bg-primary"
+              color="primary"
               style={{ width: "48%", border: "none" }}
               onClick={() => {
                 setConditions([
@@ -177,10 +177,10 @@ function NodeLayout({ data }) {
                 ]);
               }}
             >
-              + intent
+              <i class="fa-solid fa-plus"></i> Intent
             </Button>
             <Button
-              className="btn bg-primary"
+              color="primary"
               style={{ width: "48%", border: "none" }}
               onClick={() => {
                 setConditions([
@@ -189,7 +189,7 @@ function NodeLayout({ data }) {
                 ]);
               }}
             >
-              + key work
+              <i class="fa-solid fa-plus"></i> Keyword
             </Button>
           </div>
           <>

@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect } from "react";
-import { Spinner } from "reactstrap";
+import { Spinner, Button } from "reactstrap";
 import { BASE_URL } from "../global/globalVar";
 import uniqueID from "../functionHelper/GenerateID";
 import { GET, POST } from "../functionHelper/APIFunction";
@@ -15,7 +15,7 @@ import ReactFlow, {
 import NodeLayout from "../components/Node/NodeLayout";
 import CustomEdge from "../components/Node/ButtonEdge";
 import "reactflow/dist/style.css";
-
+import { NotificationManager } from "react-notifications";
 const nodeTypes = {
   nodeLayout: NodeLayout,
 };
@@ -78,10 +78,10 @@ function Flow() {
 
     POST(BASE_URL + "api/script/update", JSON.stringify(body))
       .then((res) => {
-        console.loh(res);
+        NotificationManager.success("Update successfully", "Success");
       })
       .catch((err) => {
-        console.log(err);
+        NotificationManager.error("Update failure", "Error");
       });
   }, []);
 
@@ -217,20 +217,34 @@ function Flow() {
         <MiniMap />
         <Controls />
       </ReactFlow>
-      <button
-        onClick={handleCreateNode}
-        className="btn-add"
-        style={{ position: "relative", top: "-45px", left: "45px" }}
-      >
-        add node
-      </button>
-      <button
-        onClick={handleSaveScript}
-        className="btn-add"
-        style={{ position: "relative", top: "-45px", left: "45px" }}
-      >
-        update
-      </button>
+      <div>
+        <Button
+          onClick={handleCreateNode}
+          className="btn-success"
+          style={{
+            position: "relative",
+            top: "-45px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            marginRight: "10px",
+          }}
+        >
+          <i className="fa-solid fa-plus"></i> Add
+        </Button>
+        <Button
+          onClick={handleSaveScript}
+          color="primary"
+          style={{
+            position: "relative",
+            top: "-45px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            marginLeft: "10px",
+          }}
+        >
+          <i className="fa-regular fa-floppy-disk"></i> Save
+        </Button>
+      </div>
       <Spinner
         animation="border"
         variant="primary"
