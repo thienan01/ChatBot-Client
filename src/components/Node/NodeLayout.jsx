@@ -16,7 +16,6 @@ function NodeLayout({ data }) {
   }, [value, data]);
   useEffect(() => {
     data.conditionMapping = conditions;
-    console.log("after", data.conditionMapping);
   }, [conditions, data]);
 
   const setConditionMappingIntent = (data) => {

@@ -18,16 +18,10 @@
 .logo img {
   width: calc(100%-30%);
   object-fit: contain;
+  margin-top: 7px;
   z-index: 101;
   position: sticky;
   top: 0;
-}
-.logo h5 {
-  font-weight: 600;
-  font-size: 1rem;
-  color: #212245;
-  margin-top: 0px;
-  margin-bottom: 0;
 }
 
 .menu a {

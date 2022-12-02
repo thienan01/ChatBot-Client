@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect } from "react";
 import { Spinner, Button } from "reactstrap";
+import ModalChatTrial from "../components/Node/ModalChatTrial";
 import { BASE_URL } from "../global/globalVar";
 import uniqueID from "../functionHelper/GenerateID";
 import { GET, POST } from "../functionHelper/APIFunction";
@@ -32,6 +33,7 @@ function Flow() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [loading, isLoading] = useState(true);
+  const [openChat, setOpenChat] = useState(false);
   const [intents, setIntents] = useState([]);
   const reactFlowInstance = useReactFlow();
 
@@ -42,16 +44,17 @@ function Flow() {
         GET(BASE_URL + "api/node?script_id=6385c673e327384e29b96744"),
       ])
         .then((res) => {
-          console.log("res", res);
           isLoading(false);
           setIntents(res[0].intents);
           let data = nodeObject(res[1].nodes, res[0].intents);
-          console.log("fi", data);
           setNodes(data.lstNode);
           setEdges(data.lstEdge);
         })
         .catch((err) => {
-          console.log(err);
+          NotificationManager.error(
+            "Error occur when loading script!",
+            "Error"
+          );
         });
     } else {
       GET(BASE_URL + "api/intent/get_all/by_user_id")
@@ -74,8 +77,6 @@ function Flow() {
       name: "new script pos",
       nodes: nodes,
     };
-    console.log("post", body);
-
     POST(BASE_URL + "api/script/update", JSON.stringify(body))
       .then((res) => {
         NotificationManager.success("Update successfully", "Success");
@@ -156,7 +157,6 @@ function Flow() {
         }),
       };
     });
-    console.log("lst", reactFlowInstance.getNodes());
 
     saveScript(lstSaveObj);
   };
@@ -180,10 +180,12 @@ function Flow() {
         return node;
       })
     );
-    console.log(reactFlowInstance.getNodes());
     setEdges((eds) => eds.filter((e) => e.id !== id));
   }, []);
 
+  const closeModal = () => {
+    setOpenChat(!openChat);
+  };
   const onConnect = useCallback((params) => {
     setEdges((eds) =>
       addEdge(
@@ -202,7 +204,7 @@ function Flow() {
   }, []);
 
   return (
-    <div style={{ height: "90vh" }}>
+    <div style={{ height: "95vh" }}>
       <ReactFlow
         nodes={nodes}
         onNodesChange={onNodesChange}
@@ -217,32 +219,43 @@ function Flow() {
         <MiniMap />
         <Controls />
       </ReactFlow>
-      <div>
+      <div
+        className="shadow bg-white"
+        style={{
+          textAlign: "center",
+          position: "relative",
+          top: "-68px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          marginLeft: "10px",
+          width: "400px",
+          padding: "10px",
+          marginBottom: "10px",
+          borderRadius: "10px",
+        }}
+      >
         <Button
           onClick={handleCreateNode}
           className="btn-success"
-          style={{
-            position: "relative",
-            top: "-45px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            marginRight: "10px",
-          }}
+          style={{ margin: "0px 3px", width: "90px" }}
         >
           <i className="fa-solid fa-plus"></i> Add
         </Button>
         <Button
           onClick={handleSaveScript}
           color="primary"
-          style={{
-            position: "relative",
-            top: "-45px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            marginLeft: "10px",
-          }}
+          style={{ margin: "0px 3px", width: "90px" }}
         >
           <i className="fa-regular fa-floppy-disk"></i> Save
+        </Button>
+        <Button
+          color="warning"
+          style={{ margin: "0px 3px", width: "90px" }}
+          onClick={() => {
+            setOpenChat(!openChat);
+          }}
+        >
+          <i className="fa-regular fa-square-caret-left"></i> Try
         </Button>
       </div>
       <Spinner
@@ -256,6 +269,7 @@ function Flow() {
           display: loading ? "block" : "none",
         }}
       />
+      <ModalChatTrial openChat={openChat} closeModal={closeModal} />
     </div>
   );
 }
