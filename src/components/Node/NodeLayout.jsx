@@ -105,7 +105,7 @@ function NodeLayout({ data }) {
             style={{ alignItems: "center", marginTop: "20px" }}
           >
             <div className="replyIcon">
-              <i class="fa-solid fa-reply text-white"></i>
+              <i className="fa-solid fa-reply text-white"></i>
             </div>
             <label
               style={{
@@ -176,7 +176,7 @@ function NodeLayout({ data }) {
                 ]);
               }}
             >
-              <i class="fa-solid fa-plus"></i> Intent
+              <i className="fa-solid fa-plus"></i> Intent
             </Button>
             <Button
               color="primary"
@@ -188,7 +188,7 @@ function NodeLayout({ data }) {
                 ]);
               }}
             >
-              <i class="fa-solid fa-plus"></i> Keyword
+              <i className="fa-solid fa-plus"></i> Keyword
             </Button>
           </div>
           <>

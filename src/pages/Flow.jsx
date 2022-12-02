@@ -41,7 +41,7 @@ function Flow() {
     if (true) {
       Promise.all([
         GET(BASE_URL + "api/intent/get_all/by_user_id"),
-        GET(BASE_URL + "api/node?script_id=6385c673e327384e29b96744"),
+        GET(BASE_URL + "api/node?script_id=6389d5a0769c2b2ed974bc26"),
       ])
         .then((res) => {
           isLoading(false);
@@ -72,9 +72,10 @@ function Flow() {
   }, []);
 
   const saveScript = useCallback((nodes) => {
+    nodes.reverse();
     let body = {
-      id: "6385c673e327384e29b96744",
-      name: "new script pos",
+      id: "6389d5a0769c2b2ed974bc26",
+      name: "Script mua xe",
       nodes: nodes,
     };
     POST(BASE_URL + "api/script/update", JSON.stringify(body))
