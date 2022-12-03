@@ -13,4 +13,4 @@ const ListIntent = () => {
     );
 }
 
-export default ListIntent
+export default ListIntent 

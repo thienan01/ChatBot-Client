@@ -1,14 +1,17 @@
 import { Button, Table, Modal, Input, Form, Space} from "antd";
-import { useState, useEffect } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { nanoid } from "@reduxjs/toolkit";
+import { useState, useEffect, useRef } from "react";
+import { EditOutlined, DeleteOutlined, SaveOutlined, EyeOutlined, SearchOutlined} from "@ant-design/icons";
+import Highlighter from 'react-highlight-words';
 import AddForm from "./AddForm";
+import {GET, POST} from '../../functionHelper/APIFunction'
+import uniqueID from "../../functionHelper/GenerateID";
 
 
 function Intent() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState(null);
- 
+  const [loading, setLoading] = useState(false);
+  const [isPattern, setIsPattern] = useState(false);
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const showAdd = () => {
@@ -21,32 +24,138 @@ function Intent() {
     form.resetFields()
   };
 
-  const [dataSource, setDataSource] = useState([
-
-  ]);
-
+  const [dataSource, setDataSource] = useState([]);
+  const fetchRecords = (page) => {
+    setLoading(true);
+    GET(`https://chatbot-vapt.herokuapp.com/api/intent/get_pagination/by_user_id?page=${page}&size=10`)
+      .then((res) => {
+        setDataSource(res.items);
+        setLoading(false);
+      })
+  };
   useEffect(() => {
-    const fetchData = async () => {
-    const response = await fetch('http://localhost:3001/intent')
-    const responseJSON = await response.json()
-
-    setDataSource(responseJSON)
-    }
-    fetchData()
+    fetchRecords(1);
+    
   }, [])
+
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: '#ffc069',
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
+
+
 
   const [addFormData, setAddFormData] = useState({
     name: "",
     code: "",
   });
-
-
-
   const handleAddFormChange = (event) => {
     event.preventDefault();
-
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
+
 
     const newFormData = { ...addFormData };
     newFormData[fieldName] = fieldValue;
@@ -54,37 +163,55 @@ function Intent() {
     setAddFormData(newFormData);
   };
 
-  const handleAddFormSubmit = (event) => {
+  const createData = (data) => {
+    POST(`https://chatbot-vapt.herokuapp.com/api/intent/add`, JSON.stringify(data))
+    .then(response => {
+      console.log(response)
+      return response.payload()
+    })
+    .then(data => this.setDataSource(data.id))
+  }
+
+  const updateData = (data) => {
+    POST(`https://chatbot-vapt.herokuapp.com/api/intent/update`, JSON.stringify(data))
+    .then(response => {
+      console.log(response)
+      return response.payload()})
+    .then(data => this.setDataSource(data.id))
+  }
+
+  const handleAddFormSubmit = async (event) => {
     event.preventDefault();
 
     const newData = {
-      id: nanoid(),
+      id: uniqueID,
       name: addFormData.name,
       code: addFormData.code,
-
     };
-
+    console.log(newData.id)
     const newDatas = [...dataSource, newData];
     setDataSource(newDatas);
+    createData(newData, function(){
+      fetchRecords(1);
+    });
     handleCancel();
   };
-
-
-
   const columns = [
 
     {
-        key: "2",
-        title: "Name",
-        dataIndex: "name",
-      },
-    {
-      key: "3",
-      title: "Code",
-      dataIndex: "code",
+      key: "1",
+      title: "Name",
+      dataIndex: "name",
+      ...getColumnSearchProps('name'),
     },
     {
-      key: "4",
+      key: "2",
+      title: "Code",
+      dataIndex: "code",
+      ...getColumnSearchProps('code'),
+    },
+    {
+      key: "3",
       title: "Actions",
       render: (record) => {
         return (
@@ -93,6 +220,7 @@ function Intent() {
               onClick={() => {
                 onEditData(record);
               }}
+              
             />
             <DeleteOutlined
               onClick={() => {
@@ -100,6 +228,22 @@ function Intent() {
               }}
               style={{ color: "red", marginLeft: 12 }}
             />
+            <SaveOutlined 
+            onClick={() =>{
+              updateData(record, function(){
+                fetchRecords(1);
+              })
+            }}
+            style={{ color: "blue", marginLeft: 12 }}
+            />
+            <EyeOutlined
+            onClick={() =>{
+              onViewData(record)
+              console.log(record.id)
+            }}
+            style={{ color: "blue", marginLeft: 12 }}
+            />
+            
           </>
         );
       },
@@ -120,13 +264,21 @@ function Intent() {
     });
   };
 
-
-
+  const onViewData = (record) => {
+      setIsPattern(true)
+      setDataSource((pre) => {
+          return pre.filter((data) => data.id !== record.id);
+        })
+      
+  }
 
 
   const onEditData = (record) => {
     setIsEditing(true);
     setEditingData({ ...record });
+    updateData(record, function(){
+      fetchRecords(1);
+    })
   };
   const resetEditing = () => {
     setIsEditing(false);
@@ -135,15 +287,27 @@ function Intent() {
   return (
     <div className="Script">
       <header className="Script-header">
-      <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i class="ri-add-circle-fill"></i> <span> Create </span></Button>
+      <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i className="ri-add-circle-fill"></i> <span> Create </span></Button>
       <br />
       <br />
 
-        <Table columns={columns} dataSource={dataSource}></Table>
+        <Table
+        loading={loading}
+        columns={columns}
+         dataSource={dataSource}
+         rowKey="id"
+         pagination={{
+          pageSize: 10,
+          total: 500,
+          onChange: (page) => {
+            fetchRecords(page);
+          },
+        }}
+        ></Table>
         <Modal
           title="Edit Data"
-          visible={isEditing}
-          okText="Save"
+          open={isEditing}
+          okText="Confirm"
           onCancel={() => {
             resetEditing();
           }}
@@ -156,9 +320,11 @@ function Intent() {
                   return data;
                 }
               });
+
             });
             resetEditing();
-          }}
+          }
+        }
         >
           <br />
            <Space.Compact block>
@@ -187,11 +353,19 @@ function Intent() {
           <br />
   
         </Modal>
-        
+
+  <Modal
+    open={isPattern}
+    okText="Confirm">
+    onViewData()
+
+  </Modal>
+      
        <Modal
+          forceRender
           title="Add Data"
-          visible={visible}
-          okText="Save"
+          open={visible}
+          okText="Confirm"
           onCancel={handleCancel}
           onOk={handleAddFormSubmit}
         >

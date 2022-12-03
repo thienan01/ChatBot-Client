@@ -25,4 +25,19 @@ const POST = async (_url, _body) => {
   });
   return res;
 };
-export { GET, POST };
+
+const DELETE = async (_url) => {
+  let res = await $.ajax({
+    url: _url,
+    dataType: "json",
+    headers: {
+      Authorization: "Token " + getCookie("token"),
+    },
+    contentType: "application/json",
+  });
+  return res;
+};
+
+export { GET, POST, DELETE};
+
+

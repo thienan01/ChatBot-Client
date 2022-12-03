@@ -1,24 +1,8 @@
 {
-  "intent": [
+  "status": [
     {
-      "id": "1",
-      "name": "Intent name 1",
-      "code": "Code name 1"
-    },
-    {
-      "id": "2",
-      "name": "Intent name 1",
-      "code": "Code name 1"
-    },
-    {
-      "id": "3",
-      "name": "Intent name 1",
-      "code": "Code name 1"
-    },
-    {
-      "id": "4",
-      "name": "Intent name 1",
-      "code": "Code name 1"
+      "http_status": "Ok",
+      "status": "FREE"
     }
   ],
   "pattern": [

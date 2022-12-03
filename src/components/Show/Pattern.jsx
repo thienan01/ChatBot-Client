@@ -1,18 +1,39 @@
 import { Button, Table, Modal, Input, Form, Space} from "antd";
-import { useState, useEffect } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { nanoid } from "@reduxjs/toolkit";
-import AddForm from "./AddForm";
+import { useState, useEffect, useRef } from "react";
+import { EditOutlined, DeleteOutlined, SearchOutlined} from "@ant-design/icons";
+import {GET, POST} from '../../functionHelper/APIFunction'
+import uniqueID from "../../functionHelper/GenerateID";
+import AddFormPattern from "./AddFormPattern";
+import Highlighter from 'react-highlight-words';
+import Progressbar from "./Progessbar";
 
 
 function Pattern() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState(null);
- 
+
+
+  const checkStatus = () => {
+    GET(`https://chatbot-vapt.herokuapp.com/api/training/get_server_status`)
+    .then((res) => {
+      setDataCheck(res.http_status);
+      setDataCheck(res.status);
+      console.log(res.http_status)
+      console.log(res.status)
+    })
+  }
+    
+  
   const [visible, setVisible] = useState(false);
+  const [visible1, setVisible1] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const showAdd = () => {
     setVisible(true)
+  }
+  const showPro = () => {
+    setVisible1(true)
+    checkStatus()
   }
 
   
@@ -20,31 +41,144 @@ function Pattern() {
     setVisible(false)
     form.resetFields()
   };
+  const handleCancel1 = () => {
+    setVisible1(false)
 
-  const [dataSource, setDataSource] = useState([
+  };
+  const [dataSource, setDataSource] = useState([]);
+  const [dataCheck, setDataCheck] = useState([]);
 
-  ]);
+
+  const fetchRecords = () => {
+    setLoading(true);
+    GET(`https://chatbot-vapt.herokuapp.com/api/pattern/get_pagination/by_user_id?page=2&size=10`)
+      .then((res) => {
+        setDataSource(res.items);
+        setLoading(false);
+        console.log(res.patterns)
+      })
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-    const response = await fetch('http://localhost:3001/pattern')
-    const responseJSON = await response.json()
-
-    setDataSource(responseJSON)
-    }
-    fetchData()
+    fetchRecords(1);  
+    checkStatus()
   }, [])
 
+
   const [addFormData, setAddFormData] = useState({
-    name: "",
-    code: "",
+    id: uniqueID,
+    intent_id: "",
+    content: "",
   });
-
-
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: '#ffc069',
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
 
   const handleAddFormChange = (event) => {
     event.preventDefault();
-
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
 
@@ -54,35 +188,53 @@ function Pattern() {
     setAddFormData(newFormData);
   };
 
+  function createData(data) {
+    POST(`https://chatbot-vapt.herokuapp.com/api/pattern/add`, JSON.stringify(data))
+    .then(response => {
+      console.log(response)
+      return response.payload()})
+  }
   const handleAddFormSubmit = (event) => {
     event.preventDefault();
 
-    const newData = {
-      id: nanoid(),
-      name: addFormData.name,
-      code: addFormData.code,
 
+    const newData = {
+      intent_id: addFormData.intent_id,
+      content: addFormData.content,
     };
 
     const newDatas = [...dataSource, newData];
     setDataSource(newDatas);
+    createData(newData, function(){
+      fetchRecords(1);
+    });
     handleCancel();
   };
-
-
-
-  const columns = [
-
+  const columnsCheck = [
+    {
+      key: "1",
+      title: "HTTP Status",
+      dataIndex: "http_status",
+    },
     {
         key: "2",
-        title: "Name",
-        dataIndex: "name",
+        title: "Status",
+        dataIndex: "status",
       },
+    ]
+  const columns = [
     {
-      key: "3",
-      title: "Code",
-      dataIndex: "code",
+      key: "1",
+      title: "Intent ID",
+      dataIndex: "intent_id",
+      ...getColumnSearchProps('intent_id'),
     },
+    {
+        key: "2",
+        title: "content",
+        dataIndex: "content",
+        ...getColumnSearchProps('content'),
+      },
     {
       key: "4",
       title: "Actions",
@@ -105,8 +257,6 @@ function Pattern() {
       },
     },
   ];
-
- 
   const onDeleteData = (record) => {
     Modal.confirm({
       title: "Are you sure, you want to delete this Data record?",
@@ -119,11 +269,6 @@ function Pattern() {
       },
     });
   };
-
-
-
-
-
   const onEditData = (record) => {
     setIsEditing(true);
     setEditingData({ ...record });
@@ -135,14 +280,30 @@ function Pattern() {
   return (
     <div className="Script">
       <header className="Script-header">
-      <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i class="ri-add-circle-fill"></i> <span> Create </span></Button>
-      <br />
-      <br />
+      <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i className="ri-add-circle-fill"></i> <span> Create </span></Button>
+      <Button onClick={showPro} className="btn btn-success" 
+      style={{
+        float: 'right',
+        backgroundColor: '#006CBE'
+      }}
+      ><i class="ri-checkbox-circle-fill"></i><span> Check </span></Button>
 
-        <Table columns={columns} dataSource={dataSource}></Table>
+        <Table 
+        loading={loading}
+        columns={columns}
+         dataSource={dataSource}
+         rowKey="id"
+         pagination={{
+          pageSize: 10,
+          total: 6000,
+          onChange: (page) => {
+            fetchRecords(page);
+          },
+        }}
+         ></Table>
         <Modal
           title="Edit Data"
-          visible={isEditing}
+          open={isEditing}
           okText="Save"
           onCancel={() => {
             resetEditing();
@@ -162,23 +323,27 @@ function Pattern() {
         >
           <br />
            <Space.Compact block>
+           <h5>Content</h5>
+
           <Input
-            value={editingData?.name}
+            value={editingData?.content}
             onChange={(e) => {
               setEditingData((pre) => {
-                return { ...pre, name: e.target.value };
+                return { ...pre, content: e.target.value };
               });
             }}
           />
           </Space.Compact>
           <br />
           <br />
+            <h5>Intent ID</h5>
+
           <Space.Compact block>
           <Input
-            value={editingData?.code}
+            value={editingData?.intent_id}
             onChange={(e) => {
               setEditingData((pre) => {
-                return { ...pre, code: e.target.value };
+                return {...pre, intent_id: e.intent_id};
               });
             }}
           />
@@ -190,15 +355,47 @@ function Pattern() {
         
        <Modal
           title="Add Data"
-          visible={visible}
+          open={visible}
           okText="Save"
           onCancel={handleCancel}
-          onOk={handleAddFormSubmit}
+          onOk={() => 
+            handleAddFormSubmit
+          }
+          
         >
-          <AddForm
+          <AddFormPattern
           handleAddFormChange={handleAddFormChange}
           />
+            <h5>Intent ID</h5>
+
+          <Space.Compact block>
+          <Input
+            value={editingData?.intent_id}
+            onChange={(e) => {
+              setEditingData((pre) => {
+                return {...pre, intent_id: e.intent_id};
+              });
+            }}
+          />
+          </Space.Compact>
         </Modal>
+
+        <Modal
+        title="Check Status"
+        open={visible1}
+        onCancel={handleCancel1}
+        onOk={checkStatus}
+        >
+          <Progressbar
+          />
+          <Table
+          columns={columnsCheck}
+          dataSource={dataCheck}
+          rowKey="id"
+          >
+          </Table>
+        </Modal>
+        
 
 
 

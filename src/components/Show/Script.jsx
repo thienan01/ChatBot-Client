@@ -29,11 +29,13 @@ function Script() {
     const fetchData = async () => {
     const response = await fetch('http://localhost:3001/scripts')
     const responseJSON = await response.json()
-
+    console.log(responseJSON)
     setDataSource(responseJSON)
     }
     fetchData()
-  }, [])
+    
+  }
+  , [])
 
   const [addFormData, setAddFormData] = useState({
     name: "",
@@ -61,7 +63,6 @@ function Script() {
       id: nanoid(),
       name: addFormData.name,
       code: addFormData.code,
-
     };
 
     const newDatas = [...dataSource, newData];
@@ -135,7 +136,7 @@ function Script() {
   return (
     <div className="Script">
       <header className="Script-header">
-      <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i class="ri-add-circle-fill"></i> <span> Create </span></Button>
+      <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i className="ri-add-circle-fill"></i> <span> Create </span></Button>
       <br />
       <br />
 
@@ -187,7 +188,6 @@ function Script() {
           <br />
   
         </Modal>
-        
        <Modal
           title="Add Data"
           visible={visible}
@@ -199,6 +199,8 @@ function Script() {
           handleAddFormChange={handleAddFormChange}
           />
         </Modal>
+
+        
 
 
 
