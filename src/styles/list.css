@@ -175,3 +175,25 @@ table.table .avatar {
 .btn btn-check {
 	margin-right: 20px;
 }
+.modalStyle .ant-modal-header {
+	border-radius: 20px 20px 0 0;
+  }
+  
+  .newStyle {
+	border-radius: 20px;
+  }
+  
+  .ant-modal-content {
+	border-radius: 20px;
+  }
+  
+  .modalStyle2 {
+	border-radius: 20px;
+  }
+  .modalStyle{
+	font-size: 20px;
+  }
+  span{
+	margin: auto;
+	padding: auto;
+  }

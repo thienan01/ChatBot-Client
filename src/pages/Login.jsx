@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BASE_URL } from "../global/globalVar";
+import { BASE_URL_LOCAL } from "../global/globalVar";
 import {
   Container,
   Row,
@@ -34,7 +34,7 @@ const Login = () => {
         username: username,
         password: password,
       };
-      POST(BASE_URL + "api/user/login", JSON.stringify(body)).then((res) => {
+      POST(BASE_URL_LOCAL + "/api/user/login", JSON.stringify(body)).then((res) => {
         if (res.http_status !== "OK") {
           throw res.exception_code;
         }

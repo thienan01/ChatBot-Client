@@ -1,88 +1,67 @@
-import { Button, Table, Modal, Input, Form, Space} from "antd";
+import { Button, Table, Modal, Input, Space, Form, Typography} from "antd";
 import { useState, useEffect } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { nanoid } from "@reduxjs/toolkit";
-import AddForm from "./AddForm";
+import { EditOutlined, DeleteOutlined} from "@ant-design/icons";
+import {GET, POST} from '../../functionHelper/APIFunction'
+import { BASE_URL_LOCAL } from '../../global/globalVar'
+
 
 
 function Script() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState(null);
- 
-  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
+  const [visible, setVisible] = useState(false)
   const [form] = Form.useForm();
-  const showAdd = () => {
-    setVisible(true)
-  }
 
-  
+ 
+
+  const { Paragraph } = Typography;
+  const [dataSource, setDataSource] = useState([]);
+  const [dataSource1, setDataSource1] = useState([]);
+  const fetchRecords = (page) => {
+    setLoading(true);
+    GET(BASE_URL_LOCAL + `/script/get_pagination/by_user_id?page=${page}&size=5`)
+      .then((res) => {
+        setDataSource(res.items);
+        setLoading(false);
+      })
+  };
+  // const fecthSecretKey = () => {
+  //   setLoading1(true);
+  //   POST(BASE_URL_LOCAL + `/api/training/predict`)
+  //     .then((res) => {
+  //       setDataSource1(res);
+  //       setLoading1(false);
+  //     })
+  // }
   const handleCancel = () => {
     setVisible(false)
     form.resetFields()
   };
 
-  const [dataSource, setDataSource] = useState([
-
-  ]);
+  const showScript = () => {
+    setVisible(true)
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-    const response = await fetch('http://localhost:3001/scripts')
-    const responseJSON = await response.json()
-    console.log(responseJSON)
-    setDataSource(responseJSON)
-    }
-    fetchData()
-    
+    fetchRecords(1)
+    //fecthSecretKey()
   }
   , [])
 
-  const [addFormData, setAddFormData] = useState({
-    name: "",
-    code: "",
-  });
-
-
-
-  const handleAddFormChange = (event) => {
-    event.preventDefault();
-
-    const fieldName = event.target.getAttribute("name");
-    const fieldValue = event.target.value;
-
-    const newFormData = { ...addFormData };
-    newFormData[fieldName] = fieldValue;
-
-    setAddFormData(newFormData);
-  };
-
-  const handleAddFormSubmit = (event) => {
-    event.preventDefault();
-
-    const newData = {
-      id: nanoid(),
-      name: addFormData.name,
-      code: addFormData.code,
-    };
-
-    const newDatas = [...dataSource, newData];
-    setDataSource(newDatas);
-    handleCancel();
-  };
-
-
-
+ 
   const columns = [
 
     {
         key: "2",
-        title: "Name",
-        dataIndex: "name",
+        title: "ID",
+        dataIndex: "id",
       },
     {
       key: "3",
-      title: "Code",
-      dataIndex: "code",
+      title: "Name",
+      dataIndex: "name",
     },
     {
       key: "4",
@@ -121,14 +100,20 @@ function Script() {
     });
   };
 
-
-
-
-
   const onEditData = (record) => {
     setIsEditing(true);
     setEditingData({ ...record });
+    updateData(record, function(){
+      fetchRecords(1);
+    })
   };
+  const updateData = (data) => {
+    POST(`https://chatbot-vapt.herokuapp.com/api/intent/update`, JSON.stringify(data))
+    .then(response => {
+      console.log(response)
+      return response.payload()})
+    .then(data => this.setDataSource(data.id))
+  }
   const resetEditing = () => {
     setIsEditing(false);
     setEditingData(null);
@@ -136,11 +121,23 @@ function Script() {
   return (
     <div className="Script">
       <header className="Script-header">
-      <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i className="ri-add-circle-fill"></i> <span> Create </span></Button>
+      <Button onClick={showScript} className="btn btn-success" data-toggle="modal"><i class="ri-chat-forward-fill"></i> <span>&nbsp; Get the code </span></Button>
       <br />
       <br />
 
-        <Table columns={columns} dataSource={dataSource}></Table>
+      <Table
+        loading={loading}
+        columns={columns}
+         dataSource={dataSource}
+         rowKey="id"
+         pagination={{
+          pageSize: 10,
+          total: 500,
+          onChange: (page) => {
+            fetchRecords(page);
+          },
+        }}
+        ></Table>
         <Modal
           title="Edit Data"
           visible={isEditing}
@@ -175,35 +172,89 @@ function Script() {
           <br />
           <br />
           <Space.Compact block>
-          <Input
-            value={editingData?.code}
-            onChange={(e) => {
-              setEditingData((pre) => {
-                return { ...pre, code: e.target.value };
-              });
-            }}
-          />
           </Space.Compact>
-          
           <br />
-  
         </Modal>
-       <Modal
-          title="Add Data"
-          visible={visible}
-          okText="Save"
+        <Modal
+          loading={loading1}
+          title={"Copy the code below for your Website:"}
+          open={visible}
+          footer={null}
+          width={800}
+          okText="Ok"
           onCancel={handleCancel}
-          onOk={handleAddFormSubmit}
-        >
-          <AddForm
-          handleAddFormChange={handleAddFormChange}
-          />
+          className="modalStyle"
+          dataSource={dataSource1}
+          >
+           <Paragraph copyable={{ tooltips: false }}>
+          <span>&lt; script &gt;</span>
+          <br />
+           <span>&nbsp; &nbsp;var secretKey = "{dataSource1.secret_key}"; </span>
+          <br />
+           <span>&nbsp; &nbsp;var scriptId = "INPUT_YOUR_SCRIPT_HERE"; </span>
+          <br />
+           <span>&nbsp; &nbsp;var currentNodeId = "_BEGIN"; </span>
+          <br />
+          <span>&lt; script /&gt;</span>
+            <br />
+            <br />
+          <span>&lt; div class="containerChat" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&lt; div class="chatbox" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; div class="chatbox__support" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; div class="chatbox__header" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; div class="chatbox__content--header" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; h4 class="chatbox__heading--header" &gt; Chat support &lt; /h4 &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; div/ &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; div/ &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; div class="chatbox__messages" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; div/ &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; div class="chatbox__footer" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; img src="https://cdn.jsdelivr.net/gh/thienan01/ChatCDNs/emojis.svg" alt="" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; img src="https://cdn.jsdelivr.net/gh/thienan01/ChatCDNs/microphone.svg" alt="" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; input type="text" placeholder="Write a message..." id="inputMessage" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; p class="chatbox__send--footer" id="btnSend" onclick="handleSendMsg()"&gt;Send &lt;/p &gt; </span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; img src="https://cdn.jsdelivr.net/gh/thienan01/ChatCDNs/attachment.svg" alt="" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; /div &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; /div &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; div class="chatbox__button" &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; button &gt; button &lt; /button &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; /div &gt;</span>
+          <br />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&lt; /div &gt;</span>
+          <br />
+          <span>&lt; /div &gt;</span>
+          <br />
+            <br />
+          <span>&lt; link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" &gt;</span>
+          <br />
+          <span>&lt; link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/thienan01/ChatCDNs/chat.css" &gt;</span>
+          <br />
+          <span>&lt; script src="https://code.jquery.com/jquery-1.10.2.min.js &gt; &lt; /script &gt;</span> 
+          <br />
+          <span>&lt; src="https://cdn.jsdelivr.net/gh/thienan01/ChatCDNs/handleChat.js" &gt; &lt; /script &gt;</span> 
+          <br />
+          </Paragraph>
         </Modal>
-
-        
-
-
-
       </header>
     </div>
   );

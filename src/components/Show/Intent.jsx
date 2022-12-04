@@ -5,6 +5,9 @@ import Highlighter from 'react-highlight-words';
 import AddForm from "./AddForm";
 import {GET, POST} from '../../functionHelper/APIFunction'
 import uniqueID from "../../functionHelper/GenerateID";
+import Progressbar from "./Progessbar";
+import { BASE_URL_LOCAL } from '../../global/globalVar'
+
 
 
 function Intent() {
@@ -17,17 +20,24 @@ function Intent() {
   const showAdd = () => {
     setVisible(true)
   }
+  const [visible1, setVisible1] = useState(false);
 
   
   const handleCancel = () => {
     setVisible(false)
     form.resetFields()
   };
+  const handleCancel1 = () => {
+    setVisible1(false)
+
+  };
 
   const [dataSource, setDataSource] = useState([]);
+  const [dataCheck, setDataCheck] = useState([]);
+
   const fetchRecords = (page) => {
     setLoading(true);
-    GET(`https://chatbot-vapt.herokuapp.com/api/intent/get_pagination/by_user_id?page=${page}&size=10`)
+    GET(BASE_URL_LOCAL + `/api/intent/get_pagination/by_user_id?page=${page}&size=10`)
       .then((res) => {
         setDataSource(res.items);
         setLoading(false);
@@ -35,8 +45,19 @@ function Intent() {
   };
   useEffect(() => {
     fetchRecords(1);
+    checkStatus()
     
   }, [])
+  const checkStatus = () => {
+    GET(BASE_URL_LOCAL + `/api/training/get_server_status`)
+    .then((res) => {
+      setDataCheck(res.http_status);
+      setDataCheck(res.status);
+      console.log(res.http_status)
+      console.log(res.status)
+      alert(res)
+    })
+  }
 
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
@@ -145,7 +166,10 @@ function Intent() {
       ),
   });
 
-
+  const showPro = () => {
+    setVisible1(true)
+    checkStatus()
+  }
 
   const [addFormData, setAddFormData] = useState({
     name: "",
@@ -197,7 +221,6 @@ function Intent() {
     handleCancel();
   };
   const columns = [
-
     {
       key: "1",
       title: "Name",
@@ -288,6 +311,12 @@ function Intent() {
     <div className="Script">
       <header className="Script-header">
       <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i className="ri-add-circle-fill"></i> <span> Create </span></Button>
+      <Button onClick={showPro} className="btn btn-success" 
+      style={{
+        float: 'right',
+        backgroundColor: '#006CBE'
+      }}
+      ><i class="ri-checkbox-circle-fill"></i><span> Check </span></Button>
       <br />
       <br />
 
@@ -373,7 +402,20 @@ function Intent() {
           handleAddFormChange={handleAddFormChange}
           />
         </Modal>
+          
+        <Modal
+        title="Check Status"
+        open={visible1}
+        onCancel={handleCancel1}
+        onOk={checkStatus}
+        >
+          <Progressbar
+          />
 
+          <p>{dataCheck.http_status}</p>
+          <p>{dataCheck.status}</p>
+
+        </Modal>
 
 
       </header>

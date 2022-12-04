@@ -5,7 +5,8 @@ import {GET, POST} from '../../functionHelper/APIFunction'
 import uniqueID from "../../functionHelper/GenerateID";
 import AddFormPattern from "./AddFormPattern";
 import Highlighter from 'react-highlight-words';
-import Progressbar from "./Progessbar";
+import { BASE_URL_LOCAL } from '../../global/globalVar'
+
 
 
 function Pattern() {
@@ -13,45 +14,29 @@ function Pattern() {
   const [editingData, setEditingData] = useState(null);
 
 
-  const checkStatus = () => {
-    GET(`https://chatbot-vapt.herokuapp.com/api/training/get_server_status`)
-    .then((res) => {
-      setDataCheck(res.http_status);
-      setDataCheck(res.status);
-      console.log(res.http_status)
-      console.log(res.status)
-    })
-  }
+ 
     
   
   const [visible, setVisible] = useState(false);
-  const [visible1, setVisible1] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const showAdd = () => {
     setVisible(true)
   }
-  const showPro = () => {
-    setVisible1(true)
-    checkStatus()
-  }
+  
 
   
   const handleCancel = () => {
     setVisible(false)
     form.resetFields()
   };
-  const handleCancel1 = () => {
-    setVisible1(false)
-
-  };
+  
   const [dataSource, setDataSource] = useState([]);
-  const [dataCheck, setDataCheck] = useState([]);
 
 
   const fetchRecords = () => {
     setLoading(true);
-    GET(`https://chatbot-vapt.herokuapp.com/api/pattern/get_pagination/by_user_id?page=2&size=10`)
+    GET(BASE_URL_LOCAL +`/api/pattern/get_pagination/by_user_id?page=2&size=10`)
       .then((res) => {
         setDataSource(res.items);
         setLoading(false);
@@ -61,7 +46,6 @@ function Pattern() {
 
   useEffect(() => {
     fetchRecords(1);  
-    checkStatus()
   }, [])
 
 
@@ -210,18 +194,6 @@ function Pattern() {
     });
     handleCancel();
   };
-  const columnsCheck = [
-    {
-      key: "1",
-      title: "HTTP Status",
-      dataIndex: "http_status",
-    },
-    {
-        key: "2",
-        title: "Status",
-        dataIndex: "status",
-      },
-    ]
   const columns = [
     {
       key: "1",
@@ -281,12 +253,7 @@ function Pattern() {
     <div className="Script">
       <header className="Script-header">
       <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i className="ri-add-circle-fill"></i> <span> Create </span></Button>
-      <Button onClick={showPro} className="btn btn-success" 
-      style={{
-        float: 'right',
-        backgroundColor: '#006CBE'
-      }}
-      ><i class="ri-checkbox-circle-fill"></i><span> Check </span></Button>
+      
 
         <Table 
         loading={loading}
@@ -337,9 +304,9 @@ function Pattern() {
           <br />
           <br />
             <h5>Intent ID</h5>
-
           <Space.Compact block>
           <Input
+          placeholder="intent id"
             value={editingData?.intent_id}
             onChange={(e) => {
               setEditingData((pre) => {
@@ -380,21 +347,7 @@ function Pattern() {
           </Space.Compact>
         </Modal>
 
-        <Modal
-        title="Check Status"
-        open={visible1}
-        onCancel={handleCancel1}
-        onOk={checkStatus}
-        >
-          <Progressbar
-          />
-          <Table
-          columns={columnsCheck}
-          dataSource={dataCheck}
-          rowKey="id"
-          >
-          </Table>
-        </Modal>
+        
         
 
 
