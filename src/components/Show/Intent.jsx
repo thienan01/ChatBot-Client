@@ -12,6 +12,8 @@ import { BASE_URL_LOCAL } from '../../global/globalVar'
 function Intent() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState(null);
+  const [isDeleteing, setIsDeleteing] = useState(false);
+  const [deleteingData, setDeleteingData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isPattern, setIsPattern] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -247,10 +249,8 @@ function Intent() {
             />
             <DeleteOutlined
               onClick={() => {
-                onDeleteData(record)
-                deleteData(record, function(){
-                  fetchRecords(1);
-                });
+                //onDeleteData(record)
+                onDeleteData1(record)
               }}
               style={{ color: "red", marginLeft: 12 }}
             />
@@ -307,6 +307,18 @@ function Intent() {
       fetchRecords(1);
     })
   };
+  
+  const onDeleteData1 = (record) => {
+    setIsDeleteing(true);
+    setDeleteingData({ ...record });
+    deleteData(record, function(){
+      fetchRecords(1);
+    })
+  };
+  const resetDeleteing = () => {
+    setIsDeleteing(false);
+    setDeleteingData(null);
+  };
   const resetEditing = () => {
     setIsEditing(false);
     setEditingData(null);
@@ -330,6 +342,23 @@ function Intent() {
           },
         }}
         ></Table>
+        <Modal
+          title="Delete Data"
+          open={isDeleteing}
+          okText="Confirm"
+          onCancel={() => {
+            resetDeleteing();
+          }}
+          onOk={() => {
+            setDataSource((pre) => {
+                  return pre.filter((data) => data.id !== pre.id);
+              });
+            resetDeleteing();
+          }
+        }
+        >
+          
+        </Modal>
         <Modal
           title="Edit Data"
           open={isEditing}

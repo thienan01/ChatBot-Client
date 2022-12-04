@@ -1,6 +1,6 @@
 import { Button, Table, Modal, Input, Form, Space, notification, Spin} from "antd";
 import { useState, useEffect, useRef } from "react";
-import { EditOutlined, DeleteOutlined, SearchOutlined, SmileOutlined} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, SearchOutlined, SmileOutlined, SaveOutlined} from "@ant-design/icons";
 import {GET, POST} from '../../functionHelper/APIFunction'
 import uniqueID from "../../functionHelper/GenerateID";
 import AddFormPattern from "./AddFormPattern";
@@ -54,7 +54,6 @@ function Pattern() {
         console.log(res.status)
       }
       else if (res.status === "FREE"){
-        console.log(res.status)
         openNotificationOK()
       }
     })
@@ -231,10 +230,18 @@ function Pattern() {
   };
 
   function createData(data) {
-    POST(`https://chatbot-vapt.herokuapp.com/api/pattern/add`, JSON.stringify(data))
+    POST( BASE_URL_LOCAL + `/api/pattern/add`, JSON.stringify(data))
     .then(response => {
       console.log(response)
       return response.payload()})
+  }
+
+  const updateData = (data) => {
+    POST(BASE_URL_LOCAL + `/api/pattern/update`, JSON.stringify(data))
+    .then(response => {
+      console.log(response.id)
+      return response.payload})
+    .then(data => this.setDataSource(data.id))
   }
   const handleAddFormSubmit = (event) => {
     event.preventDefault();
@@ -287,6 +294,14 @@ function Pattern() {
                 onDeleteData(record);
               }}
               style={{ color: "red", marginLeft: 12 }}
+            />
+            <SaveOutlined 
+            onClick={() =>{
+              updateData(record, function(){
+                fetchRecords(1);
+              })
+            }}
+            style={{ color: "blue", marginLeft: 12 }}
             />
           </>
         );
@@ -408,11 +423,6 @@ function Pattern() {
           />
           </Space.Compact>
         </Modal>
-
-        
-        
-
-
 
       </header>
     </div>
