@@ -1,6 +1,6 @@
-import { Button, Table, Modal, Input, Form, Space} from "antd";
+import { Button, Table, Modal, Input, Form, Space, notification, Spin} from "antd";
 import { useState, useEffect, useRef } from "react";
-import { EditOutlined, DeleteOutlined, SearchOutlined} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, SearchOutlined, SmileOutlined} from "@ant-design/icons";
 import {GET, POST} from '../../functionHelper/APIFunction'
 import uniqueID from "../../functionHelper/GenerateID";
 import AddFormPattern from "./AddFormPattern";
@@ -32,20 +32,37 @@ function Pattern() {
   };
   
   const [dataSource, setDataSource] = useState([]);
-
-
-  const fetchRecords = () => {
+  const fetchRecords = (page) => {
     setLoading(true);
-    GET(BASE_URL_LOCAL +`/api/pattern/get_pagination/by_user_id?page=2&size=10`)
+    GET(BASE_URL_LOCAL +`/api/pattern/get_pagination/by_user_id?page=${page}&size=10`)
       .then((res) => {
         setDataSource(res.items);
         setLoading(false);
-        console.log(res.patterns)
       })
   };
 
+  function Wait5s() {
+    setInterval(checkStatus, 5000);
+  }
+  const checkStatus = () => {
+    GET(BASE_URL_LOCAL + `/api/training/get_server_status`)
+    .then((res) => {
+    console.log(res.status)
+
+      if (res.status === "BUSY"){
+        openNotificationBUSY()
+        console.log(res.status)
+      }
+      else if (res.status === "FREE"){
+        console.log(res.status)
+        openNotificationOK()
+      }
+    })
+  }
   useEffect(() => {
-    fetchRecords(1);  
+    checkStatus()
+    fetchRecords(1);
+    Wait5s()
   }, [])
 
 
@@ -161,6 +178,47 @@ function Pattern() {
       ),
   });
 
+  const key = "updatable";
+
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationBUSY = () => {
+      api.open({
+        key,
+        message: "Notification",
+        description: "Server training. Please wait!",
+        icon: <Spin size="large" style={{ color: '#108ee9' }} />,
+        duration: 0,
+      });
+      setTimeout(() => {
+        api.open({
+          key,
+          message: "Notification",
+          description: "Server training. Please wait!",
+        icon: <Spin size="large" style={{ color: '#108ee9' }} />,
+          duration: 0,
+        });
+      }, 0);
+    };
+    const openNotificationOK = () => {
+      api.open({
+        key,
+        message: "Notification",
+        description: "Server OK.",
+        icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+
+        duration: 0,
+      });
+      setTimeout(() => {
+        api.open({
+          key,
+          message: "Notification",
+          description: "Server OK.",
+          icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+
+          duration: 0,
+        });
+      }, 1000);
+    };
   const handleAddFormChange = (event) => {
     event.preventDefault();
     const fieldName = event.target.getAttribute("name");
@@ -197,16 +255,22 @@ function Pattern() {
   const columns = [
     {
       key: "1",
+      title: "Content",
+      dataIndex: "content",
+      ...getColumnSearchProps('content'),
+    },
+    {
+      key: "2",
       title: "Intent ID",
       dataIndex: "intent_id",
       ...getColumnSearchProps('intent_id'),
     },
     {
-        key: "2",
-        title: "content",
-        dataIndex: "content",
-        ...getColumnSearchProps('content'),
-      },
+      key: "3",
+      title: "Intent Name",
+      dataIndex: "intent_name",
+      ...getColumnSearchProps('intent_name'),
+    },
     {
       key: "4",
       title: "Actions",
@@ -253,8 +317,7 @@ function Pattern() {
     <div className="Script">
       <header className="Script-header">
       <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i className="ri-add-circle-fill"></i> <span> Create </span></Button>
-      
-
+      {contextHolder}
         <Table 
         loading={loading}
         columns={columns}
@@ -289,9 +352,8 @@ function Pattern() {
           }}
         >
           <br />
-           <Space.Compact block>
            <h5>Content</h5>
-
+           <Space.Compact block>
           <Input
             value={editingData?.content}
             onChange={(e) => {

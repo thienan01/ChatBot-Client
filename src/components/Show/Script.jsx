@@ -10,7 +10,7 @@ function Script() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [loading1, setLoading1] = useState(false);
+  const [loading1] = useState(false);
   const [visible, setVisible] = useState(false)
   const [form] = Form.useForm();
 
@@ -18,10 +18,10 @@ function Script() {
 
   const { Paragraph } = Typography;
   const [dataSource, setDataSource] = useState([]);
-  const [dataSource1, setDataSource1] = useState([]);
-  const fetchRecords = (page) => {
+  const [dataSource1] = useState([]);
+  const fetchRecords = () => {
     setLoading(true);
-    GET(BASE_URL_LOCAL + `/script/get_pagination/by_user_id?page=${page}&size=5`)
+    GET(BASE_URL_LOCAL + `/api/script/get_pagination/by_user_id?page=2&size=5`)
       .then((res) => {
         setDataSource(res.items);
         setLoading(false);
@@ -131,8 +131,8 @@ function Script() {
          dataSource={dataSource}
          rowKey="id"
          pagination={{
-          pageSize: 10,
-          total: 500,
+          pageSize: 5,
+          total: 100,
           onChange: (page) => {
             fetchRecords(page);
           },

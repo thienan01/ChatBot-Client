@@ -3,9 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { EditOutlined, DeleteOutlined, SaveOutlined, EyeOutlined, SearchOutlined} from "@ant-design/icons";
 import Highlighter from 'react-highlight-words';
 import AddForm from "./AddForm";
-import {GET, POST} from '../../functionHelper/APIFunction'
+import {DELETE, GET, POST} from '../../functionHelper/APIFunction'
 import uniqueID from "../../functionHelper/GenerateID";
-import Progressbar from "./Progessbar";
 import { BASE_URL_LOCAL } from '../../global/globalVar'
 
 
@@ -20,20 +19,14 @@ function Intent() {
   const showAdd = () => {
     setVisible(true)
   }
-  const [visible1, setVisible1] = useState(false);
 
   
   const handleCancel = () => {
     setVisible(false)
     form.resetFields()
   };
-  const handleCancel1 = () => {
-    setVisible1(false)
-
-  };
 
   const [dataSource, setDataSource] = useState([]);
-  const [dataCheck, setDataCheck] = useState([]);
 
   const fetchRecords = (page) => {
     setLoading(true);
@@ -51,11 +44,7 @@ function Intent() {
   const checkStatus = () => {
     GET(BASE_URL_LOCAL + `/api/training/get_server_status`)
     .then((res) => {
-      setDataCheck(res.http_status);
-      setDataCheck(res.status);
-      console.log(res.http_status)
-      console.log(res.status)
-      alert(res)
+      console.log(res)
     })
   }
 
@@ -166,10 +155,6 @@ function Intent() {
       ),
   });
 
-  const showPro = () => {
-    setVisible1(true)
-    checkStatus()
-  }
 
   const [addFormData, setAddFormData] = useState({
     name: "",
@@ -188,19 +173,28 @@ function Intent() {
   };
 
   const createData = (data) => {
-    POST(`https://chatbot-vapt.herokuapp.com/api/intent/add`, JSON.stringify(data))
+    POST( BASE_URL_LOCAL + `/api/intent/add`, JSON.stringify(data))
     .then(response => {
       console.log(response)
-      return response.payload()
+      return response.payload
     })
     .then(data => this.setDataSource(data.id))
   }
 
   const updateData = (data) => {
-    POST(`https://chatbot-vapt.herokuapp.com/api/intent/update`, JSON.stringify(data))
+    POST(BASE_URL_LOCAL + `/api/intent/update`, JSON.stringify(data))
     .then(response => {
       console.log(response)
-      return response.payload()})
+      return response.payload})
+    .then(data => this.setDataSource(data.id))
+  }
+  const deleteData = (data) => {
+    DELETE(BASE_URL_LOCAL + `/api/intent`, JSON.stringify(data))
+    .then(response => {
+      console.log(response.id)
+      return response.payload
+    })
+    
     .then(data => this.setDataSource(data.id))
   }
 
@@ -221,6 +215,12 @@ function Intent() {
     handleCancel();
   };
   const columns = [
+    {
+      key: "1",
+      title: "ID",
+      dataIndex: "id",
+      ...getColumnSearchProps('name'),
+    },
     {
       key: "1",
       title: "Name",
@@ -247,7 +247,10 @@ function Intent() {
             />
             <DeleteOutlined
               onClick={() => {
-                onDeleteData(record);
+                onDeleteData(record)
+                deleteData(record, function(){
+                  fetchRecords(1);
+                });
               }}
               style={{ color: "red", marginLeft: 12 }}
             />
@@ -283,6 +286,7 @@ function Intent() {
         setDataSource((pre) => {
           return pre.filter((data) => data.id !== record.id);
         });
+
       },
     });
   };
@@ -311,15 +315,8 @@ function Intent() {
     <div className="Script">
       <header className="Script-header">
       <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i className="ri-add-circle-fill"></i> <span> Create </span></Button>
-      <Button onClick={showPro} className="btn btn-success" 
-      style={{
-        float: 'right',
-        backgroundColor: '#006CBE'
-      }}
-      ><i class="ri-checkbox-circle-fill"></i><span> Check </span></Button>
       <br />
       <br />
-
         <Table
         loading={loading}
         columns={columns}
@@ -327,7 +324,7 @@ function Intent() {
          rowKey="id"
          pagination={{
           pageSize: 10,
-          total: 500,
+          total: 1000,
           onChange: (page) => {
             fetchRecords(page);
           },
@@ -386,8 +383,6 @@ function Intent() {
   <Modal
     open={isPattern}
     okText="Confirm">
-    onViewData()
-
   </Modal>
       
        <Modal
@@ -401,20 +396,6 @@ function Intent() {
           <AddForm
           handleAddFormChange={handleAddFormChange}
           />
-        </Modal>
-          
-        <Modal
-        title="Check Status"
-        open={visible1}
-        onCancel={handleCancel1}
-        onOk={checkStatus}
-        >
-          <Progressbar
-          />
-
-          <p>{dataCheck.http_status}</p>
-          <p>{dataCheck.status}</p>
-
         </Modal>
 
 
