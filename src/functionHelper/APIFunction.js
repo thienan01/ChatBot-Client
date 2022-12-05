@@ -26,11 +26,10 @@ const POST = async (_url, _body) => {
   return res;
 };
 
-const DELETE = async (_url, _body) => {
+const DELETE = async (_url) => {
   let res = await $.ajax({
     type: "DELETE",
     url: _url,
-    data: _body,
     dataType: "json",
     headers: {
       Authorization: "Token " + getCookie("token"),

@@ -1,6 +1,6 @@
 import { Button, Table, Modal, Input, Form, Space, notification, Spin} from "antd";
 import { useState, useEffect, useRef } from "react";
-import { EditOutlined, DeleteOutlined, SearchOutlined, SmileOutlined} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, SearchOutlined, SaveOutlined} from "@ant-design/icons";
 import {GET, POST} from '../../functionHelper/APIFunction'
 import uniqueID from "../../functionHelper/GenerateID";
 import AddFormPattern from "./AddFormPattern";
@@ -13,19 +13,18 @@ function Pattern() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState(null);
 
-
- 
-    
+  
   
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const showAdd = () => {
     setVisible(true)
+    clearInterval(Wait5s)
   }
   
 
-  
+ 
   const handleCancel = () => {
     setVisible(false)
     form.resetFields()
@@ -42,7 +41,7 @@ function Pattern() {
   };
 
   function Wait5s() {
-    setInterval(checkStatus, 5000);
+    setInterval(checkStatus, 1000);
   }
   const checkStatus = () => {
     GET(BASE_URL_LOCAL + `/api/training/get_server_status`)
@@ -53,16 +52,10 @@ function Pattern() {
         openNotificationBUSY()
         console.log(res.status)
       }
-      else if (res.status === "FREE"){
-        console.log(res.status)
-        openNotificationOK()
-      }
     })
   }
   useEffect(() => {
-    checkStatus()
     fetchRecords(1);
-    Wait5s()
   }, [])
 
 
@@ -199,26 +192,6 @@ function Pattern() {
         });
       }, 0);
     };
-    const openNotificationOK = () => {
-      api.open({
-        key,
-        message: "Notification",
-        description: "Server OK.",
-        icon: <SmileOutlined style={{ color: '#108ee9' }} />,
-
-        duration: 0,
-      });
-      setTimeout(() => {
-        api.open({
-          key,
-          message: "Notification",
-          description: "Server OK.",
-          icon: <SmileOutlined style={{ color: '#108ee9' }} />,
-
-          duration: 0,
-        });
-      }, 1000);
-    };
   const handleAddFormChange = (event) => {
     event.preventDefault();
     const fieldName = event.target.getAttribute("name");
@@ -231,20 +204,24 @@ function Pattern() {
   };
 
   function createData(data) {
-    POST(`https://chatbot-vapt.herokuapp.com/api/pattern/add`, JSON.stringify(data))
+    POST( BASE_URL_LOCAL + `/api/pattern/add`, JSON.stringify(data))
     .then(response => {
       console.log(response)
       return response.payload()})
   }
+  const updateData = (data) => {
+    POST(BASE_URL_LOCAL + `/api/pattern/update`, JSON.stringify(data))
+    .then(response => {
+      console.log(response.id)
+      return response.payload})
+    .then(data => this.setDataSource(data.id))
+  }
   const handleAddFormSubmit = (event) => {
     event.preventDefault();
-
-
     const newData = {
       intent_id: addFormData.intent_id,
       content: addFormData.content,
     };
-
     const newDatas = [...dataSource, newData];
     setDataSource(newDatas);
     createData(newData, function(){
@@ -288,6 +265,14 @@ function Pattern() {
               }}
               style={{ color: "red", marginLeft: 12 }}
             />
+            <SaveOutlined 
+            onClick={() =>{
+              updateData(record, function(){
+                fetchRecords(1);
+              })
+            }}
+            style={{ color: "blue", marginLeft: 12 }}
+            />
           </>
         );
       },
@@ -309,6 +294,7 @@ function Pattern() {
     setIsEditing(true);
     setEditingData({ ...record });
   };
+
   const resetEditing = () => {
     setIsEditing(false);
     setEditingData(null);
@@ -389,8 +375,7 @@ function Pattern() {
           onCancel={handleCancel}
           onOk={() => 
             handleAddFormSubmit
-          }
-          
+          }  
         >
           <AddFormPattern
           handleAddFormChange={handleAddFormChange}
@@ -408,9 +393,6 @@ function Pattern() {
           />
           </Space.Compact>
         </Modal>
-
-        
-        
 
 
 
