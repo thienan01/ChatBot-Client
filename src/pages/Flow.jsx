@@ -106,10 +106,12 @@ function Flow() {
         .then((res) => {
           if (res.http_status === "OK") {
             NotificationManager.success("Update successfully", "Success");
+          } else {
+            throw res.exception_code;
           }
         })
         .catch((err) => {
-          NotificationManager.error("Update failure", "Error");
+          NotificationManager.error(err, "Error");
         });
     },
     [wrongMsg]

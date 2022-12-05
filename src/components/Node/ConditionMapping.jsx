@@ -48,7 +48,9 @@ function ConditionMapping({ background, color, border, data }) {
         >
           {value.name}
         </DropdownToggle>
-        <DropdownMenu>
+        <DropdownMenu
+          style={{ maxHeight: "400px", overflowY: "scroll", cursor: "pointer" }}
+        >
           <DropdownItem header>Choose Intent</DropdownItem>
           {data.intents.map((item) => {
             return (

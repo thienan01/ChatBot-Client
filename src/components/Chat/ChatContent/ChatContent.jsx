@@ -49,11 +49,12 @@ function ChatContent() {
               ]);
             }
           }
+        } else {
+          throw res.exception_code;
         }
       })
       .catch((err) => {
-        console.log(err);
-        NotificationManager.error("Error occur", "Error");
+        NotificationManager.error(err, "Error");
       });
   });
   useEffect(() => {
