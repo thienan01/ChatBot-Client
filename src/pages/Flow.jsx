@@ -1,6 +1,7 @@
 import { useCallback, useState, useEffect } from "react";
 import { Spinner, Button } from "reactstrap";
 import ModalChatTrial from "../components/Node/ModalChatTrial";
+import ModalSetting from "../components/Node/ModalSetting";
 import { BASE_URL } from "../global/globalVar";
 import uniqueID from "../functionHelper/GenerateID";
 import { GET, POST } from "../functionHelper/APIFunction";
@@ -14,11 +15,13 @@ import ReactFlow, {
   useEdgesState,
 } from "reactflow";
 import NodeLayout from "../components/Node/NodeLayout";
+import StartNode from "../components/Node/StartNode";
 import CustomEdge from "../components/Node/ButtonEdge";
 import "reactflow/dist/style.css";
 import { NotificationManager } from "react-notifications";
 const nodeTypes = {
   nodeLayout: NodeLayout,
+  startNode: StartNode,
 };
 const edgeType = {
   buttonedge: CustomEdge,
@@ -28,26 +31,45 @@ const rfStyle = {
   backgroundColor: "#f5f6fa",
 };
 
+const initialNode = [
+  {
+    id: "STARTNODE",
+    type: "startNode",
+    position: {
+      x: 20,
+      y: 400,
+    },
+    data: {
+      id: "STARTNODE",
+      value: "STARTNODE",
+      conditionMapping: [{}],
+    },
+  },
+];
+
 function Flow() {
   const defaultEdgeOptions = { animated: true };
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNode);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [loading, isLoading] = useState(true);
   const [openChat, setOpenChat] = useState(false);
+  const [openSetting, setOpenSetting] = useState(false);
   const [intents, setIntents] = useState([]);
+  const [wrongMsg, setWrongMsg] = useState("");
   const reactFlowInstance = useReactFlow();
 
   useEffect(() => {
     if (true) {
       Promise.all([
         GET(BASE_URL + "api/intent/get_all/by_user_id"),
-        GET(BASE_URL + "api/node?script_id=6389d5a0769c2b2ed974bc26"),
+        GET(BASE_URL + "api/script/get/638d685e61bc0357da5c1329"),
       ])
         .then((res) => {
           isLoading(false);
           setIntents(res[0].intents);
+          setWrongMsg(res[1].wrong_message);
           let data = nodeObject(res[1].nodes, res[0].intents);
-          setNodes(data.lstNode);
+          setNodes((nodes) => [...nodes, ...data.lstNode]);
           setEdges(data.lstEdge);
         })
         .catch((err) => {
@@ -71,23 +93,29 @@ function Flow() {
     }
   }, []);
 
-  const saveScript = useCallback((nodes) => {
-    nodes.reverse();
-    let body = {
-      id: "6389d5a0769c2b2ed974bc26",
-      name: "Script mua xe",
-      nodes: nodes,
-    };
-    POST(BASE_URL + "api/script/update", JSON.stringify(body))
-      .then((res) => {
-        NotificationManager.success("Update successfully", "Success");
-      })
-      .catch((err) => {
-        NotificationManager.error("Update failure", "Error");
-      });
-  }, []);
+  const saveScript = useCallback(
+    (nodes) => {
+      nodes.reverse();
+      let body = {
+        id: "638d685e61bc0357da5c1329",
+        name: "Script mua xe",
+        wrong_message: wrongMsg,
+        nodes: nodes,
+      };
+      POST(BASE_URL + "api/script/update", JSON.stringify(body))
+        .then((res) => {
+          if (res.http_status === "OK") {
+            NotificationManager.success("Update successfully", "Success");
+          }
+        })
+        .catch((err) => {
+          NotificationManager.error("Update failure", "Error");
+        });
+    },
+    [wrongMsg]
+  );
 
-  const nodeObject = useCallback((nodes, intents) => {
+  const nodeObject = (nodes, intents) => {
     let lstNode = [];
     let lstEdge = [];
     nodes.forEach((node) => {
@@ -122,9 +150,18 @@ function Flow() {
           });
         }
       });
+      if (node.is_first_node === true) {
+        lstEdge.push({
+          id: uniqueID(),
+          source: "STARTNODE",
+          target: node.node_id,
+          type: "buttonedge",
+          data: { delete: handleDeleteEdge },
+        });
+      }
     });
     return { lstNode, lstEdge };
-  });
+  };
 
   const handleCreateNode = () => {
     let data = nodeObject(
@@ -143,10 +180,17 @@ function Flow() {
 
   const handleSaveScript = () => {
     let lstNode = reactFlowInstance.getNodes();
+    let startNodeID = lstNode.filter(
+      (node) => node.data.value === "STARTNODE"
+    )[0].data.conditionMapping[0].target;
+
+    lstNode = lstNode.filter((node) => node.id !== "STARTNODE");
+
     let lstSaveObj = lstNode.map((node) => {
       return {
         node_id: node.id,
         message: node.data.value,
+        is_first_node: node.id === startNodeID ? true : false,
         position: [node.position.x, node.position.y],
         condition_mappings: node.data.conditionMapping.map((condition) => {
           return {
@@ -158,8 +202,10 @@ function Flow() {
         }),
       };
     });
+    console.log(lstSaveObj);
 
     saveScript(lstSaveObj);
+    console.log("post", lstSaveObj);
   };
 
   const handleDeleteNode = useCallback((id) => {
@@ -186,6 +232,12 @@ function Flow() {
 
   const closeModal = () => {
     setOpenChat(!openChat);
+  };
+  const closeModalSetting = () => {
+    setOpenSetting(!openSetting);
+  };
+  const handleWrongMsg = (value) => {
+    setWrongMsg(value);
   };
   const onConnect = useCallback((params) => {
     setEdges((eds) =>
@@ -239,6 +291,7 @@ function Flow() {
           onClick={handleCreateNode}
           className="btn-success"
           style={{ margin: "0px 3px", width: "90px" }}
+          disabled={loading}
         >
           <i className="fa-solid fa-plus"></i> Add
         </Button>
@@ -246,6 +299,7 @@ function Flow() {
           onClick={handleSaveScript}
           color="primary"
           style={{ margin: "0px 3px", width: "90px" }}
+          disabled={loading}
         >
           <i className="fa-regular fa-floppy-disk"></i> Save
         </Button>
@@ -255,9 +309,17 @@ function Flow() {
           onClick={() => {
             setOpenChat(!openChat);
           }}
+          disabled={loading}
         >
           <i className="fa-regular fa-square-caret-left"></i> Try
         </Button>
+        <i
+          className="fa-solid fa-sliders"
+          id="setting"
+          onClick={() => {
+            setOpenSetting(!openSetting);
+          }}
+        ></i>
       </div>
       <Spinner
         animation="border"
@@ -271,6 +333,12 @@ function Flow() {
         }}
       />
       <ModalChatTrial openChat={openChat} closeModal={closeModal} />
+      <ModalSetting
+        open={openSetting}
+        closeModalSetting={closeModalSetting}
+        message={wrongMsg}
+        setMsg={handleWrongMsg}
+      />
     </div>
   );
 }

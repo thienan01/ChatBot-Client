@@ -97,6 +97,14 @@
 #deleteEdgeIcon {
   visibility: visible;
 }
-.react-flow__edge-path:hover  #deleteEdgeIcon {
+.react-flow__edge-path:hover #deleteEdgeIcon {
   visibility: visible;
+}
+#setting:hover {
+  color: black;
+}
+#setting {
+  color: #808b96;
+  font-size: 22px;
+  margin: 0px 6px;
 }

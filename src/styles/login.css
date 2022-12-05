@@ -94,3 +94,8 @@
   border: 1px solid #000;
   border-radius: 7px;
 }
+
+.signUptxt:hover {
+  color: blue;
+  cursor: pointer;
+}
