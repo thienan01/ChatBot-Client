@@ -1,15 +1,14 @@
 import React from 'react';
 import {
-  DesktopOutlined,
-  UnorderedListOutlined,
-  TeamOutlined,
-  WechatOutlined,
-  BarcodeOutlined
+    DesktopOutlined,
+    UnorderedListOutlined,
+    TeamOutlined,
+    WechatOutlined,
+    BarcodeOutlined
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import Intent from '../Show/Intent';
 import { useNavigate } from 'react-router-dom';
-import Script from '../components/Show/Script';
-import Helmet from '../components/Helmet/Helmet.js';
 const { Content, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -20,18 +19,18 @@ function getItem(label, key, icon, children) {
   };
 }
 const items2 = [
-  getItem('Chatbot Service', '/home', <DesktopOutlined />,),
-  getItem('List Intent', '/listintent',  <WechatOutlined />),
-  getItem('List Pattern', '/listpattern',  <UnorderedListOutlined />),
-  getItem('List Script', '/listscript',  <BarcodeOutlined />),
-  getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-];
-const ListScript = () => {
+    getItem('Chatbot Service', '/home', <DesktopOutlined />,),
+    getItem('List Intent', '/listintent',  <WechatOutlined />),
+    getItem('List Pattern', '/listpattern',  <UnorderedListOutlined />),
+    getItem('List Script', '/listscript',  <BarcodeOutlined />),
+    getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
+  ];
+const App = () => {
 const navigate = useNavigate();
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-  return ( <Helmet title="List Script">
+  return (
     <Layout>
       <Layout>
         <Sider
@@ -45,8 +44,8 @@ const navigate = useNavigate();
                 navigate(key)
           }}
             mode="inline"
-            defaultSelectedKeys={['/listscript']}
-            defaultOpenKeys={['/listscript']}
+            defaultSelectedKeys={['/listintent']}
+            defaultOpenKeys={['/listintent']}
             style={{
               height: '100%',
               borderRight: 0,
@@ -77,13 +76,11 @@ const navigate = useNavigate();
               minHeight: 280,
               background: colorBgContainer,
             }}>
-            <Script/>
+            <Intent/>
           </Content>
         </Layout>
       </Layout>
     </Layout>
-    </Helmet>
   );
 };
-
-export default ListScript
+export default App;

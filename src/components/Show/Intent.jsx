@@ -7,6 +7,7 @@ import {GET, POST} from '../../functionHelper/APIFunction'
 import uniqueID from "../../functionHelper/GenerateID";
 import AddFormPattern from "./AddFormPattern";
 import { BASE_URL_LOCAL } from '../../global/globalVar'
+import axios from "axios";
 
 
 
@@ -77,7 +78,6 @@ function Intent() {
   }
   useEffect(() => {
     fetchRecords(1);
-    
   }, [])
 
   const [searchText, setSearchText] = useState('');
@@ -277,15 +277,6 @@ function Intent() {
       return response.payload})
     .then(data => this.setDataSource(data.id))
   }
-  // const deleteData = (data) => {
-  //   DELETE(BASE_URL_LOCAL + `/api/intent`, JSON.stringify(data))
-  //   .then(response => {
-  //     console.log(response.id)
-  //     return response.payload
-  //   })
-    
-  //   .then(data => this.setDataSource(data.id))
-  // }
 
   const handleAddFormSubmit = async (event) => {
     event.preventDefault();
@@ -436,17 +427,6 @@ function Intent() {
     })
   };
   
-  // const onDeleteData1 = (record) => {
-  //   setIsDeleteing(true);
-  //   setDeleteingData({ ...record });
-  //   deleteData(record, function(){
-  //     fetchRecords(1);
-  //   })
-  // };
-  // const resetDeleteing = () => {
-  //   setIsDeleteing(false);
-  //   setDeleteingData(null);
-  // };
   const resetEditing = () => {
     setIsEditing(false);
     setEditingData(null);
@@ -463,7 +443,7 @@ function Intent() {
          dataSource={dataSource}
          rowKey="id"
          pagination={{
-          pageSize: 10,
+          pageSize: 5,
           total: 1000,
           onChange: (page) => {
             fetchRecords(page);

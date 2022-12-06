@@ -309,7 +309,7 @@ function Pattern() {
          dataSource={dataSource}
          rowKey="id"
          pagination={{
-          pageSize: 10,
+          pageSize: 5,
           total: 6000,
           onChange: (page) => {
             fetchRecords(page);

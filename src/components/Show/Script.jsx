@@ -19,9 +19,9 @@ function Script() {
   const { Paragraph } = Typography;
   const [dataSource, setDataSource] = useState([]);
   const [dataSource1] = useState([]);
-  const fetchRecords = () => {
+  const fetchRecords = (page) => {
     setLoading(true);
-    GET(BASE_URL_LOCAL + `/api/script/get_pagination/by_user_id?page=2&size=5`)
+    GET(BASE_URL_LOCAL + `/api/script/get_pagination/by_user_id?page=${page}&size=5`)
       .then((res) => {
         setDataSource(res.items);
         setLoading(false);
@@ -108,7 +108,7 @@ function Script() {
     })
   };
   const updateData = (data) => {
-    POST(`https://chatbot-vapt.herokuapp.com/api/intent/update`, JSON.stringify(data))
+    POST( BASE_URL_LOCAL + `/api/intent/update`, JSON.stringify(data))
     .then(response => {
       console.log(response)
       return response.payload()})

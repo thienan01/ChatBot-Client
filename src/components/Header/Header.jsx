@@ -12,7 +12,7 @@ const nav__links = [
     },
     {
         display: 'Training',
-        path: '/train'
+        path: '/dashboard'
     },
     {
         display: 'Contact',

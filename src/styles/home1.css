@@ -1,0 +1,106 @@
+.feature__subtitle {
+    color: #df2020;
+}
+
+.feature__title span {
+    color: #df2020;
+}
+.feature__text{
+    color: #777;
+    font-weight: 1000;
+}
+.order__btn a{
+    text-decoration: none;
+    color: #fff;
+}
+.order__btn a:hover {
+    color: #fff;
+}
+.hero__title span{
+    font-size: 3rem;
+    font-weight: 1000;
+}
+
+.hero__content p{
+    font-size: 1.3rem;
+    font-weight: 200;
+    color: #212245;
+    font-family: 'Akaya Telivigala';font-size: 22px;
+
+}
+.feature__text, .feature__title{
+    font-family: 'Akaya Telivigala';
+    font-size: 20px;
+    color: #212245;
+}
+.hero__content h5{
+    font-size: 2rem;
+    font-weight: 500;
+    color: #212245;
+    font-family: "Brush Script MT", cursive;
+}
+.feature__item:hover{
+
+    transform: scale(1.105);
+    transition: 0.4s;
+    cursor: pointer;
+}
+
+
+
+.kits__category{
+    background: #212245;
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px 0px;
+    border-radius: 8px;
+}
+.kits__category button {
+    border: none;
+    outline: none;
+    padding: 5px 15px;
+    background: transparent;
+    color: #fff;
+    transition: 0.4s;
+}
+
+.kits__category button img{
+    width: 20%;
+    height: 20%;
+}
+.kitsBtnActive{
+    /* background: #fff !important; */
+    border-radius: 5px;
+    background: #fff !important;
+    color: #212245 !important;
+}
+
+.iconic__good-title{
+    color: #212245;
+}
+
+.why__iconic-good{
+    color: #777;
+    line-height: 28px;
+}
+
+.choose__us-title {
+    font-weight: 600;
+}
+
+.choose__us-title i{
+    font-weight: 500 !important;
+    color: #212245;
+}
+
+.testimonial__subtitle{
+    color: #212245;
+}
+
+.testimonial__title span{
+    color: #df2020;
+}
+.testimonial__desc{
+    color: #777;
+    line-height: 30px;
+}
