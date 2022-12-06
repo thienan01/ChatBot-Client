@@ -1,6 +1,6 @@
 import { Button, Table, Modal, Input, Form, Space, notification, Spin} from "antd";
 import { useState, useEffect, useRef } from "react";
-import { EditOutlined, DeleteOutlined, SearchOutlined, SmileOutlined, SaveOutlined} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, SearchOutlined, SaveOutlined} from "@ant-design/icons";
 import {GET, POST} from '../../functionHelper/APIFunction'
 import uniqueID from "../../functionHelper/GenerateID";
 import AddFormPattern from "./AddFormPattern";
@@ -13,19 +13,18 @@ function Pattern() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState(null);
 
-
- 
-    
+  
   
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const showAdd = () => {
     setVisible(true)
+    clearInterval(Wait5s)
   }
   
 
-  
+ 
   const handleCancel = () => {
     setVisible(false)
     form.resetFields()
@@ -42,7 +41,7 @@ function Pattern() {
   };
 
   function Wait5s() {
-    setInterval(checkStatus, 5000);
+    setInterval(checkStatus, 1000);
   }
   const checkStatus = () => {
     GET(BASE_URL_LOCAL + `/api/training/get_server_status`)
@@ -53,15 +52,10 @@ function Pattern() {
         openNotificationBUSY()
         console.log(res.status)
       }
-      else if (res.status === "FREE"){
-        openNotificationOK()
-      }
     })
   }
   useEffect(() => {
-    checkStatus()
     fetchRecords(1);
-    Wait5s()
   }, [])
 
 
@@ -198,26 +192,6 @@ function Pattern() {
         });
       }, 0);
     };
-    const openNotificationOK = () => {
-      api.open({
-        key,
-        message: "Notification",
-        description: "Server OK.",
-        icon: <SmileOutlined style={{ color: '#108ee9' }} />,
-
-        duration: 0,
-      });
-      setTimeout(() => {
-        api.open({
-          key,
-          message: "Notification",
-          description: "Server OK.",
-          icon: <SmileOutlined style={{ color: '#108ee9' }} />,
-
-          duration: 0,
-        });
-      }, 1000);
-    };
   const handleAddFormChange = (event) => {
     event.preventDefault();
     const fieldName = event.target.getAttribute("name");
@@ -235,7 +209,6 @@ function Pattern() {
       console.log(response)
       return response.payload()})
   }
-
   const updateData = (data) => {
     POST(BASE_URL_LOCAL + `/api/pattern/update`, JSON.stringify(data))
     .then(response => {
@@ -245,13 +218,10 @@ function Pattern() {
   }
   const handleAddFormSubmit = (event) => {
     event.preventDefault();
-
-
     const newData = {
       intent_id: addFormData.intent_id,
       content: addFormData.content,
     };
-
     const newDatas = [...dataSource, newData];
     setDataSource(newDatas);
     createData(newData, function(){
@@ -404,8 +374,7 @@ function Pattern() {
           onCancel={handleCancel}
           onOk={() => 
             handleAddFormSubmit
-          }
-          
+          }  
         >
           <AddFormPattern
           handleAddFormChange={handleAddFormChange}
@@ -423,6 +392,8 @@ function Pattern() {
           />
           </Space.Compact>
         </Modal>
+
+
 
       </header>
     </div>
