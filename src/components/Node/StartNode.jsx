@@ -20,7 +20,7 @@ function StartNode({ data }) {
         }}
       >
         <i
-          class="fa-solid fa-circle-play"
+          className="fa-solid fa-circle-play"
           style={{ fontSize: "18px", marginRight: "10px" }}
         ></i>
         Start

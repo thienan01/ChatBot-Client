@@ -135,7 +135,7 @@ function Pattern() {
   return (
     <div className="Script">
       <header className="Script-header">
-      <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i class="ri-add-circle-fill"></i> <span> Create </span></Button>
+      <Button onClick={showAdd} className="btn btn-success" data-toggle="modal"><i className="ri-add-circle-fill"></i> <span> Create </span></Button>
       <br />
       <br />
 

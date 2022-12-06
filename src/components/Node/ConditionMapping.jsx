@@ -43,10 +43,20 @@ function ConditionMapping({ background, color, border, data }) {
             fontWeight: "600",
             borderRadius: "12px",
             textAlign: "left",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
           value={value.id}
         >
           {value.name}
+          <i
+            className="fa-solid fa-delete-left deleteCondition"
+            style={{ textAlign: "right" }}
+            onClick={() => {
+              data.deleteCondition(data.conditionMapping.id);
+            }}
+          ></i>
         </DropdownToggle>
         <DropdownMenu
           style={{ maxHeight: "400px", overflowY: "scroll", cursor: "pointer" }}

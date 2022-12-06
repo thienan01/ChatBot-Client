@@ -55,10 +55,10 @@
   background: #ebf5fb;
   border: 1px solid #3498db;
 }
-#keyword {
+.inputKeyword {
   border: 0px solid #ec7063;
 }
-#keyword:hover {
+.inputKeyword:hover {
   border: 1px solid #ec7063;
 }
 #intent {
@@ -107,4 +107,13 @@
   color: #808b96;
   font-size: 22px;
   margin: 0px 6px;
+}
+.deleteCondition {
+  display: none;
+}
+#intent:hover .deleteCondition {
+  display: inline;
+}
+.inputKeyword:hover .deleteCondition {
+  display: inline;
 }

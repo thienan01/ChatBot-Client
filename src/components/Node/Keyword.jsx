@@ -6,19 +6,30 @@ function Keyword({ color, background, border, data }) {
   const [key, setKey] = useState(data.conditionMapping.keyword);
   return (
     <>
-      <div className="inputKeyword" style={{ margin: "5px 0px" }}>
+      <div
+        className="inputKeyword"
+        style={{
+          margin: "5px 0px",
+          width: "100%",
+          height: "40px",
+          background,
+          color,
+          borderRadius: "12px",
+        }}
+      >
         <input
           id="keyword"
           className="form-control form-control-sm"
           style={{
-            width: "100%",
+            width: "89%",
             height: "40px",
-            background,
+            background: "none",
             color,
             fontSize: "15px",
             fontWeight: "600",
-            borderRadius: "12px",
             textAlign: "left",
+            display: "inline",
+            border: "none",
           }}
           placeholder="Keyword"
           type="text"
@@ -31,6 +42,11 @@ function Keyword({ color, background, border, data }) {
             });
           }}
         />
+        <i
+          className="fa-solid fa-delete-left deleteCondition"
+          style={{ textAlign: "right" }}
+          onClick={() => data.deleteCondition(data.conditionMapping.id)}
+        ></i>
       </div>
       <Handle
         id={data.conditionMapping.id}

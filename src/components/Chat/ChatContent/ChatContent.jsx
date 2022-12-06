@@ -7,8 +7,8 @@ import { POST } from "../../../functionHelper/APIFunction";
 import { NotificationManager } from "react-notifications";
 import { BASE_URL } from "../../../global/globalVar";
 
-var secretKey = "A4FAB9F9-664B-446D-80B5-E9B089F3F500";
-var scriptId = "638d685e61bc0357da5c1329";
+var secretKey = "432E0AA3-5980-429A-B9FB-B18314350DA4";
+var scriptId = "638eb88af075e87a12679e5d";
 var currentNodeId = "_BEGIN";
 
 function ChatContent() {
@@ -33,8 +33,10 @@ function ChatContent() {
       current_node_id: currentNode,
       message: value,
     };
+    console.log(body);
     POST(BASE_URL + "api/training/predict", JSON.stringify(body))
       .then((res) => {
+        console.log(res);
         if (res.http_status === "OK") {
           setCurrentNode(res.current_node_id);
           if (res.current_node_id !== "_END") {
@@ -54,7 +56,8 @@ function ChatContent() {
         }
       })
       .catch((err) => {
-        NotificationManager.error(err, "Error");
+        // NotificationManager.error(err, "Error");
+        console.log(err);
       });
   });
   useEffect(() => {

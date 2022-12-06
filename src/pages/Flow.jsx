@@ -13,12 +13,14 @@ import ReactFlow, {
   useReactFlow,
   useNodesState,
   useEdgesState,
+  Handle,
 } from "reactflow";
 import NodeLayout from "../components/Node/NodeLayout";
 import StartNode from "../components/Node/StartNode";
 import CustomEdge from "../components/Node/ButtonEdge";
 import "reactflow/dist/style.css";
 import { NotificationManager } from "react-notifications";
+import { set } from "lodash";
 const nodeTypes = {
   nodeLayout: NodeLayout,
   startNode: StartNode,
@@ -62,9 +64,10 @@ function Flow() {
     if (true) {
       Promise.all([
         GET(BASE_URL + "api/intent/get_all/by_user_id"),
-        GET(BASE_URL + "api/script/get/638d685e61bc0357da5c1329"),
+        GET(BASE_URL + "api/script/get/638eb88af075e87a12679e5d"),
       ])
         .then((res) => {
+          console.log(res);
           isLoading(false);
           setIntents(res[0].intents);
           setWrongMsg(res[1].wrong_message);
@@ -95,9 +98,9 @@ function Flow() {
 
   const saveScript = useCallback(
     (nodes) => {
-      nodes.reverse();
+      console.log("send", nodes);
       let body = {
-        id: "638d685e61bc0357da5c1329",
+        id: "638eb88af075e87a12679e5d",
         name: "Script mua xe",
         wrong_message: wrongMsg,
         nodes: nodes,
@@ -133,6 +136,7 @@ function Flow() {
         },
         data: {
           id: node.node_id,
+          isFirst: node.is_first_node ? node.is_first_node : false,
           value: node.message,
           intents: intents,
           conditionMapping: node.condition_mappings,
@@ -153,12 +157,23 @@ function Flow() {
         }
       });
       if (node.is_first_node === true) {
+        setNodes((nds) =>
+          nds.map((item) => {
+            if (item.id === "STARTNODE") {
+              item.data.conditionMapping[0].target = node.node_id;
+              return item;
+            }
+            return item;
+          })
+        );
         lstEdge.push({
           id: uniqueID(),
           source: "STARTNODE",
           target: node.node_id,
           type: "buttonedge",
-          data: { delete: handleDeleteEdge },
+          data: {
+            delete: handleDeleteEdge,
+          },
         });
       }
     });
@@ -182,6 +197,7 @@ function Flow() {
 
   const handleSaveScript = () => {
     let lstNode = reactFlowInstance.getNodes();
+    console.log("nodes", lstNode);
     let startNodeID = lstNode.filter(
       (node) => node.data.value === "STARTNODE"
     )[0].data.conditionMapping[0].target;
@@ -215,6 +231,7 @@ function Flow() {
   }, []);
 
   const handleDeleteEdge = useCallback((id, nodeID, sourceHandle) => {
+    console.log(id, nodeID, sourceHandle);
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === nodeID) {

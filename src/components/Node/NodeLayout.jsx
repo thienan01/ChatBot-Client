@@ -52,6 +52,9 @@ function NodeLayout({ data }) {
       })
     );
   };
+  const deleteCondition = (id) => {
+    setConditions(conditions.filter((item) => item.id !== id));
+  };
   return (
     <Fragment>
       <div
@@ -137,6 +140,7 @@ function NodeLayout({ data }) {
                           intents: data.intents,
                           conditionMapping: item,
                           setCondition: setConditionMappingIntent,
+                          deleteCondition: deleteCondition,
                         }}
                       />
                     </div>
@@ -156,6 +160,7 @@ function NodeLayout({ data }) {
                         data={{
                           conditionMapping: item,
                           setCondition: setConditionMappingKeyword,
+                          deleteCondition: deleteCondition,
                         }}
                       />
                     </div>
