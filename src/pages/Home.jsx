@@ -1,131 +1,138 @@
+import React from 'react';
+import Helmet from '../components/Helmet/Helmet.js';
+import { Container, Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
+import heroImg from '../assets/images/chatbot-HR.gif';
+import heroImg1 from '../assets/images/ezgif-3-d79bab7cdc.gif';
+import "../styles/hero-section.css";
+import '../styles/home1.css';
+import '../styles/home.css';
+import featureImg01 from '../assets/images/servive-01.png';
+import featureImg02 from '../assets/images/servive-02.png';
+import featureImg03 from '../assets/images/servive-03.png';
+import { Link } from 'react-router-dom';
+import kitsCategoryImg01 from '../assets/images/category-011.png';
+import kitsCategoryImg02 from '../assets/images/category-022.png';
+import kitsCategoryImg03 from '../assets/images/category-044.png';
+import whyImg from '../assets/images/Chatbot.gif'
 
-import React, {useRef} from 'react'
-import { Container, Row, Col } from "reactstrap"
-import { NavLink } from 'react-router-dom'
-import "../styles/home.css"
-import Background from '../assets/Background.png';
-
-
-const nav__links = [
-  {
-      display: 'Contacs Us',
-      path: '/'
-  },
-  {
-      display: 'Support',
-      path: '/'
-  },
-  {
-      display: 'My Account',
-      path: '/'
-  },
-  {
-    display: 'Sign In',
-    path: '/'
-},
-
+const featureData = [
+ {
+   title:'Convenient',
+   imgUrl: featureImg01,
+   
+ },
+ {
+   title:'Quick Replies',
+   imgUrl: featureImg02,
+ },
+ {
+   title:'Secure',
+   imgUrl: featureImg03,
+   
+ }
 ]
+
 
 const Home = () => {
 
-  const menuRef = useRef(null)
-  const toggleMenu = () => menuRef.current.classList.toggle('show__menu')
+  return <Helmet title="Home">
+   <section>
+     <Container>
+       <Row>
+         <Col lg='6' md='6'>
+           <div className='hero__content'>
+             <h5 className='mb-3'>Easy to TRAINING</h5>
+             <h1 className='mb-4 hero__title'>Welcome to <span> Chatbot Service</span></h1>
+             <p>&nbsp;&nbsp;Chatbot is a tool that can communicate and interact with humans through pre-programmed artificial intelligence. In most cases, chatbots are used via messaging apps to talk to humans. </p>
+             <div className="hero__btns d-flex align-items-center gap-5 mt-4">
+             <Link to ="/dashboard"><button className="order__btn d-flex align-items-center justify-content-between">Training now <i class="ri-arrow-right-s-line"></i></button></Link>
+             </div>
+             <div className='hero__service d-flex align-items-center gap-5 mt-5'>
+               <p className='d-flex align-items-center gap-2'>
+                 <span className='shipping__icon'><i class="ri-money-dollar-circle-line"></i></span>
+                 No training charge
+               </p>
+               <p className='d-flex align-items-center gap-2'>
+                 <span className='shipping__icon'><i class="ri-shield-check-line"></i></span>
+                 100% secure 
+               </p>
+             </div>
+           </div>
+         </Col>
+         <Col lg='6' md='6'>
+           <div className='hero__img'>
+             {<img src={heroImg} alt="hero-img" className='w-100'/>}
+           </div>
+         </Col>
+       </Row>
+       <Row>
+  <div className='hero__img'>
+             {<img src={heroImg1} alt="hero-img" className='w-100'/>}
+           </div>
+  </Row>
+     </Container>
+   </section>
+   <section>
+     <Container>
+       <Row>
+         <Col lg='12' className='text-center'>
+           <h5 className='feature__title'>Just looking for training intent</h5>
+           <p className='mb-1 mt-4 feature__text'>Chatbots have varying levels of complexity, being either stateless or stateful. Stateless chatbots approach each conversation as if interacting with a new user.<br/> In contrast, stateful chatbots can review past interactions and frame new responses in context.</p>
+         </Col>
+         {
+           featureData.map((item, index)=>(
+             <Col lg='4' md= '4' key={index} className='mt-5'>
+               <div className="feature__item text-center p-3">
+                 <img src={item.imgUrl} alt="feature-img" className='w-50 mb-3' />
+                 <h5 className=' fw-bold '>{item.title}</h5>
+               </div>
+             </Col>
+           ))
+         }
+       </Row>
+     </Container>
+   </section>
 
-  return (
-    
-    <div className='homePage'>
-    
-    <div className='container__header'>
-      
-      <div className='header'>
-        
-      
-          <div className='header__nav'>
-            <div className='header__navMenu'>
-            {
-          nav__links.map((item,index)=>(
-                       
-                        <NavLink 
-                        onClick={toggleMenu}
-                        to={item.path} 
-                        key={index}
-                        className={navClass => 
-                            navClass.isActive ? 'active__menu' : ""}
-                        >
-                            {item.display}
-                            </NavLink>
-                    ))
-              }
-              </div>
+   <section>
+     <Container>
+       <Row>
+         <Col lg='12' className='text-center'>
+         </Col>
 
-              <div className='header__option'>
-                  
-                  <span className='header__createAccount'>Create Account</span>     
-                  
-                </div> 
-            </div>
-        </div>
-      <div className='header__feature'>
-      
-  
-
-        <div className='header__featureContainer'> 
-          
-        <div className='header__featureContainerOption'>
-            <span>Overview</span>  
-        </div>
-
-        <div className='header__featureContainerOption'>
-            <span>Features</span>  
-        </div>
-
-        <div className='header__featureContainerOption'>
-            <span>Use Cases</span>  
-        </div>
-
-        <div className='header__featureContainerOption'>
-            <span>Pricing</span>  
-        </div>
-
-        <div className='header__featureContainerOption'>
-            <span>Resources</span>  
-        </div>
-
-        <div className='header__featureContainerOption'>
-            <span>Customers</span>  
-        </div>
-
-        <div className='header__featureContainerOption'>
-            <span>AI ChatBox</span>  
-          </div>
-
-        </div>
-    
-      </div>
-      
-      </div>
-
-
-    <div className='homePage__container'>
-        <img className='homePage__img' src={Background} alt="homePageImage"></img>
-        <Container>
-        <Row>
-          
-          <Col lg="6" md="6" sm="6" className="m-auto text-center">
-            <h4 className='title__chatbox'>AI ChatBox Customer</h4>
-            <h1 className='title__chatboxDescription'>Build Chat Box Using The AI API </h1>
-            <div className='started__chatbox'>Get Started With AI</div>
-          </Col>
+         <Col lg='12'>
+           <div className="kits__category d-flex align-items-center justify-content-center gap-5">
+             <button className={`d-flex align-items-center gap-2`} ><img src={kitsCategoryImg01} alt='' />Fast</button>
+             <button className={`d-flex align-items-center gap-2`} ><img src={kitsCategoryImg02} alt='' />Secure</button>
+             <button className={`d-flex align-items-center gap-2`} ><img src={kitsCategoryImg03} alt='' />convenient</button>
+           </div>
+         </Col>
+         
+       </Row>
+     </Container>
+   </section>
    
-          <Col lg="6" md="6" sm="6" className="m-auto text-center">
-          <p className='homePage__descriptionRightSideText'>Create Voice Call Using API Support For Sale or Provide Service Better</p>
-          </Col>
-    </Row>
-    </Container>
-    </div>
+   <section>
+     <Container>
+       <Row>
+         <Col lg='6' md='6'>
+           <img src={whyImg} alt='delivery' className='w-100'/>
+         </Col>
+         <Col lg='6' md='6'>
+           <div className="why__iconic-good">
+             <h2 className='iconic__good-title mb-4'>Chatbot Service</h2>
+             <p className='iconic__good-desc'>A chatbot is an automated program that interacts with customers as a human would and costs little to nothing to engage with. Chatbots attend to customers at all times of the day and week and are not limited by time or a physical location. This makes its implementation appealing to a lot of businesses that may not have the manpower or financial resources to keep employees working around the clock.</p>
+             <ListGroup className='mt-5'>
+               <ListGroupItem className='border-0 ps-0'>
+                 <p className='choose__us-title d-flex align-items-center gap-2'> <i class="ri-checkbox-circle-line"></i> Best Service &emsp; <i class="ri-checkbox-circle-line"></i>Quality Support &emsp;<i class="ri-checkbox-circle-line"></i> Training from any location</p> 
+               </ListGroupItem>
+             </ListGroup>
+           </div>
+         </Col>
+       </Row>
+     </Container>
+   </section>
 
-</div>
-  )
+  </Helmet>
 }
 
 export default Home

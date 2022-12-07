@@ -8,6 +8,7 @@ import Chat from "../pages/Chat"
 import ListScript from "../pages/ListScript";
 import ListIntent from "../pages/ListIntent";
 import ListPattern from "../pages/ListPattern";
+import Dashboard from "../components/Dashboard/Dashboard"
 const Routers = () => {
   return (
         <Routes>
@@ -20,6 +21,7 @@ const Routers = () => {
           <Route path="/listscript" element={<ListScript/>} />
           <Route path="/listintent" element={<ListIntent/>} />
           <Route path="/listpattern" element={<ListPattern/>} />
+          <Route path="/dashboard" element={<Dashboard/>} />
         </Routes>
   );
 };

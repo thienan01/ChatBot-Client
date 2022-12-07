@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { EditOutlined, DeleteOutlined} from "@ant-design/icons";
 import {GET, POST} from '../../functionHelper/APIFunction'
 import { BASE_URL_LOCAL } from '../../global/globalVar'
+import { getCookie } from "../../functionHelper/GetSetCookie";
 
 
 
@@ -19,9 +20,9 @@ function Script() {
   const { Paragraph } = Typography;
   const [dataSource, setDataSource] = useState([]);
   const [dataSource1] = useState([]);
-  const fetchRecords = () => {
+  const fetchRecords = (page) => {
     setLoading(true);
-    GET(BASE_URL_LOCAL + `/api/script/get_pagination/by_user_id?page=2&size=5`)
+    GET(BASE_URL_LOCAL + `/api/script/get_pagination/by_user_id?page=${page}&size=5`)
       .then((res) => {
         setDataSource(res.items);
         setLoading(false);
@@ -42,6 +43,7 @@ function Script() {
 
   const showScript = () => {
     setVisible(true)
+    console.log(getCookie.secretkey)
   }
 
   useEffect(() => {
@@ -108,7 +110,7 @@ function Script() {
     })
   };
   const updateData = (data) => {
-    POST(`https://chatbot-vapt.herokuapp.com/api/intent/update`, JSON.stringify(data))
+    POST( BASE_URL_LOCAL + `/api/intent/update`, JSON.stringify(data))
     .then(response => {
       console.log(response)
       return response.payload()})
@@ -140,7 +142,7 @@ function Script() {
         ></Table>
         <Modal
           title="Edit Data"
-          visible={isEditing}
+          open={isEditing}
           okText="Save"
           onCancel={() => {
             resetEditing();
@@ -189,7 +191,7 @@ function Script() {
            <Paragraph copyable={{ tooltips: false }}>
           <span>&lt; script &gt;</span>
           <br />
-           <span>&nbsp; &nbsp;var secretKey = "{dataSource1.secret_key}"; </span>
+           <span>&nbsp; &nbsp;var secretKey = "{getCookie.secretkey}"; </span>
           <br />
            <span>&nbsp; &nbsp;var scriptId = "INPUT_YOUR_SCRIPT_HERE"; </span>
           <br />

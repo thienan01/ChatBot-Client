@@ -9335,7 +9335,7 @@ react-flow-renderer@^10.3.17:
     d3-zoom "^3.0.0"
     zustand "^3.7.2"
 
-react-highlight-words@*:
+react-highlight-words@^0.18.0:
   version "0.18.0"
   resolved "https://registry.npmjs.org/react-highlight-words/-/react-highlight-words-0.18.0.tgz"
   integrity sha512-5z+46eLPjB4JWgOhuQ0E+6iUPTD1U3amiy5KKjzZmeJ5zyvHr91hnzBT3UHya/KlySm5KRTKpYpba9vs67oO2A==
