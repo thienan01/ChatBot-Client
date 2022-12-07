@@ -1,13 +1,4 @@
-import {
-  Button,
-  Table,
-  Modal,
-  Input,
-  Form,
-  Space,
-  notification,
-  Spin,
-} from "antd";
+import { Button, Table, Modal, Input, Form, Space } from "antd";
 import { useState, useEffect, useRef } from "react";
 import {
   EditOutlined,
@@ -67,34 +58,19 @@ function Intent() {
   };
   const fetchPattern = () => {
     setLoading1(true);
-    GET(BASE_URL_LOCAL +`/api/pattern/get_all/by_intent_id/${editingData?.id}`)
-        .then((res) => {
-          setDataSource1(res.patterns);
-          setLoading1(false);
-          console.log(res.patterns)
-        })
-  }
-  // function Wait5s() {
-  //   setInterval(checkStatus, 1000);
-  // }
-  const checkStatus = () => {
-    GET(BASE_URL_LOCAL + `/api/training/get_server_status`).then((res) => {
-      console.log(res.status);
-      if (res.status === "BUSY") {
-        openNotificationBUSY();
-        console.log(res.status);
-      } else if (res.status === "FREE") {
-        clearInterval(Wait5s);
-      }
-      else if (res.status === "FREE"){
-        //clearInterval(Wait5s)
-      }
-    })
-  }
+    GET(
+      BASE_URL_LOCAL + `/api/pattern/get_all/by_intent_id/${editingData?.id}`
+    ).then((res) => {
+      setDataSource1(res.patterns);
+      setLoading1(false);
+      console.log(res.patterns);
+    });
+  };
+
   useEffect(() => {
     fetchRecords(1);
     fetchPattern();
-  }, [])
+  }, []);
 
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -107,27 +83,6 @@ function Intent() {
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
-  };
-  const key = "updatable";
-
-  const [api, contextHolder] = notification.useNotification();
-  const openNotificationBUSY = () => {
-    api.open({
-      key,
-      message: "Notification",
-      description: "Server training. Please wait!",
-      icon: <Spin size="large" style={{ color: "#108ee9" }} />,
-      duration: 0,
-    });
-    setTimeout(() => {
-      api.open({
-        key,
-        message: "Notification",
-        description: "Server training. Please wait!",
-        icon: <Spin size="large" style={{ color: "#108ee9" }} />,
-        duration: 0,
-      });
-    }, 0);
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -372,13 +327,12 @@ function Intent() {
               style={{ color: "blue", marginLeft: 12 }}
             />
             <EyeOutlined
-            onClick={() =>{
-              fetchPattern()
-              onViewData(record)
-              checkStatus()
-              console.log(record.id)
-            }}
-            style={{ color: "blue", marginLeft: 12 }}
+              onClick={() => {
+                fetchPattern();
+                onViewData(record);
+                console.log(record.id);
+              }}
+              style={{ color: "blue", marginLeft: 12 }}
             />
           </>
         );
@@ -509,23 +463,6 @@ function Intent() {
             },
           }}
         ></Table>
-        {/* <Modal
-          title="Delete Data"
-          open={isDeleteing}
-          okText="Confirm"
-          onCancel={() => {
-            resetDeleteing();
-          }}
-          onOk={() => {
-            setDataSource((pre) => {
-                  return pre.filter((data) => data.id !== pre.id);
-              });
-            resetDeleteing();
-          }
-        }
-        >
-          
-        </Modal> */}
         <Modal
           title="Edit Data"
           open={isEditing}
@@ -654,7 +591,6 @@ function Intent() {
         >
           <br />
 
-          {contextHolder}
           <Button
             onClick={showAddPattern}
             className="btn btn-success"

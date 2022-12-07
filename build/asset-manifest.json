@@ -1,0 +1,33 @@
+{
+  "files": {
+    "main.css": "/static/css/main.4bd50069.css",
+    "main.js": "/static/js/main.df979ab8.js",
+    "static/media/Chatbot.gif": "/static/media/Chatbot.28b32576a73cb1defe85.gif",
+    "static/media/ezgif-3-d79bab7cdc.gif": "/static/media/ezgif-3-d79bab7cdc.00d845f4ec27b473caaf.gif",
+    "static/media/remixicon.svg?t=1590207869815": "/static/media/remixicon.9cedd2150922ead84869.svg",
+    "static/media/remixicon.eot?t=1590207869815": "/static/media/remixicon.5cb99e6cba5a4619063f.eot",
+    "static/media/remixicon.ttf?t=1590207869815": "/static/media/remixicon.f2616f597cf98f38d234.ttf",
+    "static/media/chatbot-HR.gif": "/static/media/chatbot-HR.286137803c0cdc21112b.gif",
+    "static/media/remixicon.woff?t=1590207869815": "/static/media/remixicon.8d09fa11700ed63cf96e.woff",
+    "static/media/Poppins-Regular.ttf": "/static/media/Poppins-Regular.1c701c9a6b587802e3d0.ttf",
+    "static/media/Poppins-Medium.ttf": "/static/media/Poppins-Medium.b59f6a636397975c5409.ttf",
+    "static/media/Poppins-SemiBold.ttf": "/static/media/Poppins-SemiBold.5981b450a68d5134225b.ttf",
+    "static/media/Poppins-Bold.ttf": "/static/media/Poppins-Bold.e2abc8f5e9a67ea669ea.ttf",
+    "static/media/pngegg.png": "/static/media/pngegg.dd930ee4eaf9413872b4.png",
+    "static/media/remixicon.woff2?t=1590207869815": "/static/media/remixicon.90668f6f9b3c2c18a090.woff2",
+    "static/media/servive-01.png": "/static/media/servive-01.1224c25daa700d86da0e.png",
+    "static/media/servive-03.png": "/static/media/servive-03.5cd0dd559ced635e393a.png",
+    "static/media/servive-02.png": "/static/media/servive-02.b1fcffc357590dd9a135.png",
+    "static/media/notification.svg?s3g3t9": "/static/media/notification.5d0158671dd860c714c4.svg",
+    "static/media/notification.eot": "/static/media/notification.3657084dc0419605a91c.eot",
+    "static/media/notification.woff?s3g3t9": "/static/media/notification.c392cd33d9d9de730f9d.woff",
+    "static/media/notification.ttf?s3g3t9": "/static/media/notification.c5d9251ea82e42f75381.ttf",
+    "index.html": "/index.html",
+    "main.4bd50069.css.map": "/static/css/main.4bd50069.css.map",
+    "main.df979ab8.js.map": "/static/js/main.df979ab8.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4bd50069.css",
+    "static/js/main.df979ab8.js"
+  ]
+}
