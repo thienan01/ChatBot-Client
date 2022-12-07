@@ -1,6 +1,6 @@
-import { Button, Table, Modal, Input, Space, Form, Typography} from "antd";
+import { Table, Modal, Input, Space, Form, Typography} from "antd";
 import { useState, useEffect } from "react";
-import { EditOutlined, DeleteOutlined} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, EyeOutlined} from "@ant-design/icons";
 import {GET, POST} from '../../functionHelper/APIFunction'
 import { BASE_URL_LOCAL } from '../../global/globalVar'
 import { getCookie } from "../../functionHelper/GetSetCookie";
@@ -10,7 +10,7 @@ function Script() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [loading1] = useState(false);
+  const [loading1, setLoading1] = useState(false);
   const [visible, setVisible] = useState(false)
   const [form] = Form.useForm();
 
@@ -18,7 +18,7 @@ function Script() {
 
   const { Paragraph } = Typography;
   const [dataSource, setDataSource] = useState([]);
-  const [dataSource1] = useState([]);
+  const [dataSource1, setDataSource1] = useState([]);
   const fetchRecords = (page) => {
     setLoading(true);
     GET(BASE_URL_LOCAL + `/api/script/get_pagination/by_user_id?page=${page}&size=5`)
@@ -27,27 +27,30 @@ function Script() {
         setLoading(false);
       })
   };
-  // const fecthSecretKey = () => {
-  //   setLoading1(true);
-  //   POST(BASE_URL_LOCAL + `/api/training/predict`)
-  //     .then((res) => {
-  //       setDataSource1(res);
-  //       setLoading1(false);
-  //     })
-  // }
+  const fecthSecretKey = () => {
+    setLoading1(true);
+    GET(BASE_URL_LOCAL + `/api/user/get_secret_key`)
+      .then((res) => {
+        setDataSource1(res);
+        setLoading1(false);
+        console.log(res.secret_key)
+      })
+  }
   const handleCancel = () => {
     setVisible(false)
     form.resetFields()
   };
 
-  const showScript = () => {
+  const showScript = (record) => {
+    fecthSecretKey()
     setVisible(true)
     console.log(getCookie.secretkey)
+    setEditingData({...record})
   }
 
   useEffect(() => {
     fetchRecords(1)
-    //fecthSecretKey()
+    fecthSecretKey()
   }
   , [])
 
@@ -79,6 +82,13 @@ function Script() {
                 onDeleteData(record);
               }}
               style={{ color: "red", marginLeft: 12 }}
+            />
+            <EyeOutlined
+            onClick={() =>{
+              showScript(record)
+              console.log(record.id)
+            }}
+            style={{ color: "blue", marginLeft: 12 }}
             />
           </>
         );
@@ -120,10 +130,6 @@ function Script() {
   return (
     <div className="Script">
       <header className="Script-header">
-      <Button onClick={showScript} className="btn btn-success" data-toggle="modal"><i class="ri-chat-forward-fill"></i> <span>&nbsp; Get the code </span></Button>
-      <br />
-      <br />
-
       <Table
         loading={loading}
         columns={columns}
@@ -188,9 +194,9 @@ function Script() {
            <Paragraph copyable={{ tooltips: false }}>
           <span>&lt; script &gt;</span>
           <br />
-           <span>&nbsp; &nbsp;var secretKey = "{getCookie.secretkey}"; </span>
+           <span>&nbsp; &nbsp;var secretKey = "{dataSource1.secret_key}"; </span>
           <br />
-           <span>&nbsp; &nbsp;var scriptId = "INPUT_YOUR_SCRIPT_HERE"; </span>
+           <span>&nbsp; &nbsp;var scriptId = "{editingData?.id}"; </span>
           <br />
            <span>&nbsp; &nbsp;var currentNodeId = "_BEGIN"; </span>
           <br />

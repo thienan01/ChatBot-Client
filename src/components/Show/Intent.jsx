@@ -65,19 +65,18 @@ function Intent() {
       setLoading(false);
     });
   };
-  const fetchPattern = (page) => {
+  const fetchPattern = () => {
     setLoading1(true);
-    GET(
-      BASE_URL_LOCAL + `/api/pattern/get_all/by_intent_id/${editingData?.id}`
-    ).then((res) => {
-      setDataSource1(res.patterns);
-      setLoading1(false);
-      console.log(res.patterns);
-    });
-  };
-  function Wait5s() {
-    setInterval(checkStatus, 1000);
+    GET(BASE_URL_LOCAL +`/api/pattern/get_all/by_intent_id/${editingData?.id}`)
+        .then((res) => {
+          setDataSource1(res.patterns);
+          setLoading1(false);
+          console.log(res.patterns)
+        })
   }
+  // function Wait5s() {
+  //   setInterval(checkStatus, 1000);
+  // }
   const checkStatus = () => {
     GET(BASE_URL_LOCAL + `/api/training/get_server_status`).then((res) => {
       console.log(res.status);
@@ -87,11 +86,15 @@ function Intent() {
       } else if (res.status === "FREE") {
         clearInterval(Wait5s);
       }
-    });
-  };
+      else if (res.status === "FREE"){
+        //clearInterval(Wait5s)
+      }
+    })
+  }
   useEffect(() => {
     fetchRecords(1);
-  }, []);
+    fetchPattern();
+  }, [])
 
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -275,7 +278,6 @@ function Intent() {
     event.preventDefault();
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
-
     const newFormData = { ...addFormData };
     newFormData[fieldName] = fieldValue;
 
@@ -370,13 +372,13 @@ function Intent() {
               style={{ color: "blue", marginLeft: 12 }}
             />
             <EyeOutlined
-              onClick={() => {
-                onViewData(record);
-                Wait5s();
-                checkStatus();
-                console.log(record.id);
-              }}
-              style={{ color: "blue", marginLeft: 12 }}
+            onClick={() =>{
+              fetchPattern()
+              onViewData(record)
+              checkStatus()
+              console.log(record.id)
+            }}
+            style={{ color: "blue", marginLeft: 12 }}
             />
           </>
         );
