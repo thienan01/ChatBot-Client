@@ -37,8 +37,7 @@
     "reactflow": "^11.2.0",
     "reactstrap": "^9.1.5",
     "remixicon": "^2.5.0",
-    "uuid": "^9.0.0",
-    "video-react": "^0.16.0"
+    "uuid": "^9.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -41,11 +41,11 @@ const Home = () => {
        <Row>
          <Col lg='6' md='6'>
            <div className='hero__content'>
-             <h5 className='mb-3'>Easy way to make SEO your website</h5>
-             <h1 className='mb-4 hero__title'><span></span>Welcome to <span> Chatbot Service</span></h1>
+             <h5 className='mb-3'>Easy to TRAINING</h5>
+             <h1 className='mb-4 hero__title'>Welcome to <span> Chatbot Service</span></h1>
              <p>&nbsp;&nbsp;Chatbot is a tool that can communicate and interact with humans through pre-programmed artificial intelligence. In most cases, chatbots are used via messaging apps to talk to humans. </p>
              <div className="hero__btns d-flex align-items-center gap-5 mt-4">
-               <button className="order__btn d-flex align-items-center justify-content-between"><Link to ="/dashboard">Training now </Link><i class="ri-arrow-right-s-line"></i></button>
+             <Link to ="/dashboard"><button className="order__btn d-flex align-items-center justify-content-between">Training now <i class="ri-arrow-right-s-line"></i></button></Link>
              </div>
              <div className='hero__service d-flex align-items-center gap-5 mt-5'>
                <p className='d-flex align-items-center gap-2'>

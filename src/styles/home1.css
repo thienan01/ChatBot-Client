@@ -13,6 +13,10 @@
     text-decoration: none;
     color: #fff;
 }
+.hero__btns a{
+    text-decoration: none;
+    
+}
 .order__btn a:hover {
     color: #fff;
 }

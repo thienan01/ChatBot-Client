@@ -34,7 +34,7 @@ const navigate = useNavigate();
     <Layout>
       <Layout>
         <Sider
-          width={200}
+          width={300}
           style={{
             background: colorBgContainer,
           }}

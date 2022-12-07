@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { EditOutlined, DeleteOutlined} from "@ant-design/icons";
 import {GET, POST} from '../../functionHelper/APIFunction'
 import { BASE_URL_LOCAL } from '../../global/globalVar'
+import { getCookie } from "../../functionHelper/GetSetCookie";
 
 
 
@@ -42,6 +43,7 @@ function Script() {
 
   const showScript = () => {
     setVisible(true)
+    console.log(getCookie.secretkey)
   }
 
   useEffect(() => {
@@ -140,7 +142,7 @@ function Script() {
         ></Table>
         <Modal
           title="Edit Data"
-          visible={isEditing}
+          open={isEditing}
           okText="Save"
           onCancel={() => {
             resetEditing();
@@ -189,7 +191,7 @@ function Script() {
            <Paragraph copyable={{ tooltips: false }}>
           <span>&lt; script &gt;</span>
           <br />
-           <span>&nbsp; &nbsp;var secretKey = "{dataSource1.secret_key}"; </span>
+           <span>&nbsp; &nbsp;var secretKey = "{getCookie.secretkey}"; </span>
           <br />
            <span>&nbsp; &nbsp;var scriptId = "INPUT_YOUR_SCRIPT_HERE"; </span>
           <br />
