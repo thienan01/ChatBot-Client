@@ -52,7 +52,7 @@ function Intent() {
         setLoading(false);
       })
   };
-  const fetchPattern = (page) => {
+  const fetchPattern = () => {
     setLoading1(true);
     GET(BASE_URL_LOCAL +`/api/pattern/get_all/by_intent_id/${editingData?.id}`)
         .then((res) => {
@@ -61,9 +61,9 @@ function Intent() {
           console.log(res.patterns)
         })
   }
-  function Wait5s() {
-    setInterval(checkStatus, 1000);
-  }
+  // function Wait5s() {
+  //   setInterval(checkStatus, 1000);
+  // }
   const checkStatus = () => {
     GET(BASE_URL_LOCAL + `/api/training/get_server_status`)
     .then((res) => {
@@ -73,12 +73,13 @@ function Intent() {
         console.log(res.status)
       }
       else if (res.status === "FREE"){
-        clearInterval(Wait5s)
+        //clearInterval(Wait5s)
       }
     })
   }
   useEffect(() => {
     fetchRecords(1);
+    fetchPattern();
   }, [])
 
   const [searchText, setSearchText] = useState('');
@@ -256,8 +257,6 @@ function Intent() {
     event.preventDefault();
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
-
-
     const newFormData = { ...addFormData };
     newFormData[fieldName] = fieldValue;
 
@@ -352,8 +351,8 @@ function Intent() {
             />
             <EyeOutlined
             onClick={() =>{
+              fetchPattern()
               onViewData(record)
-              Wait5s()
               checkStatus()
               console.log(record.id)
             }}
