@@ -1,3 +1,6 @@
+* {
+  font-family: sans-serif;
+}
 .edgebutton {
   width: 20px;
   height: 20px;
@@ -25,4 +28,92 @@
 
 .fa-trash:hover {
   color: red;
+}
+
+.textIcon {
+  display: inline;
+  background-color: #1e3150;
+  padding: 4px 6px;
+  border-radius: 9px;
+  margin-right: 7px;
+}
+
+.replyIcon {
+  display: inline;
+  background-color: #1e3150;
+  padding: 4px 5px;
+  border-radius: 9px;
+  margin-right: 7px;
+}
+#message {
+  border-radius: 12px;
+  font-size: 20px;
+  height: 45px;
+  background: #f2f3f4;
+}
+#message:hover {
+  background: #ebf5fb;
+  border: 1px solid #3498db;
+}
+.inputKeyword {
+  border: 0px solid #ec7063;
+}
+.inputKeyword:hover {
+  border: 1px solid #ec7063;
+}
+#intent {
+  border: 0px solid #ec7063;
+}
+#intent:hover {
+  border: 1px solid #f5b041;
+}
+
+#deleteIcon {
+  position: absolute;
+  top: 2px;
+  left: 303px;
+  width: 35px;
+  border-radius: 10px;
+  visibility: hidden;
+}
+#addCondition {
+  display: none;
+}
+#node:hover > #deleteIcon {
+  visibility: visible;
+}
+#node:hover #addCondition {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.hoverSession {
+  width: 40px;
+  height: 42px;
+  position: absolute;
+  top: 0px;
+  left: 300px;
+}
+#deleteEdgeIcon {
+  visibility: visible;
+}
+.react-flow__edge-path:hover #deleteEdgeIcon {
+  visibility: visible;
+}
+#setting:hover {
+  color: black;
+}
+#setting {
+  color: #808b96;
+  font-size: 22px;
+  margin: 0px 6px;
+}
+.deleteCondition {
+  display: none;
+}
+#intent:hover .deleteCondition {
+  display: inline;
+}
+.inputKeyword:hover .deleteCondition {
+  display: inline;
 }

@@ -29,7 +29,7 @@ export default function CustomEdge({
     <>
       <path
         id={id}
-        style={style}
+        style={{strokeWidth:'3px'}}
         className="react-flow__edge-path"
         d={edgePath}
         markerEnd={markerEnd}
@@ -43,7 +43,10 @@ export default function CustomEdge({
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
         <div>
-          <button className="edgebutton" onClick={() => data.delete(id)}>
+          <button
+            className="edgebutton"
+            onClick={() => data.delete(id, data.nodeID, data.sourceHandle)}
+          >
             ×
           </button>
         </div>

@@ -6,9 +6,9 @@ import {
 } from "reactstrap";
 import { useState } from "react";
 import { Handle, Position } from "reactflow";
-import uniqueID from "../../functionHelper/GenerateID";
-function ConditionMapping({ background, color, data, setCondition }) {
+function ConditionMapping({ background, color, border, data }) {
   const [dropdownOpen, setOpen] = useState(false);
+
   const [value, setValue] = useState({
     id: data.conditionMapping.intent_id,
     name:
@@ -16,11 +16,12 @@ function ConditionMapping({ background, color, data, setCondition }) {
         ? "Choose intent"
         : data.intents.filter(
             (items) => items.id === data.conditionMapping.intent_id
+          ).length === 0
+        ? "Choose intent"
+        : data.intents.filter(
+            (items) => items.id === data.conditionMapping.intent_id
           )[0].name,
   });
-  const [source, setSource] = useState("");
-  const [handle, setHandle] = useState("");
-  const [target, setTarget] = useState("");
 
   return (
     <div style={{ margin: "5px 0px" }}>
@@ -29,34 +30,48 @@ function ConditionMapping({ background, color, data, setCondition }) {
           setOpen(!dropdownOpen);
         }}
         isOpen={dropdownOpen}
+        style={{ width: "100%" }}
       >
         <DropdownToggle
-          caret
+          id="intent"
           style={{
-            height: "25px",
+            width: "100%",
+            height: "40px",
             background,
             color,
-            fontSize: "13px",
-            fontWeight: "500",
-            borderRadius: "10px",
+            fontSize: "15px",
+            fontWeight: "600",
+            borderRadius: "12px",
+            textAlign: "left",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
           value={value.id}
         >
           {value.name}
+          <i
+            className="fa-solid fa-delete-left deleteCondition"
+            style={{ textAlign: "right" }}
+            onClick={() => {
+              data.deleteCondition(data.conditionMapping.id);
+            }}
+          ></i>
         </DropdownToggle>
-        <DropdownMenu>
+        <DropdownMenu
+          style={{ maxHeight: "400px", overflowY: "scroll", cursor: "pointer" }}
+        >
           <DropdownItem header>Choose Intent</DropdownItem>
           {data.intents.map((item) => {
             return (
               <DropdownItem
                 onClick={() => {
                   setValue({ id: item.id, name: item.name });
-                  // setHandle(item.id);
-                  // setCondition({
-                  //   src: source,
-                  //   handle: item.id,
-                  //   target: target,
-                  // });
+                  data.setCondition({
+                    conditionId: data.conditionMapping.id,
+                    intentId: item.id,
+                    intentName: item.name,
+                  });
                 }}
                 key={item.id}
                 value={item.id}
@@ -68,15 +83,18 @@ function ConditionMapping({ background, color, data, setCondition }) {
         </DropdownMenu>
       </ButtonDropdown>
       <Handle
-        id={value.id}
+        id={data.conditionMapping.id}
         type="source"
         position={Position.Right}
+        onConnect={(param) => {
+          data.setCondition(param);
+        }}
         style={{
-          top: "-12px",
-          left: "233px",
-          width: "10px",
-          height: "10px",
-          border: "2px solid black",
+          top: "-17px",
+          left: "275px",
+          width: "15px",
+          height: "15px",
+          border: "3px solid #F39C12",
           background: "none",
           position: "relative",
         }}

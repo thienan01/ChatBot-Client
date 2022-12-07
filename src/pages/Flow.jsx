@@ -1,25 +1,28 @@
 import { useCallback, useState, useEffect } from "react";
-import { Spinner } from "reactstrap";
+import { Spinner, Button } from "reactstrap";
+import ModalChatTrial from "../components/Node/ModalChatTrial";
+import ModalSetting from "../components/Node/ModalSetting";
 import { BASE_URL } from "../global/globalVar";
 import uniqueID from "../functionHelper/GenerateID";
-import { GET } from "../functionHelper/APIFunction";
+import { GET, POST } from "../functionHelper/APIFunction";
 import ReactFlow, {
   MiniMap,
   Controls,
   addEdge,
-  applyEdgeChanges,
-  applyNodeChanges,
   ReactFlowProvider,
   useReactFlow,
+  useNodesState,
+  useEdgesState,
 } from "reactflow";
 import NodeLayout from "../components/Node/NodeLayout";
+import StartNode from "../components/Node/StartNode";
 import CustomEdge from "../components/Node/ButtonEdge";
 import "reactflow/dist/style.css";
-
-const initialNodes = [];
-const initialEdges = [];
+import { NotificationManager } from "react-notifications";
+import { getCookie } from "../functionHelper/GetSetCookie";
 const nodeTypes = {
   nodeLayout: NodeLayout,
+  startNode: StartNode,
 };
 const edgeType = {
   buttonedge: CustomEdge,
@@ -29,29 +32,52 @@ const rfStyle = {
   backgroundColor: "#f5f6fa",
 };
 
+const initialNode = [
+  {
+    id: "STARTNODE",
+    type: "startNode",
+    position: {
+      x: 20,
+      y: 400,
+    },
+    data: {
+      id: "STARTNODE",
+      value: "STARTNODE",
+      conditionMapping: [{}],
+    },
+  },
+];
+
 function Flow() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const defaultEdgeOptions = { animated: true };
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNode);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [loading, isLoading] = useState(true);
+  const [openChat, setOpenChat] = useState(false);
+  const [openSetting, setOpenSetting] = useState(false);
   const [intents, setIntents] = useState([]);
+  const [wrongMsg, setWrongMsg] = useState("");
   const reactFlowInstance = useReactFlow();
 
   useEffect(() => {
     if (true) {
       Promise.all([
         GET(BASE_URL + "api/intent/get_all/by_user_id"),
-        GET(BASE_URL + "api/node?script_id=637b7d9b4e532158d255a434"),
+        GET(BASE_URL + "api/script/get/638eb88af075e87a12679e5d"),
       ])
         .then((res) => {
           isLoading(false);
           setIntents(res[0].intents);
+          setWrongMsg(res[1].wrong_message);
           let data = nodeObject(res[1].nodes, res[0].intents);
-          setNodes(data.lstNode);
+          setNodes((nodes) => [...nodes, ...data.lstNode]);
           setEdges(data.lstEdge);
         })
         .catch((err) => {
-          console.log(err);
+          NotificationManager.error(
+            "Error occur when loading script!",
+            "Error"
+          );
         });
     } else {
       GET(BASE_URL + "api/intent/get_all/by_user_id")
@@ -68,24 +94,50 @@ function Flow() {
     }
   }, []);
 
-  const nodeObject = useCallback((nodes, intents) => {
+  const saveScript = useCallback(
+    (nodes) => {
+      let body = {
+        id: "638eb88af075e87a12679e5d",
+        name: "Script mua xe",
+        wrong_message: wrongMsg,
+        nodes: nodes,
+      };
+      POST(BASE_URL + "api/script/update", JSON.stringify(body))
+        .then((res) => {
+          if (res.http_status === "OK") {
+            NotificationManager.success("Update successfully", "Success");
+          } else {
+            throw res.exception_code;
+          }
+        })
+        .catch((err) => {
+          NotificationManager.error(err, "Error");
+        });
+    },
+    [wrongMsg]
+  );
+
+  const nodeObject = (nodes, intents) => {
     let lstNode = [];
     let lstEdge = [];
     nodes.forEach((node) => {
+      node.condition_mappings.forEach((cnd) => {
+        cnd.target = cnd.next_node_ids[0];
+      });
       lstNode.push({
-        id: node.id,
+        id: node.node_id,
         type: "nodeLayout",
         position: {
-          x: Math.random() * 500,
-          y: Math.random() * 500,
+          x: node.position[0],
+          y: node.position[1],
         },
         data: {
-          id: node.id,
+          id: node.node_id,
+          isFirst: node.is_first_node ? node.is_first_node : false,
           value: node.message,
           intents: intents,
           conditionMapping: node.condition_mappings,
           delete: handleDeleteNode,
-          openModal: handleOpenModal,
         },
       });
 
@@ -93,94 +145,130 @@ function Flow() {
         if (condition.next_node_ids != null) {
           lstEdge.push({
             id: condition.id,
-            source: node.id,
+            source: node.node_id,
+            sourceHandle: condition.id,
             target: condition.next_node_ids[0],
             type: "buttonedge",
             data: { delete: handleDeleteEdge },
           });
         }
       });
+      if (node.is_first_node === true) {
+        setNodes((nds) =>
+          nds.map((item) => {
+            if (item.id === "STARTNODE") {
+              item.data.conditionMapping[0].target = node.node_id;
+              return item;
+            }
+            return item;
+          })
+        );
+        lstEdge.push({
+          id: uniqueID(),
+          source: "STARTNODE",
+          target: node.node_id,
+          type: "buttonedge",
+          data: {
+            delete: handleDeleteEdge,
+          },
+        });
+      }
     });
     return { lstNode, lstEdge };
-  });
+  };
 
   const handleCreateNode = () => {
     let data = nodeObject(
       [
         {
-          id: uniqueID().toString(),
+          node_id: uniqueID(),
           message: "",
-          condition_mappings: [{ id: uniqueID().toString(), intent_id: null }],
+          position: [Math.random() * 500, Math.random() * 500],
+          condition_mappings: [],
         },
       ],
       intents
     );
     reactFlowInstance.addNodes(data.lstNode[0]);
   };
+
   const handleSaveScript = () => {
-    let all = reactFlowInstance.toObject();
-    console.log("all", all);
-    let newNodeLst = all.nodes.map((node) => {
+    let lstNode = reactFlowInstance.getNodes();
+    let startNodeID = lstNode.filter(
+      (node) => node.data.value === "STARTNODE"
+    )[0].data.conditionMapping[0].target;
+
+    lstNode = lstNode.filter((node) => node.id !== "STARTNODE");
+
+    let lstSaveObj = lstNode.map((node) => {
       return {
-        id: node.id,
+        node_id: node.id,
         message: node.data.value,
-        conditionMapping: node.data.conditionMapping,
-        position: node.position,
+        is_first_node: node.id === startNodeID ? true : false,
+        position: [node.position.x, node.position.y],
+        condition_mappings: node.data.conditionMapping.map((condition) => {
+          return {
+            next_node_ids: [condition.target],
+            intent_id: condition.intent_id ? condition.intent_id : "",
+            predict_type: condition.predict_type,
+            keyword: condition.keyword ? condition.keyword : "",
+          };
+        }),
       };
     });
-    let lstSaveObj = [];
-    if (all.edges.length > 0) {
-      newNodeLst.forEach((node) => {
-        let condition = [];
-        all.edges.forEach((eds) => {
-          if (eds.source === node.id) {
-            lstSaveObj.push({
-              node_id: node.id,
-              message: node.message,
-            });
-          }
-        });
-      });
-    }
-    console.log("lst", lstSaveObj);
-    console.log("newarr", newNodeLst);
+    saveScript(lstSaveObj);
   };
 
   const handleDeleteNode = useCallback((id) => {
     setNodes((nds) => nds.filter((node) => node.id !== id));
   }, []);
-  const handleDeleteEdge = useCallback((id) => {
+
+  const handleDeleteEdge = useCallback((id, nodeID, sourceHandle) => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === nodeID) {
+          node.data.conditionMapping.forEach((condition) => {
+            if (condition.sourceHandle === sourceHandle) {
+              delete condition.source;
+              delete condition.sourceHandle;
+              delete condition.target;
+            }
+          });
+        }
+        return node;
+      })
+    );
     setEdges((eds) => eds.filter((e) => e.id !== id));
   }, []);
 
-  const handleOpenModal = useCallback(() => {
-    setIsOpenModal(!isOpenModal);
+  const closeModal = () => {
+    setOpenChat(!openChat);
+  };
+  const closeModalSetting = () => {
+    setOpenSetting(!openSetting);
+  };
+  const handleWrongMsg = (value) => {
+    setWrongMsg(value);
+  };
+  const onConnect = useCallback((params) => {
+    setEdges((eds) =>
+      addEdge(
+        {
+          ...params,
+          type: "buttonedge",
+          data: {
+            delete: handleDeleteEdge,
+            nodeID: params.source,
+            sourceHandle: params.sourceHandle,
+          },
+        },
+        eds
+      )
+    );
   }, []);
 
-  const onNodesChange = useCallback(
-    (changes) => {
-      setNodes((nds) => applyNodeChanges(changes, nds));
-    },
-    [setNodes]
-  );
-  const onEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  );
-  const onConnect = useCallback(
-    (params) =>
-      setEdges((eds) =>
-        addEdge(
-          { ...params, type: "buttonedge", data: { delete: handleDeleteEdge } },
-          eds
-        )
-      ),
-    []
-  );
-  const defaultEdgeOptions = { animated: true };
-
   return (
-    <div style={{ height: "90vh" }}>
+    <div style={{ height: "95vh" }}>
       <ReactFlow
         nodes={nodes}
         onNodesChange={onNodesChange}
@@ -195,20 +283,55 @@ function Flow() {
         <MiniMap />
         <Controls />
       </ReactFlow>
-      <button
-        onClick={handleCreateNode}
-        className="btn-add"
-        style={{ position: "relative", top: "-45px", left: "45px" }}
+      <div
+        className="shadow bg-white"
+        style={{
+          textAlign: "center",
+          position: "relative",
+          top: "-68px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          marginLeft: "10px",
+          width: "400px",
+          padding: "10px",
+          marginBottom: "10px",
+          borderRadius: "10px",
+        }}
       >
-        add node
-      </button>
-      <button
-        onClick={handleSaveScript}
-        className="btn-add"
-        style={{ position: "relative", top: "-45px", left: "45px" }}
-      >
-        update
-      </button>
+        <Button
+          onClick={handleCreateNode}
+          className="btn-success"
+          style={{ margin: "0px 3px", width: "90px" }}
+          disabled={loading}
+        >
+          <i className="fa-solid fa-plus"></i> Add
+        </Button>
+        <Button
+          onClick={handleSaveScript}
+          color="primary"
+          style={{ margin: "0px 3px", width: "90px" }}
+          disabled={loading}
+        >
+          <i className="fa-regular fa-floppy-disk"></i> Save
+        </Button>
+        <Button
+          color="warning"
+          style={{ margin: "0px 3px", width: "90px" }}
+          onClick={() => {
+            setOpenChat(!openChat);
+          }}
+          disabled={loading}
+        >
+          <i className="fa-regular fa-square-caret-left"></i> Try
+        </Button>
+        <i
+          className="fa-solid fa-sliders"
+          id="setting"
+          onClick={() => {
+            setOpenSetting(!openSetting);
+          }}
+        ></i>
+      </div>
       <Spinner
         animation="border"
         variant="primary"
@@ -219,6 +342,13 @@ function Flow() {
           left: "50%",
           display: loading ? "block" : "none",
         }}
+      />
+      <ModalChatTrial openChat={openChat} closeModal={closeModal} />
+      <ModalSetting
+        open={openSetting}
+        closeModalSetting={closeModalSetting}
+        message={wrongMsg}
+        setMsg={handleWrongMsg}
       />
     </div>
   );

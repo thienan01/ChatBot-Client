@@ -1,145 +1,129 @@
-import React, { Component, createRef} from "react";
-
-import "./chatContent.css"
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import uniqueID from "../../../functionHelper/GenerateID";
+import "./chatContent.css";
 import Avatar from "../ChatList/Avatar";
 import ChatItem from "./ChatItem";
+import { POST } from "../../../functionHelper/APIFunction";
+import { NotificationManager } from "react-notifications";
+import { BASE_URL } from "../../../global/globalVar";
 
-export default class ChatContent extends Component {
-  messagesEndRef = createRef(null);
-  chatItms = [
-    {
-      key: 1,
-      type: "",
-      msg: "Hi Tim, How are you?",
-    },
-    {
-      key: 2,
-      type: "other",
-      msg: "I am fine.",
-    },
-    {
-      key: 3,
-      type: "other",
-      msg: "What about you?",
-    },
-    {
-      key: 4,
-      type: "",
-      msg: "Awesome these days.",
-    },
-    {
-      key: 5,
-      type: "other",
-      msg: "Finally. What's the plan?",
-    },
-    {
-      key: 6,
-      type: "",
-      msg: "what plan mate?",
-    },
-    {
-      key: 7,
-      type: "other",
-      msg: "I'm taliking about the tutorial",
-    },
-    {
-      key: 8,
-      type: "other",
-      msg: "Thiện đẹp zai",
-    },
-    {
-      key: 9,
-      type: "other",
-      msg: "Thiệni",
-    },
-  ];
+var secretKey = "432E0AA3-5980-429A-B9FB-B18314350DA4";
+var scriptId = "638eb88af075e87a12679e5d";
+var currentNodeId = "_BEGIN";
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      chat: this.chatItms,
-      msg: "",
+function ChatContent() {
+  const bottomRef = useRef(null);
+  const [chatItems, setChatItems] = useState([]);
+  const [currentNode, setCurrentNode] = useState(currentNodeId);
+  const [value, setValue] = useState("");
+
+  const handleSendMessage = useCallback(() => {
+    setChatItems((citems) => [
+      ...citems,
+      {
+        key: uniqueID(),
+        type: "me",
+        msg: value,
+      },
+    ]);
+    if (currentNodeId === "_END") return;
+    let body = {
+      secret_key: secretKey,
+      script_id: scriptId,
+      current_node_id: currentNode,
+      message: value,
     };
-  }
-
-  scrollToBottom = () => {
-    this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-  };
-
-  componentDidMount() {
-    window.addEventListener("keydown", (e) => {
-      if (e.keyCode === 13) {
-        if (this.state.msg !== "") {
-          this.chatItms.push({
-            key: 1,
-            type: "",
-            msg: this.state.msg,
-          });
-          this.setState({ chat: [...this.chatItms] });
-          this.scrollToBottom();
-          this.setState({ msg: "" });
+    console.log(body);
+    POST(BASE_URL + "api/training/predict", JSON.stringify(body))
+      .then((res) => {
+        console.log(res);
+        if (res.http_status === "OK") {
+          setCurrentNode(res.current_node_id);
+          if (res.current_node_id !== "_END") {
+            if (res.message != null && res.message.trim() != "") {
+              setChatItems((citems) => [
+                ...citems,
+                {
+                  key: uniqueID(),
+                  type: "other",
+                  msg: res.message,
+                },
+              ]);
+            }
+          }
+        } else {
+          throw res.exception_code;
         }
-      }
-    });
-    this.scrollToBottom();
-  }
-  onStateChange = (e) => {
-    this.setState({ msg: e.target.value });
-  };
-
-  render() {
-    return (
-      <div className="main__chatcontent">
-        <div className="content__header">
-          <div className="blocks">
-            <div className="current-chatting-user">
-              <Avatar
-                isOnline="active"              />
-              <p>Customers</p>
-            </div>
-          </div>
-
-          <div className="blocks">
-            <div className="settings">
-              <button className="btn-nobg">
-              <i class="ri-settings-4-fill"></i>
-              </button>
-            </div>
+      })
+      .catch((err) => {
+        // NotificationManager.error(err, "Error");
+        console.log(err);
+      });
+  });
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatItems]);
+  return (
+    <div className="main__chatcontent">
+      <div className="content__header">
+        <div className="blocks">
+          <div className="current-chatting-user">
+            <Avatar isOnline="active" />
+            <p>Try your chatbot</p>
           </div>
         </div>
-        <div className="content__body">
-          <div className="chat__items">
-            {this.state.chat.map((itm, index) => {
-              return (
-                <ChatItem
-                  animationDelay={index + 2}
-                  key={itm.key}
-                  user={itm.type ? itm.type : "me"}
-                  msg={itm.msg}
-                  image={itm.image}
-                />
-              );
-            })}
-            <div ref={this.messagesEndRef} />
-          </div>
-        </div>
-        <div className="content__footer">
-          <div className="sendNewMessage">
-            <button className="addFiles">
-            <i class="ri-add-circle-fill"></i>
-            </button>
-            <input
-              type="text"
-              placeholder="Type a message here"
-              onChange={this.onStateChange}
-              value={this.state.msg}
-            />
-            <button className="btnSendMsg" id="sendMsgBtn">
-            <i class="ri-send-plane-fill"></i>
+
+        <div className="blocks">
+          <div className="settings">
+            <button className="btn-nobg">
+              <i className="ri-settings-4-fill"></i>
             </button>
           </div>
         </div>
       </div>
-    );
-  }
+      <div className="content__body" style={{ height: "70vh" }}>
+        <div className="chat__items">
+          {chatItems.map((itm, index) => {
+            return (
+              <ChatItem
+                animationDelay={index + 2}
+                key={itm.key}
+                user={itm.type}
+                msg={itm.msg}
+                image={itm.image}
+              />
+            );
+          })}
+          <div ref={bottomRef} />
+        </div>
+      </div>
+      <div className="content__footer">
+        <div className="sendNewMessage">
+          <button className="addFiles">
+            <i className="ri-add-circle-fill"></i>
+          </button>
+          <input
+            type="text"
+            placeholder="Type a message here"
+            id="msgText"
+            onChange={(e) => {
+              setValue(e.target.value);
+            }}
+            value={value}
+          />
+          <button
+            className="btnSendMsg"
+            id="sendMsgBtn"
+            onClick={() => {
+              setValue("");
+              handleSendMessage();
+            }}
+          >
+            <i className="ri-send-plane-fill"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
+export default ChatContent;

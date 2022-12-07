@@ -14,7 +14,7 @@ const Layout = () => {
       <div>
         <Routes />
       </div>
-      {pathname !== "/login" && pathname !== "/register1" && <Footer/>}
+      {/* {pathname !== "/login" && pathname !== "/register1" && <Footer />} */}
     </div>
   );
 };

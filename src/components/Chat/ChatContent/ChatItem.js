@@ -6,16 +6,21 @@ export default class ChatItem extends Component {
     super(props);
   }
   render() {
+    let today = new Date();
+    let time =
+      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     return (
-      <div
-        style={{ animationDelay: `0.8s` }}
-        className={`chat__item ${this.props.user ? this.props.user : ""}`}
-      >
+      <div className={`chat__item ${this.props.user ? this.props.user : ""}`}>
         <div className="chat__item__content">
           <div className="chat__msg">{this.props.msg}</div>
           <div className="chat__meta">
-            <span>16 mins ago</span>
-            <span>Seen 1.03PM</span>
+            <span
+              className={
+                this.props.user === "other" ? "text-black" : "text-white"
+              }
+            >
+              {time}
+            </span>
           </div>
         </div>
         <Avatar isOnline="active" image={this.props.image} />

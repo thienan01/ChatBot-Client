@@ -6,7 +6,6 @@ import { BASE_URL_LOCAL } from '../../global/globalVar'
 import { getCookie } from "../../functionHelper/GetSetCookie";
 
 
-
 function Script() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState(null);
@@ -54,7 +53,6 @@ function Script() {
 
  
   const columns = [
-
     {
         key: "2",
         title: "ID",
@@ -88,7 +86,6 @@ function Script() {
     },
   ];
 
- 
   const onDeleteData = (record) => {
     Modal.confirm({
       title: "Are you sure, you want to delete this Data record?",
@@ -161,15 +158,15 @@ function Script() {
           }}
         >
           <br />
-           <Space.Compact block>
-          <Input
-            value={editingData?.name}
-            onChange={(e) => {
-              setEditingData((pre) => {
-                return { ...pre, name: e.target.value };
-              });
-            }}
-          />
+          <Space.Compact block>
+            <Input
+              value={editingData?.name}
+              onChange={(e) => {
+                setEditingData((pre) => {
+                  return { ...pre, name: e.target.value };
+                });
+              }}
+            />
           </Space.Compact>
           <br />
           <br />
