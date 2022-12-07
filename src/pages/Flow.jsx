@@ -13,14 +13,13 @@ import ReactFlow, {
   useReactFlow,
   useNodesState,
   useEdgesState,
-  Handle,
 } from "reactflow";
 import NodeLayout from "../components/Node/NodeLayout";
 import StartNode from "../components/Node/StartNode";
 import CustomEdge from "../components/Node/ButtonEdge";
 import "reactflow/dist/style.css";
 import { NotificationManager } from "react-notifications";
-import { set } from "lodash";
+import { getCookie } from "../functionHelper/GetSetCookie";
 const nodeTypes = {
   nodeLayout: NodeLayout,
   startNode: StartNode,
@@ -67,7 +66,6 @@ function Flow() {
         GET(BASE_URL + "api/script/get/638eb88af075e87a12679e5d"),
       ])
         .then((res) => {
-          console.log(res);
           isLoading(false);
           setIntents(res[0].intents);
           setWrongMsg(res[1].wrong_message);
@@ -98,7 +96,6 @@ function Flow() {
 
   const saveScript = useCallback(
     (nodes) => {
-      console.log("send", nodes);
       let body = {
         id: "638eb88af075e87a12679e5d",
         name: "Script mua xe",
@@ -197,7 +194,6 @@ function Flow() {
 
   const handleSaveScript = () => {
     let lstNode = reactFlowInstance.getNodes();
-    console.log("nodes", lstNode);
     let startNodeID = lstNode.filter(
       (node) => node.data.value === "STARTNODE"
     )[0].data.conditionMapping[0].target;
@@ -220,10 +216,7 @@ function Flow() {
         }),
       };
     });
-    console.log(lstSaveObj);
-
     saveScript(lstSaveObj);
-    console.log("post", lstSaveObj);
   };
 
   const handleDeleteNode = useCallback((id) => {
@@ -231,7 +224,6 @@ function Flow() {
   }, []);
 
   const handleDeleteEdge = useCallback((id, nodeID, sourceHandle) => {
-    console.log(id, nodeID, sourceHandle);
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === nodeID) {
