@@ -6,7 +6,6 @@ import { useLocation } from "react-router-dom";
 
 const Layout = () => {
   const { pathname } = useLocation();
-  console.log(pathname);
   return (
     <div>
       {pathname !== "/login" && pathname !== "/register" && <Header />}

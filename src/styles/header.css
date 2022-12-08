@@ -18,7 +18,6 @@
 .logo img {
   width: calc(100%-30%);
   object-fit: contain;
-  margin-top: 7px;
   z-index: 101;
   position: sticky;
   top: 0;

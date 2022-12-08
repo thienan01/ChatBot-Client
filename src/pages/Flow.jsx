@@ -1,10 +1,11 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useContext } from "react";
 import { Spinner, Button } from "reactstrap";
 import ModalChatTrial from "../components/Node/ModalChatTrial";
 import ModalSetting from "../components/Node/ModalSetting";
 import { BASE_URL } from "../global/globalVar";
 import uniqueID from "../functionHelper/GenerateID";
 import { GET, POST } from "../functionHelper/APIFunction";
+import { ScriptContext } from "../components/Context/ScriptContext";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -49,6 +50,7 @@ const initialNode = [
 ];
 
 function Flow() {
+  const context = useContext(ScriptContext);
   const defaultEdgeOptions = { animated: true };
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNode);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -57,18 +59,20 @@ function Flow() {
   const [openSetting, setOpenSetting] = useState(false);
   const [intents, setIntents] = useState([]);
   const [wrongMsg, setWrongMsg] = useState("");
+  const [endMessage, setEndMessage] = useState("");
   const reactFlowInstance = useReactFlow();
-
+  console.log(context);
   useEffect(() => {
-    if (true) {
+    if (context.value.id !== "") {
       Promise.all([
         GET(BASE_URL + "api/intent/get_all/by_user_id"),
-        GET(BASE_URL + "api/script/get/638eb88af075e87a12679e5d"),
+        GET(BASE_URL + "api/script/get/" + context.value.id),
       ])
         .then((res) => {
           isLoading(false);
           setIntents(res[0].intents);
           setWrongMsg(res[1].wrong_message);
+          setEndMessage(res[1].end_message);
           let data = nodeObject(res[1].nodes, res[0].intents);
           setNodes((nodes) => [...nodes, ...data.lstNode]);
           setEdges(data.lstEdge);
@@ -96,13 +100,17 @@ function Flow() {
 
   const saveScript = useCallback(
     (nodes) => {
+      console.log(endMessage);
       let body = {
-        id: "638eb88af075e87a12679e5d",
-        name: "Script mua xe",
+        id: context.value.id,
+        name: context.value.name,
         wrong_message: wrongMsg,
+        end_message: endMessage,
         nodes: nodes,
       };
-      POST(BASE_URL + "api/script/update", JSON.stringify(body))
+      let url =
+        context.value.id === "" ? "api/script/add" : "api/script/update";
+      POST(BASE_URL + url, JSON.stringify(body))
         .then((res) => {
           if (res.http_status === "OK") {
             NotificationManager.success("Update successfully", "Success");
@@ -114,7 +122,7 @@ function Flow() {
           NotificationManager.error(err, "Error");
         });
     },
-    [wrongMsg]
+    [wrongMsg, endMessage]
   );
 
   const nodeObject = (nodes, intents) => {
@@ -247,8 +255,10 @@ function Flow() {
   const closeModalSetting = () => {
     setOpenSetting(!openSetting);
   };
-  const handleWrongMsg = (value) => {
-    setWrongMsg(value);
+  const handleWrongMsg = (wrongMsg, endMsg) => {
+    console.log(endMsg);
+    setWrongMsg(wrongMsg);
+    setEndMessage(endMsg);
   };
   const onConnect = useCallback((params) => {
     setEdges((eds) =>
@@ -348,6 +358,7 @@ function Flow() {
         open={openSetting}
         closeModalSetting={closeModalSetting}
         message={wrongMsg}
+        messageEnd={endMessage}
         setMsg={handleWrongMsg}
       />
     </div>

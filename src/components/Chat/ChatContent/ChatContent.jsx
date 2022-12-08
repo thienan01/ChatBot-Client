@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
 import uniqueID from "../../../functionHelper/GenerateID";
 import "./chatContent.css";
 import Avatar from "../ChatList/Avatar";
@@ -6,17 +12,16 @@ import ChatItem from "./ChatItem";
 import { POST } from "../../../functionHelper/APIFunction";
 import { NotificationManager } from "react-notifications";
 import { BASE_URL } from "../../../global/globalVar";
-
-var secretKey = "432E0AA3-5980-429A-B9FB-B18314350DA4";
-var scriptId = "638eb88af075e87a12679e5d";
-var currentNodeId = "_BEGIN";
+import { getCookie } from "../../../functionHelper/GetSetCookie";
+import { ScriptContext } from "../../Context/ScriptContext";
 
 function ChatContent() {
+  const context = useContext(ScriptContext);
+
   const bottomRef = useRef(null);
   const [chatItems, setChatItems] = useState([]);
-  const [currentNode, setCurrentNode] = useState(currentNodeId);
+  const [currentNode, setCurrentNode] = useState("_BEGIN");
   const [value, setValue] = useState("");
-
   const handleSendMessage = useCallback(() => {
     setChatItems((citems) => [
       ...citems,
@@ -26,10 +31,10 @@ function ChatContent() {
         msg: value,
       },
     ]);
-    if (currentNodeId === "_END") return;
+    if (currentNode === "_END") return;
     let body = {
-      secret_key: secretKey,
-      script_id: scriptId,
+      secret_key: getCookie("secret_key"),
+      script_id: context.value.id,
       current_node_id: currentNode,
       message: value,
     };

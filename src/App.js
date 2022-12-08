@@ -1,13 +1,15 @@
 import Layout from "./components/Layout/Layout";
-import { MantineProvider } from "@mantine/core";
 import "react-notifications/lib/notifications.css";
 import { NotificationContainer } from "react-notifications";
+import { ScriptProvider } from "./components/Context/ScriptContext";
 function App() {
   return (
-    <MantineProvider withGlobalStyles withNormalizeCSS>
-      <Layout />
-      <NotificationContainer />
-    </MantineProvider>
+    <>
+      <ScriptProvider>
+        <Layout />
+        <NotificationContainer />
+      </ScriptProvider>
+    </>
   );
 }
 export default App;
