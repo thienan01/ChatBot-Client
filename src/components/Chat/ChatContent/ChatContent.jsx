@@ -31,37 +31,32 @@ function ChatContent() {
         msg: value,
       },
     ]);
-    if (currentNode === "_END") return;
     let body = {
       secret_key: getCookie("secret_key"),
       script_id: context.value.id,
       current_node_id: currentNode,
       message: value,
     };
-    console.log(body);
     POST(BASE_URL + "api/training/predict", JSON.stringify(body))
       .then((res) => {
         console.log(res);
         if (res.http_status === "OK") {
           setCurrentNode(res.current_node_id);
-          if (res.current_node_id !== "_END") {
-            if (res.message != null && res.message.trim() != "") {
-              setChatItems((citems) => [
-                ...citems,
-                {
-                  key: uniqueID(),
-                  type: "other",
-                  msg: res.message,
-                },
-              ]);
-            }
+          if (res.message != null && res.message.trim() != "") {
+            setChatItems((citems) => [
+              ...citems,
+              {
+                key: uniqueID(),
+                type: "other",
+                msg: res.message,
+              },
+            ]);
           }
         } else {
-          throw res.exception_code;
+          NotificationManager.error(res.exception_code, "Error");
         }
       })
       .catch((err) => {
-        // NotificationManager.error(err, "Error");
         console.log(err);
       });
   });

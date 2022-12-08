@@ -60,10 +60,11 @@ function Flow() {
   const [intents, setIntents] = useState([]);
   const [wrongMsg, setWrongMsg] = useState("");
   const [endMessage, setEndMessage] = useState("");
+  const [contextChild, setContextChild] = useState(context.value);
   const reactFlowInstance = useReactFlow();
   console.log(context);
   useEffect(() => {
-    if (context.value.id !== "") {
+    if (contextChild.id !== "") {
       Promise.all([
         GET(BASE_URL + "api/intent/get_all/by_user_id"),
         GET(BASE_URL + "api/script/get/" + context.value.id),
@@ -100,19 +101,20 @@ function Flow() {
 
   const saveScript = useCallback(
     (nodes) => {
-      console.log(endMessage);
       let body = {
-        id: context.value.id,
-        name: context.value.name,
+        id: contextChild.id,
+        name: contextChild.name,
         wrong_message: wrongMsg,
         end_message: endMessage,
         nodes: nodes,
       };
-      let url =
-        context.value.id === "" ? "api/script/add" : "api/script/update";
+      let url = contextChild.id === "" ? "api/script/add" : "api/script/update";
       POST(BASE_URL + url, JSON.stringify(body))
         .then((res) => {
+          console.log("child", contextChild);
           if (res.http_status === "OK") {
+            setContextChild({ id: res.script.id, name: res.script.name });
+            context.setValue({ id: res.script.id, name: res.script.name });
             NotificationManager.success("Update successfully", "Success");
           } else {
             throw res.exception_code;
@@ -122,7 +124,7 @@ function Flow() {
           NotificationManager.error(err, "Error");
         });
     },
-    [wrongMsg, endMessage]
+    [wrongMsg, endMessage, contextChild]
   );
 
   const nodeObject = (nodes, intents) => {

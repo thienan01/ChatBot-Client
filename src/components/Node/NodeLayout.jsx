@@ -2,11 +2,17 @@ import { Fragment, memo, useState, useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import ConditionMapping from "./ConditionMapping";
 import Keyword from "./Keyword";
+import $ from "jquery";
 import { Button } from "reactstrap";
 import uniqueID from "../../functionHelper/GenerateID";
 import "../../styles/Node.css";
 const textSize = {
   fontSize: "16px",
+};
+
+const autoSize = (e) => {
+  e.target.style.height = "inherit";
+  e.target.style.height = `${e.target.scrollHeight}px`;
 };
 function NodeLayout({ data }) {
   const [conditions, setConditions] = useState(data.conditionMapping);
@@ -93,15 +99,18 @@ function NodeLayout({ data }) {
                 Your message
               </label>
             </div>
-            <input
+            <textarea
               id="message"
               className="form-control form-control-sm "
-              type="text"
               value={value}
+              style={{ overflow: "auto" }}
               onChange={(e) => {
                 setValue(e.target.value);
               }}
-            ></input>
+              onKeyDown={(e) => {
+                autoSize(e);
+              }}
+            ></textarea>
           </div>
           <div
             className="condition-mapping"

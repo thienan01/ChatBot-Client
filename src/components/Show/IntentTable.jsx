@@ -4,6 +4,7 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
+  Spinner,
 } from "reactstrap";
 import { useEffect, useState } from "react";
 import { GET, POST } from "../../functionHelper/APIFunction";
@@ -14,11 +15,15 @@ import { NotificationManager } from "react-notifications";
 import { json } from "react-router-dom";
 function IntentTable() {
   const [intents, setIntents] = useState([]);
-  const [patterns, setPatterns] = useState({ intentID: "", patterns: [] });
+  const [patterns, setPatterns] = useState({
+    intentID: "",
+    patterns: { items: [] },
+  });
   const [currentIntent, setCurrentIntent] = useState({});
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [openPatternModal, setOpenPatternModal] = useState(false);
   const [createIntent, setCreateIntent] = useState(false);
+  const [isTraining, setIsTraining] = useState(false);
   const [pagination, setPagination] = useState({});
   const getIntent = (page) => {
     if (page === undefined) page = 1;
@@ -38,13 +43,18 @@ function IntentTable() {
     });
   };
 
-  const getPattern = (intentID) => {
-    console.log(intentID);
-    GET(BASE_URL + "api/pattern/get_all/by_intent_id/" + intentID)
+  const getPattern = (intentID, page) => {
+    GET(
+      BASE_URL +
+        "api/pattern/get_pagination/by_intent_id/" +
+        intentID +
+        "?page=" +
+        page +
+        "&size=10"
+    )
       .then((res) => {
-        if (res.http_status === "OK") {
-          setPatterns({ intentID: intentID, patterns: res.patterns });
-        }
+        console.log(res);
+        setPatterns({ intentID: intentID, patterns: res });
       })
       .catch((err) => {
         NotificationManager.error("Some things went wrong!", "success");
@@ -60,7 +70,7 @@ function IntentTable() {
   };
   const handleTogglePattern = (intentID) => {
     setOpenPatternModal(!openPatternModal);
-    getPattern(intentID);
+    getPattern(intentID, 1);
   };
   const handleDeleteIntent = (id) => {
     let body = {
@@ -79,10 +89,25 @@ function IntentTable() {
   };
 
   const handleTrain = () => {
-    POST(BASE_URL + "api/training/train", JSON.stringify({})).then((res) => {
-      console.log(res);
-    });
+    POST(BASE_URL + "api/training/train", JSON.stringify({})).then((res) => {});
   };
+
+  const handleCheckStatusInterval = () => {
+    let checking = setInterval(() => {
+      GET(BASE_URL + "api/training/get_server_status")
+        .then((res) => {
+          if (res.http_status === "OK" && res.status === "FREE") {
+            NotificationManager.success("Training finished", "success");
+            setIsTraining(false);
+            clearInterval(checking);
+          }
+        })
+        .catch((err) => {
+          NotificationManager.error("Some things when  wrong!", "error");
+        });
+    }, 4000);
+  };
+
   const handleCheckStatus = () => {
     GET(BASE_URL + "api/training/get_server_status")
       .then((res) => {
@@ -118,9 +143,22 @@ function IntentTable() {
         className="btn-table"
         onClick={() => {
           handleTrain();
+          setIsTraining(true);
+          handleCheckStatusInterval();
         }}
       >
-        Train
+        {isTraining ? (
+          <Spinner
+            style={{
+              width: "16px",
+              height: "16px",
+              fontSize: "10px",
+              marginRight: "5px",
+            }}
+          />
+        ) : (
+          "Train"
+        )}
       </Button>
       <Button
         color="primary"
@@ -184,6 +222,7 @@ function IntentTable() {
           })}
         </tbody>
       </Table>
+
       <Pagination aria-label="Page navigation example">
         {Array.from({ length: pagination.totalPage }, (_, i) => (
           <PaginationItem key={i}>

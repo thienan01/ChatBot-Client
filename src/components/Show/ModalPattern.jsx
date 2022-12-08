@@ -10,17 +10,23 @@ import {
   ModalFooter,
   Table,
   Input,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
 } from "reactstrap";
 import { BASE_URL } from "../../global/globalVar";
 function ModalPattern({ open, toggle, value }) {
+  console.log("va", value);
   const [patterns, setPatterns] = useState([]);
   const [isShowInput, setShowInput] = useState(false);
   const [currentPattern, setCurrentPattern] = useState({});
   const [content, setContent] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [pagination, setPagination] = useState({});
   useEffect(() => {
-    setPatterns(value.patterns);
-  }, [value.patterns]);
+    setPatterns(value.patterns.items);
+    setPagination({ totalPage: value.patterns.total_pages });
+  }, [value.patterns.items]);
 
   const handleShowInput = () => {
     if (isShowInput && content !== "") {
@@ -38,14 +44,18 @@ function ModalPattern({ open, toggle, value }) {
     setContent("");
   };
 
-  const reloadPattern = () => {
-    GET(BASE_URL + "api/pattern/get_all/by_intent_id/" + value.intentID).then(
-      (res) => {
-        if (res.http_status === "OK") {
-          setPatterns(res.patterns);
-        }
-      }
-    );
+  const reloadPattern = (page) => {
+    if (page === undefined) page = 1;
+    GET(
+      BASE_URL +
+        "api/pattern/get_pagination/by_intent_id/" +
+        value.intentID +
+        "?page=" +
+        page +
+        "&size=10"
+    ).then((res) => {
+      setPatterns(res.items);
+    });
   };
   const handleToggleModal = () => {
     setOpenModal(!openModal);
@@ -147,6 +157,23 @@ function ModalPattern({ open, toggle, value }) {
               })}
             </tbody>
           </Table>
+          {console.log("page", pagination)}
+          <Pagination aria-label="Page navigation example">
+            {Array.from(
+              { length: pagination.totalPage > 17 ? 17 : pagination.totalPage },
+              (_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    onClick={() => {
+                      reloadPattern(i + 1);
+                    }}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              )
+            )}
+          </Pagination>
         </ModalBody>
         <ModalFooter>
           <Button
