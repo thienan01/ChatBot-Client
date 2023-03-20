@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { Container } from "reactstrap";
+import React, { useRef,useState } from "react";
+import { Container, Button, Tooltip } from "reactstrap";
 import logo from "../../assets/logo.png";
 import { NavLink, Link } from "react-router-dom";
 import "../../styles/header.css";
@@ -7,22 +7,30 @@ import "../../styles/index.css";
 
 const nav__links = [
   {
-    display: "Home",
+    display: "HOME",
     path: "/home",
+    icon: "fa-solid fa-house-chimney"
   },
   {
-    display: "Training",
+    display: "TRAINING",
     path: "/dashboard",
+    icon: "fa-solid fa-cubes-stacked"
   },
   {
-    display: "Contact",
+    display: "CONTACT",
     path: "/contact",
+    icon: "fa-regular fa-address-card"
   },
 ];
 
 const Header = () => {
+
   const menuRef = useRef(null);
+  const [isOpen, setOpen] = useState(false);
   const toggleMenu = () => menuRef.current.classList.toggle("show__menu");
+  const toggle  = ()=>{
+      setOpen(!isOpen);
+  }
   return (
     <header className="header shadow bg-white">
       <Container>
@@ -38,6 +46,7 @@ const Header = () => {
           <div className="navigation" ref={menuRef}>
             <div className="menu d-flex align-items-center gap-5">
               {nav__links.map((item, index) => (
+                <div>
                 <NavLink
                   onClick={toggleMenu}
                   to={item.path}
@@ -45,23 +54,37 @@ const Header = () => {
                   className={(navClass) =>
                     navClass.isActive ? "active__menu" : ""
                   }
+                  id="HOME"
                 >
-                  {item.display}
+                  <li className={item.icon} style={{fontSize:"25px"}} ></li><br />
                 </NavLink>
+                </div>
               ))}
             </div>
           </div>
 
           <div className="nav__right d-flex align-items-center gap-4">
-            <span className="user">
-              <Link to="/login">
-                <i className="ri-user-line"></i>
-              </Link>
-            </span>
 
             <span className="mobile__menu" onClick={toggleMenu}>
               <i className="ri-menu-line"></i>
             </span>
+            <span className="user">
+              <Link to="/document">
+                <div className="documentation">
+                <i class="fa-solid fa-print" style={{fontSize:"15px"}}></i> DOCUMENTATION
+                </div>
+              </Link>
+            </span>
+            <Link to="/login">
+              <Button
+                    color="danger"
+                    href="https://www.creative-tim.com/product/paper-kit-pro-react?ref=pkr-index-navbar"
+                    target="_blank"
+                    style={{borderRadius:"30px"}}
+                  >
+                    <i className="fa-solid fa-rocket" style={{marginLeft:"2px",marginRight:"2px", fontSize:"15px"}}></i> Get Started
+              </Button>
+              </Link>
           </div>
         </div>
       </Container>

@@ -15,7 +15,7 @@ input:focus {
   top: 0;
 }
 .header {
-  height: 50px;
+  height: 70px;
   display: flex;
   align-items: center;
   position: sticky;

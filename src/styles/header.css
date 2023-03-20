@@ -34,10 +34,10 @@
   text-decoration: none;
 }
 .menu a:hover {
-  color: #df2020;
+  color: #19a1d8;
 }
 .active__menu {
-  color: #df2020 !important;
+  color: #19a1d8 !important;
 }
 .cart__icon i,
 .user i,
@@ -77,6 +77,11 @@
   top: 0;
   left: 0;
   box-shadow: 5px 5px 15px -5px #fde4e4;
+}
+
+.documentation {
+  font-weight: 600;
+  color: black;
 }
 
 @media only screen and (max-width: 992px) {
