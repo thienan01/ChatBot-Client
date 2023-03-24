@@ -133,6 +133,9 @@
   font-size: 17px;
   font-family: sans-serif;
 }
+.tableData * {
+  color: #1e3150;
+}
 .btn-table {
   margin-right: 5px;
   min-width: 113px;

@@ -13,6 +13,9 @@ import { NotificationManager } from "react-notifications";
 import { ScriptContext } from "../Context/ScriptContext";
 import ModalUpdateScript from "./ModalUpdateScript";
 import ModalShowCode from "./ModalShowCode";
+import "../../styles/common.css";
+import filterIcon from "../../assets/filter.png";
+import clearFilter from "../../assets/clear-filter.png";
 
 function ScriptTable() {
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
@@ -25,7 +28,10 @@ function ScriptTable() {
   const loadScript = (page) => {
     if (page === undefined) page = 1;
     GET(
-      BASE_URL + "api/script/get_pagination/by_user_id?page=" + page + "&size=5"
+      BASE_URL +
+        "api/script/get_pagination/by_user_id?page=" +
+        page +
+        "&size=10"
     )
       .then((res) => {
         setPagination({
@@ -64,86 +70,125 @@ function ScriptTable() {
   return (
     <>
       <Button
-        color="primary"
+        className="btn-prim"
         onClick={() => {
           handleToggleModal();
         }}
       >
         <i className="fa-solid fa-plus" style={{ marginRight: "4px" }}></i>
-        Create new
+        Create
       </Button>
-      <Table striped bordered hover className="tableData">
-        <thead>
-          <tr>
-            <th>Script name</th>
-            <th style={{ width: "15%" }} className="text-center">
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {scripts.map((script) => {
-            return (
-              <tr key={script.id}>
-                <td
-                  onClick={() => {
-                    context.setValue({ id: script.id, name: script.name });
-                    navigate("/train");
-                  }}
-                >
-                  {script.name}
-                </td>
-                <td className="text-center">
-                  <div
-                    className="actionTable"
-                    style={{ background: "#28B463" }}
-                    onClick={() => {}}
-                  >
-                    <i className="fa-solid fa-pen-to-square text-white"></i>
-                  </div>
-                  <div
-                    className="actionTable"
+
+      <div className="filter-section">
+        <div className="filter-section">
+          <div className="filterIcon">
+            <img src={filterIcon} alt="" style={{ width: "15px" }} />
+          </div>
+          <div className="dateTime-picker">
+            <span>Date created</span>
+            <i class="fa-solid fa-caret-down" style={{ marginLeft: "5px" }}></i>
+          </div>
+        </div>
+        <img src={clearFilter} style={{ width: "18px", display: "end" }} />
+      </div>
+
+      <div className="shadow-sm table-area">
+        <div className="header-Table">
+          <div
+            className="searchArea"
+            id="searchArea"
+            style={{ width: "300px" }}
+          >
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="search"
+              className="searchInput"
+              placeholder="Find your scripts..."
+              for="searchArea"
+            />
+          </div>
+          <span className="total-script">Total: {scripts.length} Scripts</span>
+        </div>
+        <Table borderless hover responsive className="tableData">
+          <thead style={{ background: "#f6f9fc" }}>
+            <tr style={{ width: "10%" }}>
+              <th>#</th>
+              <th>
+                <span className="vertical" />
+                Script name
+              </th>
+              <th>
+                <span className="vertical" />
+                Created at
+              </th>
+              <th style={{ width: "15%" }}>
+                <span className="vertical" />
+                <i class="fa-regular fa-square-minus"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {scripts.map((script, index) => {
+              return (
+                <tr key={script.id}>
+                  <td>{++index}</td>
+                  <td
                     onClick={() => {
-                      handleDelete(script.id);
+                      context.setValue({ id: script.id, name: script.name });
+                      navigate("/train");
                     }}
                   >
-                    <i className="fa-regular fa-trash-can text-white"></i>
-                  </div>
-                  <div
-                    className="actionTable"
-                    onClick={() => {
-                      setCurrentID(script.id);
-                      handleToggleCode();
-                    }}
-                    style={{ background: "#F1C40F" }}
-                  >
-                    <i className="fa-solid fa-eye actionIntent text-white"></i>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-      <Pagination aria-label="Page navigation example">
-        {Array.from({ length: pagination.totalPage }, (_, i) => (
-          <PaginationItem key={i}>
-            <PaginationLink
-              onClick={() => {
-                loadScript(i + 1);
-              }}
-            >
-              {i + 1}
-            </PaginationLink>
-          </PaginationItem>
-        ))}
-      </Pagination>
-      <ModalUpdateScript open={openModalUpdate} toggle={handleToggleModal} />
-      <ModalShowCode
-        open={openModalCode}
-        toggle={handleToggleCode}
-        scriptID={currentID}
-      />
+                    {script.name}
+                  </td>
+                  <td>14:00AM 16/2/2022</td>
+                  <td className="d-flex action-row">
+                    <div onClick={() => {}}>
+                      <i className="fa-solid fa-pen-to-square text-primary"></i>
+                    </div>
+                    <div
+                      onClick={() => {
+                        setCurrentID(script.id);
+                        handleToggleCode();
+                      }}
+                    >
+                      <i
+                        className="fa-regular fa-eye actionIntent "
+                        style={{ color: "#56cc6e" }}
+                      ></i>
+                    </div>
+                    <div
+                      onClick={() => {
+                        handleDelete(script.id);
+                      }}
+                    >
+                      <i className="fa-regular fa-trash-can text-danger"></i>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+        <Pagination aria-label="Page navigation example">
+          {Array.from({ length: pagination.totalPage }, (_, i) => (
+            <PaginationItem key={i}>
+              <PaginationLink
+                onClick={() => {
+                  loadScript(i + 1);
+                }}
+              >
+                {i + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+        </Pagination>
+        <ModalUpdateScript open={openModalUpdate} toggle={handleToggleModal} />
+        <ModalShowCode
+          open={openModalCode}
+          toggle={handleToggleCode}
+          scriptID={currentID}
+        />
+      </div>
     </>
   );
 }

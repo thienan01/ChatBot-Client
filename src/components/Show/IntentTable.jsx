@@ -12,7 +12,9 @@ import { BASE_URL } from "../../global/globalVar";
 import ModalUpdateIntent from "./ModalUpdateIntent";
 import ModalPattern from "./ModalPattern";
 import { NotificationManager } from "react-notifications";
-import { json } from "react-router-dom";
+import "../../styles/common.css";
+import filterIcon from "../../assets/filter.png";
+import clearFilter from "../../assets/clear-filter.png";
 function IntentTable() {
   const [intents, setIntents] = useState([]);
   const [patterns, setPatterns] = useState({
@@ -32,7 +34,7 @@ function IntentTable() {
       BASE_URL +
         `api/intent/get_pagination/by_user_id?page=` +
         page +
-        `&size=15`
+        `&size=12`
     ).then((res) => {
       console.log(res);
       setIntents(res.items);
@@ -128,127 +130,168 @@ function IntentTable() {
 
   return (
     <>
-      <Button
-        color="primary"
-        onClick={() => {
-          handleToggleUpdateIntent("", "", "", "save");
-        }}
-        className="btn-table"
-      >
-        <i className="fa-solid fa-plus" style={{ marginRight: "4px" }}></i>
-        Create new
-      </Button>
-      <Button
-        color="primary"
-        className="btn-table"
-        onClick={() => {
-          handleTrain();
-          setIsTraining(true);
-          handleCheckStatusInterval();
-        }}
-      >
-        {isTraining ? (
-          <Spinner
-            style={{
-              width: "16px",
-              height: "16px",
-              fontSize: "10px",
-              marginRight: "5px",
+      <div className="btn-section">
+        <div>
+          <Button
+            className="btn-table btn-prim"
+            onClick={() => {
+              handleTrain();
+              setIsTraining(true);
+              handleCheckStatusInterval();
             }}
-          />
-        ) : (
-          "Train"
-        )}
-      </Button>
-      <Button
-        color="primary"
-        className="btn-table"
-        onClick={() => {
-          handleCheckStatus();
-        }}
-      >
-        Check status
-      </Button>
-      <Table striped bordered hover className="tableData">
-        <thead>
-          <tr>
-            <th>Intent name</th>
-            <th>Code</th>
-            <th style={{ width: "15%" }} className="text-center">
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {intents.map((intent) => {
-            return (
-              <tr key={intent.id}>
-                <td>{intent.name}</td>
-                <td>{intent.code}</td>
-                <td className="text-center">
-                  <div
-                    className="actionTable shadow-lg"
-                    style={{ background: "#28B463" }}
-                    onClick={() => {
-                      handleToggleUpdateIntent(
-                        intent.id,
-                        intent.name,
-                        intent.code
-                      );
-                    }}
-                  >
-                    <i className="fa-solid fa-pen-to-square text-white"></i>
-                  </div>
-                  <div
-                    className="actionTable"
-                    onClick={() => {
-                      handleDeleteIntent(intent.id);
-                    }}
-                  >
-                    <i className="fa-solid fa-trash-can text-white"></i>
-                  </div>
-                  <div
-                    className="actionTable"
-                    style={{ background: "#F1C40F" }}
-                    onClick={() => {
-                      handleTogglePattern(intent.id);
-                    }}
-                  >
-                    <i className="fa-solid fa-eye text-white"></i>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+          >
+            {isTraining ? (
+              <Spinner
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  fontSize: "10px",
+                  marginRight: "5px",
+                }}
+              />
+            ) : (
+              "Train"
+            )}
+          </Button>
+          <Button
+            className="btn-table btn-prim"
+            onClick={() => {
+              handleCheckStatus();
+            }}
+          >
+            Check status
+          </Button>
+        </div>
+        <Button
+          onClick={() => {
+            handleToggleUpdateIntent("", "", "", "save");
+          }}
+          className="btn-table"
+          style={{ background: "#56cc6e", border: "none" }}
+        >
+          <i className="fa-solid fa-plus" style={{ marginRight: "4px" }}></i>
+          Create
+        </Button>
+      </div>
+      <div className="filter-section">
+        <div className="filter-section">
+          <div className="filterIcon">
+            <img src={filterIcon} alt="" style={{ width: "15px" }} />
+          </div>
+          <div className="dateTime-picker">
+            <span>Date created</span>
+            <i class="fa-solid fa-caret-down" style={{ marginLeft: "5px" }}></i>
+          </div>
+        </div>
+        <img src={clearFilter} style={{ width: "18px", display: "end" }} />
+      </div>
 
-      <Pagination aria-label="Page navigation example">
-        {Array.from({ length: pagination.totalPage }, (_, i) => (
-          <PaginationItem key={i}>
-            <PaginationLink
-              onClick={() => {
-                getIntent(i + 1);
-              }}
-            >
-              {i + 1}
-            </PaginationLink>
-          </PaginationItem>
-        ))}
-      </Pagination>
-      <ModalUpdateIntent
-        open={openUpdateModal}
-        toggle={handleToggleUpdateIntent}
-        value={currentIntent}
-        create={createIntent}
-        reload={getIntent}
-        // save={handleSaveIntent}
-      />
-      <ModalPattern
-        open={openPatternModal}
-        toggle={handleTogglePattern}
-        value={patterns}
-      />
+      <div className="shadow-sm table-area">
+        <div className="header-Table">
+          <div
+            className="searchArea"
+            id="searchArea"
+            style={{ width: "300px" }}
+          >
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="search"
+              className="searchInput"
+              placeholder="Find your scripts..."
+              for="searchArea"
+            />
+          </div>
+          <span className="total-script">Total: {intents.length} Intents</span>
+        </div>
+        <Table borderless hover responsive className="tableData">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>
+                <span className="vertical" />
+                Intent name
+              </th>
+              <th>
+                <span className="vertical" />
+                Code
+              </th>
+              <th style={{ width: "15%" }}>
+                <span className="vertical" />
+                <i class="fa-regular fa-square-minus"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {intents.map((intent, idx) => {
+              return (
+                <tr key={intent.id}>
+                  <td>{++idx}</td>
+                  <td>{intent.name}</td>
+                  <td>{intent.code}</td>
+                  <td className="d-flex action-row">
+                    <div
+                      onClick={() => {
+                        handleToggleUpdateIntent(
+                          intent.id,
+                          intent.name,
+                          intent.code
+                        );
+                      }}
+                    >
+                      <i className="fa-solid fa-pen-to-square text-primary"></i>
+                    </div>
+                    <div
+                      onClick={() => {
+                        handleTogglePattern(intent.id);
+                      }}
+                    >
+                      <i
+                        className="fa-regular fa-eye "
+                        style={{ color: "#56cc6e" }}
+                      ></i>
+                    </div>
+                    <div
+                      onClick={() => {
+                        handleDeleteIntent(intent.id);
+                      }}
+                    >
+                      <i className="fa-solid fa-trash-can text-danger"></i>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+
+        <Pagination aria-label="Page navigation example">
+          {Array.from({ length: pagination.totalPage }, (_, i) => (
+            <PaginationItem key={i}>
+              <PaginationLink
+                onClick={() => {
+                  getIntent(i + 1);
+                }}
+              >
+                {i + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+        </Pagination>
+
+        <ModalUpdateIntent
+          open={openUpdateModal}
+          toggle={handleToggleUpdateIntent}
+          value={currentIntent}
+          create={createIntent}
+          reload={getIntent}
+          // save={handleSaveIntent}
+        />
+        <ModalPattern
+          open={openPatternModal}
+          toggle={handleTogglePattern}
+          value={patterns}
+        />
+      </div>
     </>
   );
 }
