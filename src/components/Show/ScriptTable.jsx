@@ -38,6 +38,14 @@ function ScriptTable() {
           totalPage: res.total_pages,
           totalItems: res.total_items,
         });
+
+        res.items.map((item) => {
+          const createdDate = new Date(item.created_date);
+          const updatedDate = new Date(item.last_updated_date);
+          item.created_date = createdDate.toLocaleString("en-US");
+          item.last_updated_date = updatedDate.toLocaleString("en-US");
+          return item;
+        });
         setScripts(res.items);
       })
       .catch((err) => console.log(err));
@@ -102,7 +110,7 @@ function ScriptTable() {
             <i class="fa-solid fa-magnifying-glass"></i>
             <input
               type="search"
-              className="searchInput"
+              className="searchInput searchInputTable"
               placeholder="Find your scripts..."
               for="searchArea"
             />
@@ -120,6 +128,10 @@ function ScriptTable() {
               <th>
                 <span className="vertical" />
                 Created at
+              </th>
+              <th>
+                <span className="vertical" />
+                Last updated at
               </th>
               <th style={{ width: "15%" }}>
                 <span className="vertical" />
@@ -140,7 +152,22 @@ function ScriptTable() {
                   >
                     {script.name}
                   </td>
-                  <td>14:00AM 16/2/2022</td>
+                  <td
+                    onClick={() => {
+                      context.setValue({ id: script.id, name: script.name });
+                      navigate("/train");
+                    }}
+                  >
+                    {script.created_date}
+                  </td>
+                  <td
+                    onClick={() => {
+                      context.setValue({ id: script.id, name: script.name });
+                      navigate("/train");
+                    }}
+                  >
+                    {script.last_updated_date}
+                  </td>
                   <td className="d-flex action-row">
                     <div onClick={() => {}}>
                       <i className="fa-solid fa-pen-to-square text-primary"></i>

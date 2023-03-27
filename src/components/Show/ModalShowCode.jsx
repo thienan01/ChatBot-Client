@@ -11,6 +11,7 @@ import {
   ModalFooter,
   Input,
 } from "reactstrap";
+import "../../styles/common.css";
 function ModalShowCode({ open, toggle, scriptID }) {
   const getCode = () => {
     let codee = Code()
@@ -27,12 +28,16 @@ function ModalShowCode({ open, toggle, scriptID }) {
       <Modal isOpen={open} style={{ maxWidth: "700px" }}>
         <ModalHeader>Code</ModalHeader>
         <ModalBody>
-          <Input
+          <textarea
             type="textarea"
             name="text"
             id="codeText"
             value={getCode()}
-            style={{ minHeight: "550px" }}
+            style={{
+              minHeight: "550px",
+              scrollbarWidth: "none",
+              width: "100%",
+            }}
             readOnly
           />
         </ModalBody>
@@ -42,7 +47,13 @@ function ModalShowCode({ open, toggle, scriptID }) {
             onClick={() => {
               Copy();
             }}
+            className="btn-prim"
+            style={{ width: "95px" }}
           >
+            <i
+              class="fa-solid fa-file-import"
+              style={{ marginRight: "10px" }}
+            ></i>
             Copy
           </Button>
           <Button
@@ -50,6 +61,8 @@ function ModalShowCode({ open, toggle, scriptID }) {
             onClick={() => {
               toggle();
             }}
+            className="closeBtn"
+            style={{ width: "95px" }}
           >
             Close
           </Button>

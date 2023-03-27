@@ -11,6 +11,7 @@ import IntentTable from "../Show/IntentTable";
 import ScriptTable from "../Show/ScriptTable";
 import "../../styles/sidebar.css";
 import { Input } from "reactstrap";
+import PatternTable from "../Show/PatternTable";
 const { Content, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -89,6 +90,9 @@ const App = () => {
                   return <ScriptTable />;
                 case "INTENT":
                   return <IntentTable />;
+                  break;
+                case "PATTERN":
+                  return <PatternTable />;
                   break;
                 default:
                   return <div></div>;

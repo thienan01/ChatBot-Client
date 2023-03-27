@@ -128,6 +128,11 @@ function IntentTable() {
       });
   };
 
+  const searching = (val) => {
+    // console.log(val.target.value);
+    // setIntents((intent) => intent.find((int) => (int.name = val.target.value)));
+    console.log(intents.find(({ name }) => (name = "Critical")));
+  };
   return (
     <>
       <div className="btn-section">
@@ -196,15 +201,18 @@ function IntentTable() {
             <i class="fa-solid fa-magnifying-glass"></i>
             <input
               type="search"
-              className="searchInput"
+              className="searchInput searchInputTable"
               placeholder="Find your scripts..."
               for="searchArea"
+              onChange={(e) => {
+                searching(e);
+              }}
             />
           </div>
           <span className="total-script">Total: {intents.length} Intents</span>
         </div>
         <Table borderless hover responsive className="tableData">
-          <thead>
+          <thead style={{ background: "#f6f9fc" }}>
             <tr>
               <th>#</th>
               <th>
@@ -226,7 +234,13 @@ function IntentTable() {
               return (
                 <tr key={intent.id}>
                   <td>{++idx}</td>
-                  <td>{intent.name}</td>
+                  <td
+                    onClick={() => {
+                      handleTogglePattern(intent.id);
+                    }}
+                  >
+                    {intent.name}
+                  </td>
                   <td>{intent.code}</td>
                   <td className="d-flex action-row">
                     <div
@@ -239,16 +253,6 @@ function IntentTable() {
                       }}
                     >
                       <i className="fa-solid fa-pen-to-square text-primary"></i>
-                    </div>
-                    <div
-                      onClick={() => {
-                        handleTogglePattern(intent.id);
-                      }}
-                    >
-                      <i
-                        className="fa-regular fa-eye "
-                        style={{ color: "#56cc6e" }}
-                      ></i>
                     </div>
                     <div
                       onClick={() => {

@@ -15,10 +15,12 @@ import {
   PaginationLink,
 } from "reactstrap";
 import { BASE_URL } from "../../global/globalVar";
+import "../../styles/common.css";
+import filterIcon from "../../assets/filter.png";
+import clearFilter from "../../assets/clear-filter.png";
+
 function ModalPattern({ open, toggle, value }) {
-  console.log("va", value);
   const [patterns, setPatterns] = useState([]);
-  const [isShowInput, setShowInput] = useState(false);
   const [currentPattern, setCurrentPattern] = useState({});
   const [content, setContent] = useState("");
   const [openModal, setOpenModal] = useState(false);
@@ -28,8 +30,8 @@ function ModalPattern({ open, toggle, value }) {
     setPagination({ totalPage: value.patterns.total_pages });
   }, [value.patterns.items]);
 
-  const handleShowInput = () => {
-    if (isShowInput && content !== "") {
+  const handleCreatePattern = () => {
+    if (content !== "") {
       let body = {
         content: content,
         intent_id: value.intentID,
@@ -40,7 +42,6 @@ function ModalPattern({ open, toggle, value }) {
         }
       });
     }
-    setShowInput(!isShowInput);
     setContent("");
   };
 
@@ -92,88 +93,132 @@ function ModalPattern({ open, toggle, value }) {
   };
   return (
     <>
-      <Modal isOpen={open} style={{ maxWidth: "700px" }}>
-        <ModalHeader>Pattern</ModalHeader>
-        <ModalBody>
-          <Button
-            color="primary"
-            style={{ minWidth: "110px" }}
-            onClick={handleShowInput}
-          >
-            {isShowInput ? "Save" : "Create new"}
-          </Button>
-          <Input
-            style={{
-              width: "80%",
-              marginLeft: "10px",
-              display: isShowInput ? "inline" : "none",
-            }}
-            value={content}
-            onChange={(e) => {
-              setContent(e.target.value);
-            }}
-          />
-          <Table striped bordered hover className="tableData">
-            <thead>
-              <tr>
-                <th>Content</th>
-                <th className="text-center" style={{ width: "15%" }}>
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {patterns.map((pattern) => {
-                return (
-                  <tr key={pattern.id}>
-                    <td>{pattern.content}</td>
-                    <td className="text-center">
-                      <div
-                        className="actionTable"
-                        style={{ background: "#28B463" }}
-                      >
-                        <i
-                          className="fa-solid fa-pen-to-square text-white"
+      <Modal
+        isOpen={open}
+        style={{ maxWidth: "1000px" }}
+        className="patternModal"
+      >
+        <ModalHeader>Pattern information</ModalHeader>
+        <ModalBody style={{ padding: "10px 30px" }}>
+          <div className="createPatternSection">
+            <div className="patternInputArea" id="searchArea">
+              <i class="fa-solid fa-circle-plus"></i>
+              <input
+                type="search"
+                className="patternInput"
+                placeholder="Create new pattern..."
+                value={content}
+                onChange={(e) => {
+                  setContent(e.target.value);
+                }}
+              />
+            </div>
+            <Button
+              style={{ background: "#56cc6e", border: "none" }}
+              onClick={handleCreatePattern}
+            >
+              Create
+            </Button>
+          </div>
+          <div className="filter-section">
+            <div className="filter-section">
+              <div className="filterIcon">
+                <img src={filterIcon} alt="" style={{ width: "15px" }} />
+              </div>
+              <div className="dateTime-picker">
+                <span>Date created</span>
+                <i
+                  class="fa-solid fa-caret-down"
+                  style={{ marginLeft: "5px" }}
+                ></i>
+              </div>
+            </div>
+            <img src={clearFilter} style={{ width: "18px", display: "end" }} />
+          </div>
+          <div className="shadow-sm table-area">
+            <div className="header-Table">
+              <div
+                className="searchArea"
+                id="searchArea"
+                style={{ width: "300px" }}
+              >
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                  type="search"
+                  className="searchInput searchInputTable"
+                  placeholder="Find your scripts..."
+                  for="searchArea"
+                />
+              </div>
+              <span className="total-script">
+                Total:{patterns.length} Patterns
+              </span>
+            </div>
+            <Table borderless hover responsive className="tableData">
+              <thead style={{ background: "#f6f9fc" }}>
+                <tr>
+                  <th>#</th>
+                  <th>
+                    <span className="vertical" />
+                    Content
+                  </th>
+                  <th style={{ width: "15%" }}>
+                    <span className="vertical" />
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {patterns.map((pattern, idx) => {
+                  return (
+                    <tr key={pattern.id}>
+                      <td>{++idx}</td>
+                      <td>{pattern.content}</td>
+                      <td className="d-flex action-row">
+                        <div>
+                          <i
+                            className="fa-solid fa-pen-to-square text-primary"
+                            onClick={() => {
+                              handleToggleModal();
+                              setCurrentPattern({
+                                id: pattern.id,
+                                content: pattern.content,
+                              });
+                            }}
+                          ></i>
+                        </div>
+                        <div
                           onClick={() => {
-                            handleToggleModal();
-                            setCurrentPattern({
-                              id: pattern.id,
-                              content: pattern.content,
-                            });
+                            handleDeletePattern(pattern.id);
                           }}
-                        ></i>
-                      </div>
-                      <div
-                        className="actionTable"
-                        onClick={() => {
-                          handleDeletePattern(pattern.id);
-                        }}
-                      >
-                        <i className="fa-solid fa-trash-can text-white"></i>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-          {console.log("page", pagination)}
-          <Pagination aria-label="Page navigation example">
-            {Array.from(
-              { length: pagination.totalPage > 17 ? 17 : pagination.totalPage },
-              (_, i) => (
-                <PaginationItem key={i}>
-                  <PaginationLink
-                    onClick={() => {
-                      reloadPattern(i + 1);
-                    }}
-                  >
-                    {i + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              )
-            )}
-          </Pagination>
+                        >
+                          <i className="fa-solid fa-trash-can text-danger"></i>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+            <Pagination aria-label="Page navigation example">
+              {Array.from(
+                {
+                  length: pagination.totalPage > 17 ? 17 : pagination.totalPage,
+                },
+                (_, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      onClick={() => {
+                        reloadPattern(i + 1);
+                      }}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+            </Pagination>
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button
