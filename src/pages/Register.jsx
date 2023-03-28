@@ -1,192 +1,134 @@
-import React, { useState, useEffect } from "react";
 import {
-  Container,
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  FormGroup,
+  Form,
+  Input,
+  InputGroupText,
+  InputGroup,
   Row,
   Col,
-  InputGroup,
-  InputGroupText,
-  Input,
-  Button,
-  Alert,
 } from "reactstrap";
-import { Link } from "react-router-dom";
-import { POST } from "../functionHelper/APIFunction";
-import "../styles/login.css";
 
-const Register = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [alert, setAlert] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [fullname, setFullname] = useState("");
-  const [toggle, setToggle] = useState({ name: "", isActive: false });
-
-  useEffect(() => {
-    console.log("state toggle >", toggle);
-    console.log("username>", username);
-    console.log("password>", password);
-    console.log("confirmPassword >", confirmPassword);
-    console.log("fullname >", fullname);
-  }, [toggle, username, password, confirmPassword, fullname]);
-
-  const handletoSignUp = () => {
-    let body = {
-      username: username,
-      password: password,
-      fullname: fullname,
-    };
-    POST(
-      "https://chatbot-vapt.herokuapp.com/api/user/sign_up",
-      JSON.stringify(body)
-    )
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const submitHandler = (e) => {
-    e.preventDefault();
-  };
-
+const register = () => {
   return (
-    <div className="login__section">
-      <Container className="login__container">
-        <Row>
-          <Col lg="6" md="6" sm="12" className="m-auto text-center centered">
-            {/* tomorow check form__container */}
-            <h2>Create your own account!</h2>
-            <form className="form mb-10" onSubmit={submitHandler}>
-              <div className="form__container">
-                <h6 className="form__label">Username:</h6>
-                <div className="form__group">
-                  <InputGroup className="Input">
+    <>
+      <Col lg="5" md="7">
+        <Card className="bg-secondary shadow border-0">
+          <CardHeader className="bg-transparent pb-5">
+            <div className="text-muted text-center mt-2 mb-3">
+              <small>Sign in with</small>
+            </div>
+            <div className="btn-wrapper text-center">
+              <Button
+                className="btn-neutral btn-icon"
+                color="default"
+                href="#pablo"
+                onClick={(e) => e.preventDefault()}
+              >
+                <span className="btn-inner--icon">
+                  <img
+                    alt="..."
+                    src={require("../assets/github.svg").default}
+                  />
+                </span>
+                <span className="btn-inner--text">Github</span>
+              </Button>
+              <Button
+                className="btn-neutral btn-icon"
+                color="default"
+                href="#pablo"
+                onClick={(e) => e.preventDefault()}
+              >
+                <span className="btn-inner--icon">
+                  <img
+                    alt="..."
+                    src={require("../assets/google.svg").default}
+                  />
+                </span>
+                <span className="btn-inner--text">Google</span>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardBody className="px-lg-5 py-lg-5">
+            <div className="text-center text-muted mb-4">
+              <small>Or sign in with credentials</small>
+            </div>
+            <Form role="form">
+              <FormGroup className="mb-3">
+                <InputGroup className="input-group-alternative">
+                  <div addonType="prepend">
                     <InputGroupText>
-                      <i className="ri-mail-line" />
+                      <i className="ni ni-email-83" />
                     </InputGroupText>
-                    <Input
-                      name="email"
-                      placeholder="Username"
-                      required
-                      onChange={(u) => setUsername(u.target.value)}
-                    />
-                  </InputGroup>
-                </div>
-
-                <h6 className="form__label">Full Name:</h6>
-                <div className="form__group">
-                  <InputGroup className="Input">
+                  </div>
+                  <Input
+                    placeholder="Email"
+                    type="email"
+                    autoComplete="new-email"
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative">
+                  <div addonType="prepend">
                     <InputGroupText>
-                      <i className="ri-shield-user-line"></i>
+                      <i className="ni ni-lock-circle-open" />
                     </InputGroupText>
-                    <Input
-                      type="text"
-                      name="fullname"
-                      placeholder="Full Name"
-                      required
-                      onChange={(u) => setFullname(u.target.value)}
-                    />
-                  </InputGroup>
-                </div>
-
-                <h6 className="form__label">Password:</h6>
-                <div className="form__group">
-                  <InputGroup className="Input">
-                    <InputGroupText>
-                      <i className="ri-lock-line"></i>
-                    </InputGroupText>
-                    <Input
-                      type={
-                        toggle.name === "password" && toggle.isActive
-                          ? "text"
-                          : "password"
-                      }
-                      placeholder="Password"
-                      name="password"
-                      required
-                      onChange={(p) => setPassword(p.target.value)}
-                    />
-                    <Button
-                      onClick={() =>
-                        setToggle({
-                          name: "password",
-                          isActive: !toggle.isActive,
-                        })
-                      }
-                      color="primary"
-                    >
-                      {toggle.name === "password" && toggle.isActive ? (
-                        <i className="ri-eye-close-line"></i>
-                      ) : (
-                        <i className="ri-eye-line"></i>
-                      )}
-                    </Button>
-                  </InputGroup>
-                </div>
-                <h6 className="form__label">Confirm Password:</h6>
-                <div className="form__group">
-                  <InputGroup className="Input">
-                    <InputGroupText>
-                      <i className="ri-key-line"></i>
-                    </InputGroupText>
-                    <Input
-                      type={
-                        toggle.name === "confirm" && toggle.isActive
-                          ? "text"
-                          : "password"
-                      }
-                      placeholder="Confirm Password"
-                      name="password"
-                      required
-                      onChange={(p) => {
-                        p.target.value !== password
-                          ? setAlert(true)
-                          : setAlert(false);
-                      }}
-                    />
-                    <Button
-                      onClick={() =>
-                        setToggle({
-                          name: "confirm",
-                          isActive: !toggle.isActive,
-                        })
-                      }
-                      color="primary"
-                    >
-                      {toggle.name === "confirm" && toggle.isActive ? (
-                        <i className="ri-eye-close-line"></i>
-                      ) : (
-                        <i className="ri-eye-line"></i>
-                      )}
-                    </Button>
-                  </InputGroup>
-                </div>
-                <Alert
-                  color="danger"
-                  style={{ padding: "6px", display: alert ? "block" : "none" }}
+                  </div>
+                  <Input
+                    placeholder="Password"
+                    type="password"
+                    autoComplete="new-password"
+                  />
+                </InputGroup>
+              </FormGroup>
+              <div className="custom-control custom-control-alternative custom-checkbox">
+                <input
+                  className="custom-control-input"
+                  id=" customCheckLogin"
+                  type="checkbox"
+                />
+                <label
+                  className="custom-control-label"
+                  htmlFor=" customCheckLogin"
                 >
-                  Confirm password incorrect!!!!
-                </Alert>
-                <Button
-                  type="submit"
-                  color="success"
-                  outline
-                  className="register__btn"
-                  onClick={handletoSignUp}
-                >
-                  Register
-                </Button>
-
-                <Link to="/login">Already have an account?</Link>
+                  <span className="text-muted">Remember me</span>
+                </label>
               </div>
-            </form>
+              <div className="text-center">
+                <Button className="my-4" color="primary" type="button">
+                  Sign in
+                </Button>
+              </div>
+            </Form>
+          </CardBody>
+        </Card>
+        <Row className="mt-3">
+          <Col xs="6">
+            <a
+              className="text-light"
+              href="#pablo"
+              onClick={(e) => e.preventDefault()}
+            >
+              <small>Forgot password?</small>
+            </a>
+          </Col>
+          <Col className="text-right" xs="6">
+            <a
+              className="text-light"
+              href="#pablo"
+              onClick={(e) => e.preventDefault()}
+            >
+              <small>Create new account</small>
+            </a>
           </Col>
         </Row>
-      </Container>
-    </div>
+      </Col>
+    </>
   );
 };
 
-export default Register;
+export default register;

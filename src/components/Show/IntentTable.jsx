@@ -13,8 +13,10 @@ import ModalUpdateIntent from "./ModalUpdateIntent";
 import ModalPattern from "./ModalPattern";
 import { NotificationManager } from "react-notifications";
 import "../../styles/common.css";
-import filterIcon from "../../assets/filter.png";
-import clearFilter from "../../assets/clear-filter.png";
+import Filter from "../Filter/Filter";
+import { Breadcrumb } from "antd";
+import SearchBar from "../Filter/SearchBar";
+import LoadingAnt from "../Loading/LoadingAnt";
 function IntentTable() {
   const [intents, setIntents] = useState([]);
   const [patterns, setPatterns] = useState({
@@ -26,6 +28,7 @@ function IntentTable() {
   const [openPatternModal, setOpenPatternModal] = useState(false);
   const [createIntent, setCreateIntent] = useState(false);
   const [isTraining, setIsTraining] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({});
   const getIntent = (page) => {
     if (page === undefined) page = 1;
@@ -36,7 +39,7 @@ function IntentTable() {
         page +
         `&size=12`
     ).then((res) => {
-      console.log(res);
+      setLoading(false);
       setIntents(res.items);
       setPagination({
         totalItem: res.total_items,
@@ -55,7 +58,6 @@ function IntentTable() {
         "&size=10"
     )
       .then((res) => {
-        console.log(res);
         setPatterns({ intentID: intentID, patterns: res });
       })
       .catch((err) => {
@@ -128,36 +130,33 @@ function IntentTable() {
       });
   };
 
-  const searching = (val) => {
-    // console.log(val.target.value);
-    // setIntents((intent) => intent.find((int) => (int.name = val.target.value)));
-    console.log(intents.find(({ name }) => (name = "Critical")));
+  const handleSearching = (val) => {
+    let body = {
+      page: 1,
+      size: 12,
+      has_patterns: false,
+      keyword: val,
+    };
+    POST(BASE_URL + `api/intent/get_pagination/`, JSON.stringify(body)).then(
+      (res) => {
+        console.log(res);
+        setIntents(res.items);
+        setPagination({
+          totalItem: res.total_items,
+          totalPage: res.total_pages,
+        });
+      }
+    );
   };
   return (
     <>
+      <Breadcrumb className="breadcrumb">
+        <Breadcrumb.Item>Home</Breadcrumb.Item>
+        <Breadcrumb.Item>Intents</Breadcrumb.Item>
+      </Breadcrumb>
+
       <div className="btn-section">
         <div>
-          <Button
-            className="btn-table btn-prim"
-            onClick={() => {
-              handleTrain();
-              setIsTraining(true);
-              handleCheckStatusInterval();
-            }}
-          >
-            {isTraining ? (
-              <Spinner
-                style={{
-                  width: "16px",
-                  height: "16px",
-                  fontSize: "10px",
-                  marginRight: "5px",
-                }}
-              />
-            ) : (
-              "Train"
-            )}
-          </Button>
           <Button
             className="btn-table btn-prim"
             onClick={() => {
@@ -178,39 +177,17 @@ function IntentTable() {
           Create
         </Button>
       </div>
-      <div className="filter-section">
-        <div className="filter-section">
-          <div className="filterIcon">
-            <img src={filterIcon} alt="" style={{ width: "15px" }} />
-          </div>
-          <div className="dateTime-picker">
-            <span>Date created</span>
-            <i class="fa-solid fa-caret-down" style={{ marginLeft: "5px" }}></i>
-          </div>
-        </div>
-        <img src={clearFilter} style={{ width: "18px", display: "end" }} />
-      </div>
+
+      <Filter />
 
       <div className="shadow-sm table-area">
         <div className="header-Table">
-          <div
-            className="searchArea"
-            id="searchArea"
-            style={{ width: "300px" }}
-          >
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input
-              type="search"
-              className="searchInput searchInputTable"
-              placeholder="Find your scripts..."
-              for="searchArea"
-              onChange={(e) => {
-                searching(e);
-              }}
-            />
-          </div>
-          <span className="total-script">Total: {intents.length} Intents</span>
+          <SearchBar func={handleSearching} />
+          <span className="total-script">
+            Total: {pagination.totalItem} Intents
+          </span>
         </div>
+
         <Table borderless hover responsive className="tableData">
           <thead style={{ background: "#f6f9fc" }}>
             <tr>
@@ -267,7 +244,9 @@ function IntentTable() {
             })}
           </tbody>
         </Table>
-
+        <div className="d-flex justify-content-center">
+          <LoadingAnt display={isLoading} />
+        </div>
         <Pagination aria-label="Page navigation example">
           {Array.from({ length: pagination.totalPage }, (_, i) => (
             <PaginationItem key={i}>

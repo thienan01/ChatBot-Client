@@ -1,0 +1,20 @@
+.searchInput {
+  background: none;
+  height: 100%;
+  margin-left: 10px;
+}
+.searchArea:has(.searchInput:focus) {
+  border: 1px solid #0d6efd;
+  background: #c9eeff;
+}
+.searchArea {
+  background: #eaebf1;
+  width: 100%;
+  height: 40px;
+  align-items: center;
+  border-radius: 50px;
+  font-size: 15px;
+  padding: 0px 5px 0px 15px;
+  margin: 0px 0px 10px 0px;
+  display: inline-block;
+}

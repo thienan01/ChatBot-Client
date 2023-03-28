@@ -37,13 +37,18 @@ const Login = () => {
       console.log(e);
     }
   };
-
+  const handleKeyDown = (e) => {
+    console.log("key", e.key);
+    if (e.key === "Enter") {
+      setLoading(true);
+      handleLogin();
+    }
+  };
   return (
     <>
       <div className="limiter">
         <div className="container-login100">
           <div className="wrap-login100">
-            <img src={logo} alt="" id="logoLogin" />
             <span className="login100-form-title p-b-26">
               Welcome to Chatbot service
             </span>
@@ -64,6 +69,7 @@ const Login = () => {
                 onChange={(e) => {
                   setFullName(e.target.value);
                 }}
+                onKeyDown={(e) => handleKeyDown(e)}
               />
             </div>
             <div
@@ -79,6 +85,7 @@ const Login = () => {
                 onChange={(e) => {
                   setUsername(e.target.value);
                 }}
+                onKeyDown={(e) => handleKeyDown(e)}
               />
             </div>
 
@@ -94,17 +101,19 @@ const Login = () => {
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}
+                onKeyDown={(e) => handleKeyDown(e)}
               />
             </div>
 
             <div className="wrap-login100-form-btn">
               <div className="login100-form-bgbtn"></div>
               <button
-                className="login100-form-btn bg-primary"
+                className="login100-form-btn "
                 onClick={() => {
                   setLoading(true);
                   handleLogin();
                 }}
+                style={{ background: "#00235b" }}
               >
                 {loading ? (
                   <Spinner style={{ width: "30px", height: "30px" }} />

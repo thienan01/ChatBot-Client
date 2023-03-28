@@ -11,6 +11,7 @@ import {
 import { POST } from "../../functionHelper/APIFunction";
 import { BASE_URL } from "../../global/globalVar";
 import { NotificationManager } from "react-notifications";
+import InputTitle from "../Input/InputTitle";
 function ModalUpdateIntent({ open, toggle, value, reload }) {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
@@ -66,37 +67,43 @@ function ModalUpdateIntent({ open, toggle, value, reload }) {
     }
     return str;
   }
-
+  const handleIntentName = (value) => {
+    console.log("alo");
+    setName(value);
+    setCode(removeAccents(genCode(value)));
+  };
   return (
     <div>
       <Modal isOpen={open} style={{ maxWidth: "700px" }}>
-        <ModalHeader>Update intent</ModalHeader>
         <ModalBody>
-          <Label>Intent name:</Label>
-          <Input
-            type="text"
-            value={name || ""}
-            onChange={(e) => {
-              setName(e.target.value);
-              setCode(removeAccents(genCode(e.target.value)));
-            }}
-          ></Input>
-          <Label>Code:</Label>
-          <Input type="text" value={removeAccents(code) || ""} readOnly></Input>
+          <span className="title">Update intent</span>
+          <InputTitle
+            title={"Intent name"}
+            placeHolder={"Enter intent name..."}
+            val={name}
+            func={handleIntentName}
+          />
+          <InputTitle
+            title={"Code"}
+            placeHolder={"Code will be converted automatically.."}
+            readOnly={true}
+            val={code}
+          />
+
+          <div className="d-flex justify-content-end">
+            <Button className="btn-prim" onClick={handleSave}>
+              Save
+            </Button>
+            <Button
+              className="closeBtn"
+              onClick={() => {
+                toggle(value.id);
+              }}
+            >
+              Close
+            </Button>
+          </div>
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={handleSave}>
-            Save
-          </Button>
-          <Button
-            color="secondary"
-            onClick={() => {
-              toggle(value.id);
-            }}
-          >
-            Close
-          </Button>
-        </ModalFooter>
       </Modal>
     </div>
   );

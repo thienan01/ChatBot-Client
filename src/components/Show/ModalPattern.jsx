@@ -16,8 +16,7 @@ import {
 } from "reactstrap";
 import { BASE_URL } from "../../global/globalVar";
 import "../../styles/common.css";
-import filterIcon from "../../assets/filter.png";
-import clearFilter from "../../assets/clear-filter.png";
+import Filter from "../Filter/Filter";
 
 function ModalPattern({ open, toggle, value }) {
   const [patterns, setPatterns] = useState([]);
@@ -120,21 +119,9 @@ function ModalPattern({ open, toggle, value }) {
               Create
             </Button>
           </div>
-          <div className="filter-section">
-            <div className="filter-section">
-              <div className="filterIcon">
-                <img src={filterIcon} alt="" style={{ width: "15px" }} />
-              </div>
-              <div className="dateTime-picker">
-                <span>Date created</span>
-                <i
-                  class="fa-solid fa-caret-down"
-                  style={{ marginLeft: "5px" }}
-                ></i>
-              </div>
-            </div>
-            <img src={clearFilter} style={{ width: "18px", display: "end" }} />
-          </div>
+
+          <Filter />
+
           <div className="shadow-sm table-area">
             <div className="header-Table">
               <div

@@ -1,0 +1,23 @@
+.input-area {
+  border: 0.5px solid #ccedfc;
+  background: #f5f6fa;
+  padding: 8px;
+  border-radius: 8px;
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
+.input-area:hover {
+  background: #ddf9fd;
+  border: 1px solid #52c8ff;
+}
+.input-area:has(.input:focus) {
+  background: #ddf9fd;
+  border: 1px solid #52c8ff;
+}
+.inputTitle {
+  font-size: 13px;
+}
+.input {
+  width: 100%;
+  background: none;
+}

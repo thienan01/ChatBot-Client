@@ -31,7 +31,7 @@ const Header = () => {
     setOpen(!isOpen);
   };
   return (
-    <div className="header shadow bg-white nav__wrapper d-flex align-items-center justify-content-between" >
+    <div className="header shadow bg-white nav__wrapper d-flex align-items-center justify-content-between">
       <div className="logo-nav logo" style={{ width: "500px" }}>
         <img src={logo} style={{ width: "150px" }} alt="logo" />
       </div>

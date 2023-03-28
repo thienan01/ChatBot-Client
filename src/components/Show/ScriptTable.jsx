@@ -14,14 +14,16 @@ import { ScriptContext } from "../Context/ScriptContext";
 import ModalUpdateScript from "./ModalUpdateScript";
 import ModalShowCode from "./ModalShowCode";
 import "../../styles/common.css";
-import filterIcon from "../../assets/filter.png";
-import clearFilter from "../../assets/clear-filter.png";
+import Filter from "../Filter/Filter";
+import { Breadcrumb } from "antd";
+import LoadingAnt from "../Loading/LoadingAnt";
 
 function ScriptTable() {
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [pagination, setPagination] = useState({});
   const [openModalCode, setOpenModalCode] = useState(false);
   const [currentID, setCurrentID] = useState("");
+  const [isLoading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [scripts, setScripts] = useState([]);
   let context = useContext(ScriptContext);
@@ -34,6 +36,7 @@ function ScriptTable() {
         "&size=10"
     )
       .then((res) => {
+        setLoading(false);
         setPagination({
           totalPage: res.total_pages,
           totalItems: res.total_items,
@@ -77,28 +80,25 @@ function ScriptTable() {
   };
   return (
     <>
-      <Button
-        className="btn-prim"
-        onClick={() => {
-          handleToggleModal();
-        }}
-      >
-        <i className="fa-solid fa-plus" style={{ marginRight: "4px" }}></i>
-        Create
-      </Button>
+      <Breadcrumb className="breadcrumb">
+        <Breadcrumb.Item>Home</Breadcrumb.Item>
+        <Breadcrumb.Item>Scripts</Breadcrumb.Item>
+      </Breadcrumb>
 
-      <div className="filter-section">
-        <div className="filter-section">
-          <div className="filterIcon">
-            <img src={filterIcon} alt="" style={{ width: "15px" }} />
-          </div>
-          <div className="dateTime-picker">
-            <span>Date created</span>
-            <i class="fa-solid fa-caret-down" style={{ marginLeft: "5px" }}></i>
-          </div>
-        </div>
-        <img src={clearFilter} style={{ width: "18px", display: "end" }} />
+      <div className="d-flex justify-content-end">
+        <Button
+          onClick={() => {
+            handleToggleModal();
+          }}
+          className="btn-table"
+          style={{ background: "#56cc6e", border: "none" }}
+        >
+          <i className="fa-solid fa-plus" style={{ marginRight: "4px" }}></i>
+          Create
+        </Button>
       </div>
+
+      <Filter />
 
       <div className="shadow-sm table-area">
         <div className="header-Table">
@@ -112,10 +112,11 @@ function ScriptTable() {
               type="search"
               className="searchInput searchInputTable"
               placeholder="Find your scripts..."
-              for="searchArea"
             />
           </div>
-          <span className="total-script">Total: {scripts.length} Scripts</span>
+          <span className="total-script">
+            Total: {pagination.totalItems} Scripts
+          </span>
         </div>
         <Table borderless hover responsive className="tableData">
           <thead style={{ background: "#f6f9fc" }}>
@@ -169,7 +170,11 @@ function ScriptTable() {
                     {script.last_updated_date}
                   </td>
                   <td className="d-flex action-row">
-                    <div onClick={() => {}}>
+                    <div
+                      onClick={() => {
+                        alert("dang loi =)");
+                      }}
+                    >
                       <i className="fa-solid fa-pen-to-square text-primary"></i>
                     </div>
                     <div
@@ -209,6 +214,10 @@ function ScriptTable() {
             </PaginationItem>
           ))}
         </Pagination>
+
+        <div className="d-flex justify-content-center">
+          <LoadingAnt display={isLoading} />
+        </div>
         <ModalUpdateScript open={openModalUpdate} toggle={handleToggleModal} />
         <ModalShowCode
           open={openModalCode}

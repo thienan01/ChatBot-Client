@@ -37,8 +37,11 @@ const App = () => {
   // } = theme.useToken();
   return (
     <div style={{ background: "#f5f6fa" }}>
-      <Layout style={{ margin: "0px 15%", background: "none" }}>
-        <Sider width={250} style={{ background: "none", marginTop: "34px" }}>
+      <Layout style={{ background: "none" }}>
+        <Sider
+          width={250}
+          style={{ background: "none", marginTop: "34px", marginLeft: "auto" }}
+        >
           <div className="searchArea" id="searchArea">
             <i class="fa-solid fa-magnifying-glass"></i>
             <input
@@ -65,23 +68,21 @@ const App = () => {
           ></Menu>
         </Sider>
 
-        <Layout
+        <div
           style={{
             padding: "0px 10px 0px 25px",
             background: "none",
+            marginRight: "auto",
           }}
         >
-          <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-            <Breadcrumb.Item>Scripts</Breadcrumb.Item>
-          </Breadcrumb>
           <Content
             style={{
-              padding: "14px 14px 0px 0px",
+              padding: "7px 14px 0px 0px",
               margin: 0,
               height: "fit-content",
               flex: "none",
               borderRadius: "10px",
+              width: "1000px",
             }}
           >
             {(() => {
@@ -99,7 +100,7 @@ const App = () => {
               }
             })()}
           </Content>
-        </Layout>
+        </div>
       </Layout>
 
       <Footer />
