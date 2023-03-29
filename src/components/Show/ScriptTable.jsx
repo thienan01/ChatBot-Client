@@ -17,6 +17,7 @@ import "../../styles/common.css";
 import Filter from "../Filter/Filter";
 import { Breadcrumb } from "antd";
 import LoadingAnt from "../Loading/LoadingAnt";
+import SearchBar from "../Filter/SearchBar";
 
 function ScriptTable() {
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
@@ -26,6 +27,8 @@ function ScriptTable() {
   const [isLoading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [scripts, setScripts] = useState([]);
+  const [filterDate, setFilterDate] = useState({});
+  const [filterSearch, setFilterSearch] = useState("");
   let context = useContext(ScriptContext);
   const loadScript = (page) => {
     if (page === undefined) page = 1;
@@ -78,6 +81,66 @@ function ScriptTable() {
         console.log(err);
       });
   };
+  const handleSearching = (val) => {
+    let body = {
+      page: 1,
+      size: 12,
+      keyword: val,
+    };
+    POST(BASE_URL + `api/script/get_pagination/`, JSON.stringify(body)).then(
+      (res) => {
+        res.items.map((item) => {
+          const createdDate = new Date(item.created_date);
+          const updatedDate = new Date(item.last_updated_date);
+          item.created_date = createdDate.toLocaleString("en-US");
+          item.last_updated_date = updatedDate.toLocaleString("en-US");
+          return item;
+        });
+        setScripts(res.items);
+        setPagination({
+          totalItem: res.total_items,
+          totalPage: res.total_pages,
+        });
+      }
+    );
+  };
+  const handleFilter = ({ val, date }) => {
+    let body = {
+      page: 1,
+      size: 12,
+      // keyword: val,
+    };
+    if (date) {
+      let fromDate = new Date(date.fromDate + " 00:00:00");
+      let toDate = new Date(date.toDate + " 23:59:59");
+      body.date_filters = [
+        {
+          field_name: "created_date",
+          from_date: fromDate * 1,
+          to_date: toDate * 1,
+        },
+      ];
+    }
+    if (val) {
+      body.keyword = val;
+    }
+    POST(BASE_URL + `api/script/get_pagination/`, JSON.stringify(body)).then(
+      (res) => {
+        res.items.map((item) => {
+          const createdDate = new Date(item.created_date);
+          const updatedDate = new Date(item.last_updated_date);
+          item.created_date = createdDate.toLocaleString("en-US");
+          item.last_updated_date = updatedDate.toLocaleString("en-US");
+          return item;
+        });
+        setScripts(res.items);
+        setPagination({
+          totalItem: res.total_items,
+          totalPage: res.total_pages,
+        });
+      }
+    );
+  };
   return (
     <>
       <Breadcrumb className="breadcrumb">
@@ -98,22 +161,11 @@ function ScriptTable() {
         </Button>
       </div>
 
-      <Filter />
+      <Filter func={handleFilter} />
 
       <div className="shadow-sm table-area">
         <div className="header-Table">
-          <div
-            className="searchArea"
-            id="searchArea"
-            style={{ width: "300px" }}
-          >
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input
-              type="search"
-              className="searchInput searchInputTable"
-              placeholder="Find your scripts..."
-            />
-          </div>
+          <SearchBar func={handleFilter} />
           <span className="total-script">
             Total: {pagination.totalItems} Scripts
           </span>

@@ -3,15 +3,23 @@ import filterIcon from "../../assets/filter.png";
 import clearFilter from "../../assets/clear-filter.png";
 import "./Filter.css";
 import FilterModal from "../Modal/FilterModal";
-function Filter() {
+function Filter({ func }) {
   const [filterItems, setFilterItems] = useState([{ name: "Created date" }]);
   const [openFilterModal, setOpenFilterModal] = useState(false);
 
-  const handleToggleFilterModal = () => {
+  const handleToggleFilterModal = (value) => {
     setOpenFilterModal(!openFilterModal);
-  };
-  const getFilterValue = (value) => {
-    console.log(value);
+    if (value.fromDate && value.toDate) {
+      setFilterItems([
+        {
+          name:
+            value.fromDate.replaceAll("-", "/") +
+            " - " +
+            value.toDate.replaceAll("-", "/"),
+        },
+      ]);
+      func({ date: value });
+    }
   };
   return (
     <>
@@ -28,7 +36,15 @@ function Filter() {
             <i class="fa-solid fa-caret-down" style={{ marginLeft: "5px" }}></i>
           </div>
         </div>
-        <img src={clearFilter} style={{ width: "18px", display: "end" }} />
+        <div
+          className="filterIcon clearFilter"
+          onClick={() => {
+            setFilterItems([{ name: "Created date" }]);
+            func({ date: undefined });
+          }}
+        >
+          <img src={clearFilter} style={{ width: "18px", display: "end" }} />
+        </div>
       </div>
       <FilterModal open={openFilterModal} toggle={handleToggleFilterModal} />
     </>

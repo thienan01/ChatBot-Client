@@ -39,6 +39,13 @@ function IntentTable() {
         page +
         `&size=12`
     ).then((res) => {
+      res.items.map((item) => {
+        const createdDate = new Date(item.created_date);
+        const updatedDate = new Date(item.last_updated_date);
+        item.created_date = createdDate.toLocaleString("en-US");
+        item.last_updated_date = updatedDate.toLocaleString("en-US");
+        return item;
+      });
       setLoading(false);
       setIntents(res.items);
       setPagination({
@@ -92,26 +99,6 @@ function IntentTable() {
       });
   };
 
-  const handleTrain = () => {
-    POST(BASE_URL + "api/training/train", JSON.stringify({})).then((res) => {});
-  };
-
-  const handleCheckStatusInterval = () => {
-    let checking = setInterval(() => {
-      GET(BASE_URL + "api/training/get_server_status")
-        .then((res) => {
-          if (res.http_status === "OK" && res.status === "FREE") {
-            NotificationManager.success("Training finished", "success");
-            setIsTraining(false);
-            clearInterval(checking);
-          }
-        })
-        .catch((err) => {
-          NotificationManager.error("Some things when  wrong!", "error");
-        });
-    }, 4000);
-  };
-
   const handleCheckStatus = () => {
     GET(BASE_URL + "api/training/get_server_status")
       .then((res) => {
@@ -130,16 +117,35 @@ function IntentTable() {
       });
   };
 
-  const handleSearching = (val) => {
+  const handleFilter = ({ val, date }) => {
     let body = {
       page: 1,
       size: 12,
-      has_patterns: false,
-      keyword: val,
+      // keyword: val,
     };
+    if (date) {
+      let fromDate = new Date(date.fromDate + " 00:00:00");
+      let toDate = new Date(date.toDate + " 23:59:59");
+      body.date_filters = [
+        {
+          field_name: "created_date",
+          from_date: fromDate * 1,
+          to_date: toDate * 1,
+        },
+      ];
+    }
+    if (val) {
+      body.keyword = val;
+    }
     POST(BASE_URL + `api/intent/get_pagination/`, JSON.stringify(body)).then(
       (res) => {
-        console.log(res);
+        res.items.map((item) => {
+          const createdDate = new Date(item.created_date);
+          const updatedDate = new Date(item.last_updated_date);
+          item.created_date = createdDate.toLocaleString("en-US");
+          item.last_updated_date = updatedDate.toLocaleString("en-US");
+          return item;
+        });
         setIntents(res.items);
         setPagination({
           totalItem: res.total_items,
@@ -178,11 +184,11 @@ function IntentTable() {
         </Button>
       </div>
 
-      <Filter />
+      <Filter func={handleFilter} />
 
       <div className="shadow-sm table-area">
         <div className="header-Table">
-          <SearchBar func={handleSearching} />
+          <SearchBar func={handleFilter} />
           <span className="total-script">
             Total: {pagination.totalItem} Intents
           </span>
@@ -198,7 +204,7 @@ function IntentTable() {
               </th>
               <th>
                 <span className="vertical" />
-                Code
+                Created at
               </th>
               <th style={{ width: "15%" }}>
                 <span className="vertical" />
@@ -218,7 +224,7 @@ function IntentTable() {
                   >
                     {intent.name}
                   </td>
-                  <td>{intent.code}</td>
+                  <td>{intent.created_date}</td>
                   <td className="d-flex action-row">
                     <div
                       onClick={() => {

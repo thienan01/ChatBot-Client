@@ -17,6 +17,7 @@ import {
 import { BASE_URL } from "../../global/globalVar";
 import "../../styles/common.css";
 import Filter from "../Filter/Filter";
+import SearchBar from "../Filter/SearchBar";
 
 function ModalPattern({ open, toggle, value }) {
   const [patterns, setPatterns] = useState([]);
@@ -25,8 +26,18 @@ function ModalPattern({ open, toggle, value }) {
   const [openModal, setOpenModal] = useState(false);
   const [pagination, setPagination] = useState({});
   useEffect(() => {
+    value.patterns.items.map((item) => {
+      const createdDate = new Date(item.created_date);
+      const updatedDate = new Date(item.last_updated_date);
+      item.created_date = createdDate.toLocaleString("en-US");
+      item.last_updated_date = updatedDate.toLocaleString("en-US");
+      return item;
+    });
     setPatterns(value.patterns.items);
-    setPagination({ totalPage: value.patterns.total_pages });
+    setPagination({
+      totalItem: value.patterns.total_items,
+      totalPage: value.patterns.total_pages,
+    });
   }, [value.patterns.items]);
 
   const handleCreatePattern = () => {
@@ -54,7 +65,18 @@ function ModalPattern({ open, toggle, value }) {
         page +
         "&size=10"
     ).then((res) => {
+      res.items.map((item) => {
+        const createdDate = new Date(item.created_date);
+        const updatedDate = new Date(item.last_updated_date);
+        item.created_date = createdDate.toLocaleString("en-US");
+        item.last_updated_date = updatedDate.toLocaleString("en-US");
+        return item;
+      });
       setPatterns(res.items);
+      setPagination({
+        totalItem: res.total_items,
+        totalPage: res.total_pages,
+      });
     });
   };
   const handleToggleModal = () => {
@@ -90,6 +112,44 @@ function ModalPattern({ open, toggle, value }) {
         console.log(err);
       });
   };
+
+  const handleFilter = ({ val, date }) => {
+    let body = {
+      page: 1,
+      size: 12,
+      // keyword: val,
+    };
+    if (date) {
+      let fromDate = new Date(date.fromDate + " 00:00:00");
+      let toDate = new Date(date.toDate + " 23:59:59");
+      body.date_filters = [
+        {
+          field_name: "created_date",
+          from_date: fromDate * 1,
+          to_date: toDate * 1,
+        },
+      ];
+    }
+    if (val) {
+      body.keyword = val;
+    }
+    POST(BASE_URL + `api/pattern/get_pagination/`, JSON.stringify(body)).then(
+      (res) => {
+        res.items.map((item) => {
+          const createdDate = new Date(item.created_date);
+          const updatedDate = new Date(item.last_updated_date);
+          item.created_date = createdDate.toLocaleString("en-US");
+          item.last_updated_date = updatedDate.toLocaleString("en-US");
+          return item;
+        });
+        setPatterns(res.items);
+        setPagination({
+          totalItem: res.total_items,
+          totalPage: res.total_pages,
+        });
+      }
+    );
+  };
   return (
     <>
       <Modal
@@ -120,25 +180,13 @@ function ModalPattern({ open, toggle, value }) {
             </Button>
           </div>
 
-          <Filter />
+          <Filter func={handleFilter} />
 
           <div className="shadow-sm table-area">
             <div className="header-Table">
-              <div
-                className="searchArea"
-                id="searchArea"
-                style={{ width: "300px" }}
-              >
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input
-                  type="search"
-                  className="searchInput searchInputTable"
-                  placeholder="Find your scripts..."
-                  for="searchArea"
-                />
-              </div>
+              <SearchBar func={handleFilter} />
               <span className="total-script">
-                Total:{patterns.length} Patterns
+                Total:{pagination.totalItem} Patterns
               </span>
             </div>
             <Table borderless hover responsive className="tableData">
@@ -148,6 +196,10 @@ function ModalPattern({ open, toggle, value }) {
                   <th>
                     <span className="vertical" />
                     Content
+                  </th>
+                  <th>
+                    <span className="vertical" />
+                    Created at
                   </th>
                   <th style={{ width: "15%" }}>
                     <span className="vertical" />
@@ -161,6 +213,7 @@ function ModalPattern({ open, toggle, value }) {
                     <tr key={pattern.id}>
                       <td>{++idx}</td>
                       <td>{pattern.content}</td>
+                      <td>{pattern.created_date}</td>
                       <td className="d-flex action-row">
                         <div>
                           <i
@@ -209,10 +262,10 @@ function ModalPattern({ open, toggle, value }) {
         </ModalBody>
         <ModalFooter>
           <Button
-            color="secondary"
             onClick={() => {
               toggle(value.intentID);
             }}
+            className="closeBtn"
           >
             Close
           </Button>

@@ -19,6 +19,13 @@ function PatternTable() {
         "&size=12"
     )
       .then((res) => {
+        res.items.map((item) => {
+          const createdDate = new Date(item.created_date);
+          const updatedDate = new Date(item.last_updated_date);
+          item.created_date = createdDate.toLocaleString("en-US");
+          item.last_updated_date = updatedDate.toLocaleString("en-US");
+          return item;
+        });
         setLoading(false);
         setPatterns(res.items);
         setPagination({
@@ -35,15 +42,35 @@ function PatternTable() {
     getPattern(1);
   }, []);
 
-  const handleSearhing = (val) => {
+  const handleFilter = ({ val, date }) => {
     let body = {
       page: 1,
       size: 12,
-      keyword: val,
+      // keyword: val,
     };
+    if (date) {
+      let fromDate = new Date(date.fromDate + " 00:00:00");
+      let toDate = new Date(date.toDate + " 23:59:59");
+      body.date_filters = [
+        {
+          field_name: "created_date",
+          from_date: fromDate * 1,
+          to_date: toDate * 1,
+        },
+      ];
+    }
+    if (val) {
+      body.keyword = val;
+    }
     POST(BASE_URL + `api/pattern/get_pagination/`, JSON.stringify(body)).then(
       (res) => {
-        console.log(res);
+        res.items.map((item) => {
+          const createdDate = new Date(item.created_date);
+          const updatedDate = new Date(item.last_updated_date);
+          item.created_date = createdDate.toLocaleString("en-US");
+          item.last_updated_date = updatedDate.toLocaleString("en-US");
+          return item;
+        });
         setPatterns(res.items);
         setPagination({
           totalItem: res.total_items,
@@ -52,16 +79,15 @@ function PatternTable() {
       }
     );
   };
-
   return (
     <>
       <div className="btn-section"></div>
 
-      <Filter />
+      <Filter func={handleFilter} />
 
       <div className="shadow-sm table-area">
         <div className="header-Table">
-          <SearchBar func={handleSearhing} />
+          <SearchBar func={handleFilter} />
           <span className="total-script">
             Total:{pagination.totalItem} Patterns
           </span>
@@ -78,6 +104,10 @@ function PatternTable() {
                 <span className="vertical" />
                 Intent
               </th>
+              <th>
+                <span className="vertical" />
+                Created at
+              </th>
               <th style={{ width: "15%" }}>
                 <span className="vertical" />
                 <i class="fa-regular fa-square-minus"></i>
@@ -91,6 +121,7 @@ function PatternTable() {
                   <td>{++idx}</td>
                   <td>{pattern.content}</td>
                   <td>{pattern.intent_name}</td>
+                  <td>{pattern.created_date}</td>
                   <td className="d-flex action-row">
                     <div onClick={() => {}}>
                       <i className="fa-solid fa-pen-to-square text-primary"></i>

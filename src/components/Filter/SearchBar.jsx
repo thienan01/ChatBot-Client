@@ -2,7 +2,7 @@ import "./SearchBar.css";
 function SearchBar({ func }) {
   const handleKey = (e) => {
     if (e.key === "Enter") {
-      func(e.target.value);
+      func({ val: e.target.value });
     }
   };
   const handleClearInput = (e) => {
@@ -17,7 +17,7 @@ function SearchBar({ func }) {
         <input
           type="search"
           className="searchInput searchInputTable"
-          placeholder="Find your scripts..."
+          placeholder="Find your records..."
           onKeyDown={(e) => handleKey(e)}
           onChange={(e) => handleClearInput(e)}
         />
