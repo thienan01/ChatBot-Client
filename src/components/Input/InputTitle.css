@@ -21,3 +21,6 @@
   width: 100%;
   background: none;
 }
+.inputArea::-webkit-scrollbar {
+  display: none;
+}

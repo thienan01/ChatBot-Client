@@ -14,7 +14,6 @@ function BorderlessTable({ data, action }) {
   let [scripts, setScripts] = useState({ data });
   let context = useContext(ScriptContext);
   const navigate = useNavigate();
-  console.log(data);
   return (
     <>
       <Table borderless hover responsive className="tableData">

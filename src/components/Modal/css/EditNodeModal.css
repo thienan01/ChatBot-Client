@@ -1,0 +1,116 @@
+.condition-section {
+  margin-top: 15px !important;
+}
+.edit-node-modal {
+  margin: 8px 8px 5px auto !important;
+  margin-right: 8px !important;
+  height: 98%;
+  max-width: 38% !important;
+}
+.edit-node-modal .modal-content {
+  border-radius: 12px !important;
+  height: 100%;
+}
+.condition-item {
+  width: 100%;
+  min-height: 55px;
+  background: #f4f4f6;
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #f4f4f6;
+  margin-top: 10px;
+}
+
+.condition-item:hover {
+  background: #ddf9fd;
+  border: 1px solid #52c8ff;
+  visibility: visible;
+}
+.condition-item:hover .delete-intent {
+  visibility: visible;
+}
+.intent-name {
+  font-size: 16px;
+  font-weight: 550;
+}
+.intent-code {
+  color: #999999;
+}
+.delete-intent {
+  background-color: #f74a36;
+  padding: 3px;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  visibility: hidden;
+}
+.delete-icon {
+  color: white;
+  font-size: 11px;
+}
+.selected {
+  background: #1e3150;
+  color: white;
+}
+.selected:hover {
+  background: #1e3150;
+  color: white;
+}
+.condition-info-section {
+  padding-top: 10px;
+}
+.intent-choice {
+  background-color: #f5f6fa;
+  width: 100%;
+  min-height: 60px;
+  border-radius: 10px;
+  padding: 10px;
+  border: 0.5px solid #ccedfc;
+}
+.intent-choice:hover {
+  background: #ddf9fd;
+  border: 1px solid #52c8ff;
+}
+
+.dropdown {
+  width: 100%;
+}
+.dropdown-toggle {
+  width: 100%;
+}
+.dropdown .btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px !important;
+  background: none !important;
+  color: black;
+  border: none;
+}
+.dropdown .btn:hover {
+  color: black;
+}
+.dropdown-menu {
+  width: 100%;
+  border: none !important;
+  margin-top: 18px !important;
+}
+.btn-section {
+  margin-top: 10px;
+}
+.add-btn {
+  width: 48%;
+  border-style: dashed !important;
+  height: 30px;
+  font-size: 15px !important;
+  padding: 0px !important;
+  border-radius: 5px !important;
+}
+.input-keyword {
+  width: 100%;
+  height: 40px;
+  background: none;
+}

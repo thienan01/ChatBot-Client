@@ -24,7 +24,6 @@ const Login = () => {
         password: password,
       };
       POST(BASE_URL + apiURL, JSON.stringify(body)).then((res) => {
-        console.log(res);
         setLoading(false);
         if (res.http_status !== "OK") {
           throw res.exception_code;
@@ -38,7 +37,6 @@ const Login = () => {
     }
   };
   const handleKeyDown = (e) => {
-    console.log("key", e.key);
     if (e.key === "Enter") {
       setLoading(true);
       handleLogin();

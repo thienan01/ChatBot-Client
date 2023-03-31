@@ -21,6 +21,7 @@ import CustomEdge from "../components/Node/ButtonEdge";
 import "reactflow/dist/style.css";
 import { NotificationManager } from "react-notifications";
 import { getCookie } from "../functionHelper/GetSetCookie";
+import EditNodeModal from "../components/Modal/EditNodeModal";
 const nodeTypes = {
   nodeLayout: NodeLayout,
   startNode: StartNode,
@@ -62,7 +63,6 @@ function Flow() {
   const [endMessage, setEndMessage] = useState("");
   const [contextChild, setContextChild] = useState(context.value);
   const reactFlowInstance = useReactFlow();
-  console.log(context);
   useEffect(() => {
     if (contextChild.id !== "") {
       Promise.all([
@@ -111,7 +111,6 @@ function Flow() {
       let url = contextChild.id === "" ? "api/script/add" : "api/script/update";
       POST(BASE_URL + url, JSON.stringify(body))
         .then((res) => {
-          console.log("child", contextChild);
           if (res.http_status === "OK") {
             setContextChild({ id: res.script.id, name: res.script.name });
             context.setValue({ id: res.script.id, name: res.script.name });
@@ -258,7 +257,6 @@ function Flow() {
     setOpenSetting(!openSetting);
   };
   const handleWrongMsg = (wrongMsg, endMsg) => {
-    console.log(endMsg);
     setWrongMsg(wrongMsg);
     setEndMessage(endMsg);
   };
@@ -280,7 +278,7 @@ function Flow() {
   }, []);
 
   return (
-    <div style={{ height: "95vh" }}>
+    <div style={{ height: "92vh" }}>
       <ReactFlow
         nodes={nodes}
         onNodesChange={onNodesChange}
@@ -363,6 +361,8 @@ function Flow() {
         messageEnd={endMessage}
         setMsg={handleWrongMsg}
       />
+
+      <EditNodeModal />
     </div>
   );
 }

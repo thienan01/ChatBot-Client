@@ -59,7 +59,6 @@ function ModalUpdateIntent({ open, toggle, value, reload }) {
       "yỳỷỹýỵ",
       "YỲỶỸÝỴ",
     ];
-    console.log(str);
     for (var i = 0; i < AccentsMap.length; i++) {
       var re = new RegExp("[" + AccentsMap[i].substr(1) + "]", "g");
       var char = AccentsMap[i][0];
@@ -68,7 +67,6 @@ function ModalUpdateIntent({ open, toggle, value, reload }) {
     return str;
   }
   const handleIntentName = (value) => {
-    console.log("alo");
     setName(value);
     setCode(removeAccents(genCode(value)));
   };

@@ -33,7 +33,7 @@ function Filter({ func }) {
             {filterItems.map((item, idx) => {
               return <span key={idx}>{item.name}</span>;
             })}
-            <i class="fa-solid fa-caret-down" style={{ marginLeft: "5px" }}></i>
+            <i className="fa-solid fa-caret-down" style={{ marginLeft: "5px" }}></i>
           </div>
         </div>
         <div

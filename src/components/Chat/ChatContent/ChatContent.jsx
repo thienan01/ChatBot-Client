@@ -39,7 +39,6 @@ function ChatContent() {
     };
     POST(BASE_URL + "api/training/predict", JSON.stringify(body))
       .then((res) => {
-        console.log(res);
         if (res.http_status === "OK") {
           setCurrentNode(res.current_node_id);
           if (res.message != null && res.message.trim() != "") {

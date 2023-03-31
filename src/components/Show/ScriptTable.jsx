@@ -188,7 +188,7 @@ function ScriptTable() {
               </th>
               <th style={{ width: "15%" }}>
                 <span className="vertical" />
-                <i class="fa-regular fa-square-minus"></i>
+                <i className="fa-regular fa-square-minus"></i>
               </th>
             </tr>
           </thead>

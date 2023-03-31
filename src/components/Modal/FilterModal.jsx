@@ -24,7 +24,7 @@ function FilterModal({ open, toggle }) {
                   setFromDate(dateString);
                 }}
               />
-              <i class="fa-solid fa-arrow-right"></i>
+              <i className="fa-solid fa-arrow-right"></i>
               <DatePicker
                 className="to-date date-picker"
                 onChange={(date, dateString) => {

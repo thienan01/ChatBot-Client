@@ -42,15 +42,13 @@ const Header = () => {
         style={{ width: "500px", justifyContent: "center" }}
       >
         {nav__links.map((item, index) => (
-          <div>
+          <div key={index}>
             <NavLink
               onClick={toggleMenu}
               to={item.path}
-              key={index}
               className={(navClass) =>
                 navClass.isActive ? "active__menu" : ""
               }
-              id="HOME"
             >
               <li className={item.icon} style={{ fontSize: "25px" }}></li>
               <br />
@@ -69,7 +67,7 @@ const Header = () => {
         <span className="user">
           <Link to="/document">
             <div className="documentation">
-              <i class="fa-solid fa-print" style={{ fontSize: "15px" }}></i>{" "}
+              <i className="fa-solid fa-print" style={{ fontSize: "15px" }}></i>{" "}
               DOCUMENTATION
             </div>
           </Link>

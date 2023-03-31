@@ -161,7 +161,7 @@ function ModalPattern({ open, toggle, value }) {
         <ModalBody style={{ padding: "10px 30px" }}>
           <div className="createPatternSection">
             <div className="patternInputArea" id="searchArea">
-              <i class="fa-solid fa-circle-plus"></i>
+              <i className="fa-solid fa-circle-plus"></i>
               <input
                 type="search"
                 className="patternInput"

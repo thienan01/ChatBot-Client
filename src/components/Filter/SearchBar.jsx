@@ -13,7 +13,7 @@ function SearchBar({ func }) {
   return (
     <>
       <div className="searchArea" id="searchArea" style={{ width: "300px" }}>
-        <i class="fa-solid fa-magnifying-glass"></i>
+        <i className="fa-solid fa-magnifying-glass"></i>
         <input
           type="search"
           className="searchInput searchInputTable"

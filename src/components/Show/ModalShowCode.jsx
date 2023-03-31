@@ -51,7 +51,7 @@ function ModalShowCode({ open, toggle, scriptID }) {
             style={{ width: "95px" }}
           >
             <i
-              class="fa-solid fa-file-import"
+              className="fa-solid fa-file-import"
               style={{ marginRight: "10px" }}
             ></i>
             Copy

@@ -43,12 +43,11 @@ const App = () => {
           style={{ background: "none", marginTop: "34px", marginLeft: "auto" }}
         >
           <div className="searchArea" id="searchArea">
-            <i class="fa-solid fa-magnifying-glass"></i>
+            <i className="fa-solid fa-magnifying-glass"></i>
             <input
               type="search"
               className="searchInput"
               placeholder="Search.."
-              for="searchArea"
             />
           </div>
           <Menu
