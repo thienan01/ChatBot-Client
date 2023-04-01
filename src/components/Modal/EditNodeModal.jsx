@@ -7,86 +7,107 @@ import {
   DropdownItem,
   Label,
   Button,
+  ModalFooter,
+  ModalHeader,
 } from "reactstrap";
 import "./css/EditNodeModal.css";
 import InputTitleTextArea from "../Input/InputTitleTextArea";
-import { useState } from "react";
-import uniqueID from "../../functionHelper/GenerateID";
+import { useEffect, useState } from "react";
 
-let items = [
-  {
-    id: uniqueID(),
-    intent_name: "Hỏi giá",
-    intent_code: "Hoi_gia",
-    intent_type: "INTENT",
-  },
-  {
-    id: uniqueID(),
-    intent_type: "KEYWORD",
-    keyword: "Màu đỏ",
-  },
-];
-function EditNodeModal({ open }) {
+function EditNodeModal({ open, toggle, nodeData }) {
+  console.log("data in modal", nodeData);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [conditionItems, setConditionItems] = useState(items);
-  const [currentSelectType, setCurrentSelectedType] = useState("");
-  const toggle = () => setDropdownOpen((prevState) => !prevState);
+  const [currentSelectedCondition, setCurrentSelectedCondition] = useState({});
+  const [conditionMapping, setConditionMapping] = useState([]);
+  const [message, setMessage] = useState(nodeData.message);
 
-  const handleAddIntent = () => {
-    let newIntent = {
-      id: uniqueID(),
-      intent_name: "Choose intent",
-      intent_code: "Choose_intent",
-      intent_type: "INTENT",
-    };
-    setConditionItems([...conditionItems, newIntent]);
-  };
+  useEffect(() => {
+    setConditionMapping(nodeData.conditions);
+  }, [nodeData]);
 
-  const handleAddKeyword = () => {
-    let newKeyword = {
-      id: uniqueID(),
-      intent_type: "KEYWORD",
-      keyword: "Choose keyword",
-    };
-    setConditionItems([...conditionItems, newKeyword]);
-  };
+  const toggleDropDown = () => setDropdownOpen((prevState) => !prevState);
 
-  const removeCondition = (conditionId) => {
-    console.log(conditionId);
-    setConditionItems(
-      conditionItems.filter((condition) => condition.id !== conditionId)
-    );
-  };
-  const handleSelected = (id) => {
+  const clearSelected = () => {
     let items = document.querySelectorAll(".condition-item");
     items.forEach((item) => {
-      item.classList.remove("selected");
+      item.classList.remove("selected-condition-item");
     });
+  };
+  const handleSelected = (id) => {
+    clearSelected();
     let item = document.getElementById(id);
-    item.classList.add("selected");
-    setCurrentSelectedType(item.getAttribute("value"));
+    item.classList.add("selected-condition-item");
+    setCurrentSelectedCondition({
+      id: id,
+      currentSelectedType: item.getAttribute("value"),
+    });
+  };
+  const handleEditKeyword = (value) => {
+    setConditionMapping(
+      conditionMapping.map((cd) => {
+        if (cd.id === currentSelectedCondition.id) {
+          cd.keyword = value;
+        }
+        return cd;
+      })
+    );
+    nodeData.setKeyword({
+      conditionId: currentSelectedCondition.id,
+      keyword: value,
+    });
+  };
+
+  const getIntentName = (id) => {
+    return nodeData.intents.filter((intent) => intent.id === id).length !== 0
+      ? nodeData.intents.filter((intent) => intent.id === id)[0].name
+      : "Choose intent";
+  };
+  const getIntentCode = (id) => {
+    return nodeData.intents.filter((intent) => intent.id === id).length !== 0
+      ? nodeData.intents.filter((intent) => intent.id === id)[0].code
+      : "Choose_intent";
+  };
+
+  const getCurrentKeywordValue = (id) => {
+    return conditionMapping.filter((cdn) => cdn.id === id).length !== 0
+      ? conditionMapping.filter((cdn) => cdn.id === id)[0].keyword
+      : "";
+  };
+
+  const getIntentNameByConditionId = (conditionId) => {
+    return conditionMapping.filter((cdn) => cdn.id === conditionId).length !== 0
+      ? conditionMapping.filter((cdn) => cdn.id === conditionId)[0].intent_id
+      : "ChooseIntent";
   };
   return (
     <div>
-      {console.log(conditionItems)}
-      <Modal isOpen={true} className="edit-node-modal">
-        <ModalBody>
-          <div>
-            <Label>Edit node</Label>
-          </div>
+      <Modal isOpen={open} className="edit-node-modal">
+        <ModalHeader className="modal-header">Edit node</ModalHeader>
+        <ModalBody style={{ background: "#fcfdfd" }}>
           <div className="containerModal">
             <div>
-              <InputTitleTextArea title={"Message"} />
+              <InputTitleTextArea
+                title={"Message"}
+                placeHolder={"Enter message..."}
+                val={message}
+                func={(value) => {
+                  setMessage(value);
+                  nodeData.handleSetMessage(value);
+                }}
+              />
             </div>
             <div className="node-info-section row">
               <div className="condition-section col-5">
-                <div>Customer response</div>
+                <div className="title">Customer's response</div>
                 <div className="condition-items-section">
-                  {conditionItems.map((condition) => {
-                    if (condition.intent_type === "INTENT") {
+                  {conditionMapping.map((condition, index) => {
+                    console.log(
+                      conditionMapping[conditionMapping.length - 1].id
+                    );
+                    if (condition.predict_type === "INTENT") {
                       return (
                         <div
-                          className="condition-item"
+                          className={"condition-item"}
                           key={condition.id}
                           id={condition.id}
                           onClick={() => {
@@ -96,28 +117,30 @@ function EditNodeModal({ open }) {
                         >
                           <div className="row">
                             <div className="intent-name col-9">
-                              {condition.intent_name}
+                              {getIntentName(condition.intent_id)}
                             </div>
                             <input type="text" value={"intent"} hidden />
                             <div className="col-3 d-flex justify-content-end">
                               <div
                                 className="delete-intent"
-                                onClick={() => removeCondition(condition.id)}
+                                onClick={() =>
+                                  nodeData.deleteCondition(condition.id)
+                                }
                               >
                                 <i className="fa-solid fa-xmark delete-icon"></i>
                               </div>
                             </div>
                           </div>
                           <div className="intent-code ">
-                            {condition.intent_code}
+                            {getIntentCode(condition.intent_id)}
                           </div>
                         </div>
                       );
                     }
-                    if (condition.intent_type === "KEYWORD") {
+                    if (condition.predict_type === "KEYWORD") {
                       return (
                         <div
-                          className="condition-item"
+                          className={"condition-item"}
                           key={condition.id}
                           id={condition.id}
                           onClick={() => {
@@ -126,93 +149,123 @@ function EditNodeModal({ open }) {
                           value={"keyword"}
                         >
                           <div className="row">
-                            <div className="intent-name col-9">
-                              {condition.keyword}
-                            </div>
+                            <div className="intent-name col-9">Keyword</div>
                             <div className="col-3 d-flex justify-content-end">
                               <div
                                 className="delete-intent"
-                                onClick={() => removeCondition(condition.id)}
+                                onClick={() =>
+                                  nodeData.deleteCondition(condition.id)
+                                }
                               >
                                 <i className="fa-solid fa-xmark delete-icon"></i>
                               </div>
                             </div>
                           </div>
-                          <div className="intent-code ">
+                          <div className="intent-code keywordValue">
                             {condition.keyword}
                           </div>
                         </div>
                       );
+                    } else {
+                      return <></>;
                     }
                   })}
                 </div>
 
                 <div className="btn-section">
-                  <Button outline className="add-btn" onClick={handleAddIntent}>
+                  <Button
+                    outline
+                    className="add-btn"
+                    onClick={() => {
+                      nodeData.addIntent();
+                    }}
+                  >
                     Add intent
                   </Button>
                   <Button
                     outline
                     className="add-btn"
-                    onClick={handleAddKeyword}
+                    onClick={() => {
+                      nodeData.addKeyword();
+                    }}
                   >
                     Add keyword
                   </Button>
                 </div>
               </div>
               <div className="condition-info-section col-7">
-                {currentSelectType === "intent" ? (
+                {currentSelectedCondition.currentSelectedType === "keyword" ? (
                   <div className="intent-choice">
-                    <div className="input-title">Intent *</div>
+                    <div className="input-title">Keyword *</div>
+                    <input
+                      type="search"
+                      className="input-keyword"
+                      placeholder="Enter keyword..."
+                      onChange={(e) => {
+                        handleEditKeyword(e.target.value);
+                      }}
+                      value={getCurrentKeywordValue(
+                        currentSelectedCondition.id
+                      )}
+                    />
+                  </div>
+                ) : currentSelectedCondition.currentSelectedType ===
+                  "intent" ? (
+                  <div className="intent-choice">
+                    <div className="input-title">
+                      Topic / Intent <span className="text-danger">*</span>
+                    </div>
                     <Dropdown
                       isOpen={dropdownOpen}
-                      toggle={toggle}
+                      toggle={toggleDropDown}
                       className="dropdown"
                     >
                       <DropdownToggle caret className="dropdown-toggle">
-                        Choose intent
+                        <div>
+                          <i class="fa-solid fa-link icon-item"></i>
+                          {getIntentName(
+                            getIntentNameByConditionId(
+                              currentSelectedCondition.id
+                            )
+                          )}
+                        </div>
                       </DropdownToggle>
                       <DropdownMenu className="dropdown-menu shadow">
-                        <DropdownItem>Action</DropdownItem>
-                        <DropdownItem>Action</DropdownItem>
-                        <DropdownItem>Action</DropdownItem>
-                        <DropdownItem>Action</DropdownItem>
+                        {nodeData.intents.map((intent) => {
+                          return (
+                            <>
+                              <DropdownItem
+                                key={intent.id}
+                                value={intent.id}
+                                onClick={() => {
+                                  nodeData.setIntent({
+                                    conditionId: currentSelectedCondition.id,
+                                    intentId: intent.id,
+                                    intentName: intent.name,
+                                  });
+                                }}
+                                className="d-flex justify-content-start item-dropdown"
+                              >
+                                <i class="fa-solid fa-link icon-item"></i>
+
+                                <div>{intent.name}</div>
+                              </DropdownItem>
+                            </>
+                          );
+                        })}
                       </DropdownMenu>
                     </Dropdown>
                   </div>
                 ) : (
-                  <div className="intent-choice">
-                    <div className="input-title">Keyword *</div>
-                    <input type="search" className="input-keyword" />
-                  </div>
+                  <></>
                 )}
-                {/* <div className="intent-choice">
-                  <div className="input-title">Intent *</div>
-                  <Dropdown
-                    isOpen={dropdownOpen}
-                    toggle={toggle}
-                    className="dropdown"
-                  >
-                    <DropdownToggle caret className="dropdown-toggle">
-                      Choose intent
-                    </DropdownToggle>
-                    <DropdownMenu className="dropdown-menu shadow">
-                      <DropdownItem>Action</DropdownItem>
-                      <DropdownItem>Action</DropdownItem>
-                      <DropdownItem>Action</DropdownItem>
-                      <DropdownItem>Action</DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
-
-                <div className="intent-choice">
-                  <div className="input-title">Keyword *</div>
-                  <input type="search" className="input-keyword" />
-                </div> */}
               </div>
             </div>
           </div>
         </ModalBody>
+        <div className="close-button" onClick={() => toggle()}>
+          <i className="fa-solid fa-circle-xmark"></i>
+        </div>
       </Modal>
     </div>
   );

@@ -2,9 +2,9 @@ import { Fragment, memo, useState, useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import ConditionMapping from "./ConditionMapping";
 import Keyword from "./Keyword";
-import $ from "jquery";
 import { Button } from "reactstrap";
 import uniqueID from "../../functionHelper/GenerateID";
+import EditNodeModal from "../Modal/EditNodeModal";
 import "../../styles/Node.css";
 const textSize = {
   fontSize: "16px",
@@ -17,6 +17,8 @@ const autoSize = (e) => {
 function NodeLayout({ data }) {
   const [conditions, setConditions] = useState(data.conditionMapping);
   const [value, setValue] = useState(data.value);
+  const [openEditNode, setOpenEditNode] = useState(false);
+
   useEffect(() => {
     data.value = value;
   }, [value, data]);
@@ -25,6 +27,7 @@ function NodeLayout({ data }) {
   }, [conditions, data]);
 
   const setConditionMappingIntent = (data) => {
+    console.log("change", data);
     setConditions(
       conditions.map((cnd) => {
         if (cnd.id === data.conditionId) {
@@ -61,8 +64,33 @@ function NodeLayout({ data }) {
   const deleteCondition = (id) => {
     setConditions(conditions.filter((item) => item.id !== id));
   };
+  const handleOpenEditNodeModal = () => {
+    setConditions((conditions) =>
+      conditions.map((cnd) => {
+        return cnd;
+      })
+    );
+    setOpenEditNode(!openEditNode);
+  };
+
+  const handleEditNodeByModal = (message) => {
+    setValue(message);
+  };
+  const addKeyword = () => {
+    setConditions([
+      ...conditions,
+      { id: uniqueID(), predict_type: "KEYWORD", keyword: "" },
+    ]);
+  };
+  const addIntent = () => {
+    setConditions([
+      ...conditions,
+      { id: uniqueID(), intent_id: null, predict_type: "INTENT" },
+    ]);
+  };
   return (
     <Fragment>
+      {console.log("afff", conditions)}
       <div
         id="node"
         className="shadow bg-white"
@@ -72,6 +100,7 @@ function NodeLayout({ data }) {
           borderRadius: "15px",
           padding: "18px",
         }}
+        onClick={handleOpenEditNodeModal}
       >
         <div className="hoverSession"></div>
         <div id="deleteIcon" className="shadow bg-white">
@@ -222,6 +251,21 @@ function NodeLayout({ data }) {
           </>
         </div>
       </div>
+      <EditNodeModal
+        open={openEditNode}
+        toggle={handleOpenEditNodeModal}
+        nodeData={{
+          message: value,
+          conditions: conditions,
+          intents: data.intents,
+          handleSetMessage: handleEditNodeByModal,
+          setKeyword: setConditionMappingKeyword,
+          addKeyword: addKeyword,
+          deleteCondition: deleteCondition,
+          addIntent: addIntent,
+          setIntent: setConditionMappingIntent,
+        }}
+      />
     </Fragment>
   );
 }

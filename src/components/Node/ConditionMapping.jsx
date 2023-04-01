@@ -22,7 +22,12 @@ function ConditionMapping({ background, color, border, data }) {
             (items) => items.id === data.conditionMapping.intent_id
           )[0].name,
   });
-
+  const getIntentName = (id) => {
+    return data.intents.filter((intent) => intent.id === id).length !== 0
+      ? data.intents.filter((intent) => intent.id === id)[0].name
+      : "Choose intent";
+  };
+  console.log("check data", data);
   return (
     <div style={{ margin: "5px 0px" }}>
       <ButtonDropdown
@@ -47,9 +52,9 @@ function ConditionMapping({ background, color, border, data }) {
             justifyContent: "space-between",
             alignItems: "center",
           }}
-          value={value.id}
+          value={data.conditionMapping.intent_id}
         >
-          {value.name}
+          {getIntentName(data.conditionMapping.intent_id)}
           <i
             className="fa-solid fa-delete-left deleteCondition"
             style={{ textAlign: "right" }}

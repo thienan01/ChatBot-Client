@@ -1,14 +1,21 @@
 .input-area {
   border: 0.5px solid #ccedfc;
   background: #f5f6fa;
-  padding: 8px;
+  padding: 15px;
   border-radius: 8px;
   margin-top: 15px;
   margin-bottom: 30px;
+  padding-top: 10px;
+}
+.input-area {
+  margin-top: 5px;
 }
 .input-area:hover {
   background: #ddf9fd;
   border: 1px solid #52c8ff;
+}
+.input-area:hover .inputTitle {
+  color: #52c8ff;
 }
 .input-area:has(.input:focus) {
   background: #ddf9fd;
@@ -16,6 +23,7 @@
 }
 .inputTitle {
   font-size: 13px;
+  font-weight: 500;
 }
 .input {
   width: 100%;
@@ -23,4 +31,7 @@
 }
 .inputArea::-webkit-scrollbar {
   display: none;
+}
+.inputArea {
+  height: 100px;
 }

@@ -20,8 +20,6 @@ import StartNode from "../components/Node/StartNode";
 import CustomEdge from "../components/Node/ButtonEdge";
 import "reactflow/dist/style.css";
 import { NotificationManager } from "react-notifications";
-import { getCookie } from "../functionHelper/GetSetCookie";
-import EditNodeModal from "../components/Modal/EditNodeModal";
 const nodeTypes = {
   nodeLayout: NodeLayout,
   startNode: StartNode,
@@ -58,10 +56,12 @@ function Flow() {
   const [loading, isLoading] = useState(true);
   const [openChat, setOpenChat] = useState(false);
   const [openSetting, setOpenSetting] = useState(false);
+  const [openEditNode, setOpenEditNode] = useState(false);
   const [intents, setIntents] = useState([]);
   const [wrongMsg, setWrongMsg] = useState("");
   const [endMessage, setEndMessage] = useState("");
   const [contextChild, setContextChild] = useState(context.value);
+  const [currentSelectedNode, setCurrentSelectedNode] = useState({});
   const reactFlowInstance = useReactFlow();
   useEffect(() => {
     if (contextChild.id !== "") {
@@ -277,6 +277,7 @@ function Flow() {
     );
   }, []);
 
+
   return (
     <div style={{ height: "92vh" }}>
       <ReactFlow
@@ -289,6 +290,7 @@ function Flow() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeType}
         style={rfStyle}
+        // onNodeClick={onNodeClick}
       >
         <MiniMap />
         <Controls />
@@ -361,8 +363,6 @@ function Flow() {
         messageEnd={endMessage}
         setMsg={handleWrongMsg}
       />
-
-      <EditNodeModal />
     </div>
   );
 }

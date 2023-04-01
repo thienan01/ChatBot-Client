@@ -33,14 +33,15 @@ function Keyword({ color, background, border, data }) {
           }}
           placeholder="Keyword"
           type="text"
-          value={key}
-          onChange={(e) => {
-            setKey(e.target.value);
-            data.setCondition({
-              conditionId: data.conditionMapping.id,
-              keyword: e.target.value,
-            });
-          }}
+          value={data.conditionMapping.keyword}
+          readOnly
+          // onChange={(e) => {
+          //   setKey(e.target.value);
+          //   data.setCondition({
+          //     conditionId: data.conditionMapping.id,
+          //     keyword: e.target.value,
+          //   });
+          // }}
         />
         <i
           className="fa-solid fa-delete-left deleteCondition"

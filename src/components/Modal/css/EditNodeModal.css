@@ -10,10 +10,11 @@
 .edit-node-modal .modal-content {
   border-radius: 12px !important;
   height: 100%;
+  padding: 2px 8px 8px 8px !important;
 }
 .condition-item {
   width: 100%;
-  min-height: 55px;
+  min-height: 70px;
   background: #f4f4f6;
   border-radius: 10px;
   padding: 10px;
@@ -51,11 +52,11 @@
   color: white;
   font-size: 11px;
 }
-.selected {
+.selected-condition-item {
   background: #1e3150;
   color: white;
 }
-.selected:hover {
+.selected-condition-item:hover {
   background: #1e3150;
   color: white;
 }
@@ -67,12 +68,15 @@
   width: 100%;
   min-height: 60px;
   border-radius: 10px;
-  padding: 10px;
+  padding: 5px 10px 10px 10px;
   border: 0.5px solid #ccedfc;
 }
 .intent-choice:hover {
   background: #ddf9fd;
   border: 1px solid #52c8ff;
+}
+.intent-choice:hover .input-title {
+  color: #52c8ff;
 }
 
 .dropdown {
@@ -97,6 +101,11 @@
   width: 100%;
   border: none !important;
   margin-top: 18px !important;
+  max-height: 500px !important;
+  overflow-y: scroll !important;
+}
+.dropdown-menu::-webkit-scrollbar {
+  display: none !important;
 }
 .btn-section {
   margin-top: 10px;
@@ -113,4 +122,34 @@
   width: 100%;
   height: 40px;
   background: none;
+}
+.close-button {
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0px;
+  left: -35px;
+}
+.modal-header {
+  border-bottom: none !important;
+}
+.input-title {
+  font-size: 13px;
+}
+.icon-item {
+  color: #52c8ff;
+  margin-right: 10px;
+}
+.item-dropdown {
+  margin: 5px !important;
+  padding: 5px !important;
+  display: flex;
+  align-items: center;
+  width: 97% !important;
+  border-radius: 7px;
 }
