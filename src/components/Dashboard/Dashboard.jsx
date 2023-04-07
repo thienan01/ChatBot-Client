@@ -25,9 +25,9 @@ const items2 = [
   getItem("Scripts", "SCRIPT", <FileSearchOutlined />),
   getItem("Intents", "INTENT", <TagsOutlined />),
   getItem("Patterns", "PATTERN", <MessageOutlined />),
-  getItem("Team", "sub2", <TeamOutlined />, [
-    getItem("Team 1", "6"),
-    getItem("Team 2", "8"),
+  getItem("Entity", "sub2", <TeamOutlined />, [
+    getItem("Entity 1", "6"),
+    getItem("Entity 2", "8"),
   ]),
 ];
 const App = () => {

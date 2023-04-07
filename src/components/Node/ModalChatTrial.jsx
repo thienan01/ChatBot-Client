@@ -4,15 +4,17 @@ import ChatContent from "../Chat/ChatContent/ChatContent";
 function ModalChatTrial({ openChat, closeModal }) {
   return (
     <div>
-      <Modal isOpen={openChat} style={{ maxWidth: "700px" }}>
+      <Modal
+        isOpen={openChat}
+        style={{ width: "600px" }}
+        className="modal-setting"
+      >
         <ModalBody style={{ padding: "0px" }}>
           <ChatContent />
         </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={closeModal}>
-            Cancel
-          </Button>
-        </ModalFooter>
+        <div className="close-button" onClick={closeModal}>
+          <i className="fa-solid fa-circle-xmark"></i>
+        </div>
       </Modal>
     </div>
   );

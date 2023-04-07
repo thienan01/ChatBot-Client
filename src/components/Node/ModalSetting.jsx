@@ -1,47 +1,62 @@
 import React from "react";
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input,
-  Label,
-} from "reactstrap";
+import { Modal, ModalBody } from "reactstrap";
+import "../../pages/css/Flow.css";
+import InputTitleTextArea from "../Input/InputTitleTextArea";
+import InputTitle from "../Input/InputTitle";
 function ModalSetting({
   open,
   closeModalSetting,
   message,
   messageEnd,
   setMsg,
+  scriptName,
+  handleEditScriptName,
 }) {
+  const handleWrongMessage = (value) => {
+    setMsg(value);
+  };
   return (
     <div>
-      <Modal isOpen={open} style={{ maxWidth: "700px" }}>
-        <ModalHeader>Setting</ModalHeader>
+      <Modal
+        isOpen={open}
+        style={{ maxWidth: "700px" }}
+        className="modal-setting"
+      >
         <ModalBody>
-          <Label>Wrong message:</Label>
-          <Input
-            type="text"
-            value={message || ""}
-            onChange={(e) => {
-              setMsg(e.target.value, messageEnd);
-            }}
-          ></Input>
-          <Label>End conversation:</Label>
-          <Input
-            type="text"
-            value={messageEnd || ""}
-            onChange={(e) => {
-              setMsg(message, e.target.value);
-            }}
-          ></Input>
+          <div className="script-name-section">
+            <div className="title-m title">
+              <span>Script information</span>
+            </div>
+            <InputTitleTextArea
+              title={"Script's name"}
+              placeHolder={"Enter script name..."}
+              val={scriptName}
+              func={handleEditScriptName}
+            />
+          </div>
+          <div className="script-name-section">
+            <div className="title-m title">
+              <span>Script's setting</span>
+            </div>
+            <InputTitle
+              title={"Wrong message"}
+              placeHolder={"Enter wrong message..."}
+              val={message || ""}
+              func={handleWrongMessage}
+            />
+            <InputTitle
+              title={"End conversation message"}
+              placeHolder={"Enter end conversation message"}
+              val={messageEnd || ""}
+              func={(value) => {
+                setMsg(message, value);
+              }}
+            />
+          </div>
         </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={closeModalSetting}>
-            Close
-          </Button>
-        </ModalFooter>
+        <div className="close-button" onClick={closeModalSetting}>
+          <i className="fa-solid fa-circle-xmark"></i>
+        </div>
       </Modal>
     </div>
   );

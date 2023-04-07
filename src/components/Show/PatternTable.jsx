@@ -122,7 +122,7 @@ function PatternTable() {
                   <td>{pattern.content}</td>
                   <td>{pattern.intent_name}</td>
                   <td>{pattern.created_date}</td>
-                  <td className="d-flex action-row">
+                  {/* <td className="d-flex action-row">
                     <div onClick={() => {}}>
                       <i className="fa-solid fa-pen-to-square text-primary"></i>
                     </div>
@@ -135,7 +135,7 @@ function PatternTable() {
                     <div onClick={() => {}}>
                       <i className="fa-solid fa-trash-can text-danger"></i>
                     </div>
-                  </td>
+                  </td> */}
                 </tr>
               );
             })}

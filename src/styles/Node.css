@@ -33,7 +33,7 @@
 .textIcon {
   display: inline;
   background-color: #1e3150;
-  padding: 4px 6px;
+  padding: 6px 7px;
   border-radius: 9px;
   margin-right: 7px;
 }
@@ -48,24 +48,27 @@
 #message {
   border-radius: 12px;
   font-size: 17px;
-  height: 45px;
   background: #f2f3f4;
+  padding: 10px;
+  border: 0.5px solid #ccedfc;
 }
 #message:hover {
   background: #ebf5fb;
-  border: 1px solid #3498db;
+  border: 0.5px solid #3498db;
 }
 .inputKeyword {
   border: 0px solid #ec7063;
 }
 .inputKeyword:hover {
   border: 1px solid #ec7063;
+  background: #fff7f6 !important;
 }
 #intent {
   border: 0px solid #ec7063;
 }
 #intent:hover {
   border: 1px solid #f5b041;
+  background: #fffaf4 !important;
 }
 
 #deleteIcon {
@@ -81,6 +84,9 @@
 }
 #node:hover > #deleteIcon {
   visibility: visible;
+}
+#node:hover {
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 #node:hover #addCondition {
   display: flex;

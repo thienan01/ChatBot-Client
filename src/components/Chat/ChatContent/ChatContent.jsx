@@ -62,6 +62,12 @@ function ChatContent() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatItems]);
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      setValue("");
+      handleSendMessage();
+    }
+  };
   return (
     <div className="main__chatcontent">
       <div className="content__header">
@@ -109,6 +115,7 @@ function ChatContent() {
               setValue(e.target.value);
             }}
             value={value}
+            onKeyDown={(e) => handleKeyDown(e)}
           />
           <button
             className="btnSendMsg"

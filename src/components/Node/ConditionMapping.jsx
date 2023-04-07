@@ -27,14 +27,13 @@ function ConditionMapping({ background, color, border, data }) {
       ? data.intents.filter((intent) => intent.id === id)[0].name
       : "Choose intent";
   };
-  console.log("check data", data);
   return (
     <div style={{ margin: "5px 0px" }}>
       <ButtonDropdown
-        toggle={() => {
-          setOpen(!dropdownOpen);
-        }}
-        isOpen={dropdownOpen}
+        // toggle={() => {
+        //   setOpen(!dropdownOpen);
+        // }}
+        // isOpen={dropdownOpen}
         style={{ width: "100%" }}
       >
         <DropdownToggle
@@ -46,7 +45,7 @@ function ConditionMapping({ background, color, border, data }) {
             color,
             fontSize: "15px",
             fontWeight: "600",
-            borderRadius: "12px",
+            borderRadius: "8px",
             textAlign: "left",
             display: "flex",
             justifyContent: "space-between",
@@ -55,13 +54,6 @@ function ConditionMapping({ background, color, border, data }) {
           value={data.conditionMapping.intent_id}
         >
           {getIntentName(data.conditionMapping.intent_id)}
-          <i
-            className="fa-solid fa-delete-left deleteCondition"
-            style={{ textAlign: "right" }}
-            onClick={() => {
-              data.deleteCondition(data.conditionMapping.id);
-            }}
-          ></i>
         </DropdownToggle>
         <DropdownMenu
           style={{ maxHeight: "400px", overflowY: "scroll", cursor: "pointer" }}
@@ -92,7 +84,9 @@ function ConditionMapping({ background, color, border, data }) {
         type="source"
         position={Position.Right}
         onConnect={(param) => {
+          console.log("checking connected");
           data.setCondition(param);
+          console.log("param in onconnect", param);
         }}
         style={{
           top: "-17px",

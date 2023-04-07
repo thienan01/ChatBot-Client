@@ -23,11 +23,11 @@ function NodeLayout({ data }) {
     data.value = value;
   }, [value, data]);
   useEffect(() => {
+    console.log("check rerender");
     data.conditionMapping = conditions;
   }, [conditions, data]);
 
   const setConditionMappingIntent = (data) => {
-    console.log("change", data);
     setConditions(
       conditions.map((cnd) => {
         if (cnd.id === data.conditionId) {
@@ -90,10 +90,9 @@ function NodeLayout({ data }) {
   };
   return (
     <Fragment>
-      {console.log("afff", conditions)}
       <div
         id="node"
-        className="shadow bg-white"
+        className="bg-white"
         style={{
           width: "300px",
           background: "white",
@@ -103,19 +102,22 @@ function NodeLayout({ data }) {
         onClick={handleOpenEditNodeModal}
       >
         <div className="hoverSession"></div>
-        <div id="deleteIcon" className="shadow bg-white">
+        <div
+          id="deleteIcon"
+          className="shadow bg-white"
+          onClick={() => data.delete(data.id)}
+        >
           <i
             className="fa fa-trash"
             style={{ fontSize: "16px", margin: "10px", color: "red" }}
             aria-hidden="true"
-            onClick={() => data.delete(data.id)}
           ></i>
         </div>
         <div>
           <div className="node-name">
             <div style={{ margin: "0px 0px 10px 0px" }}>
               <div className="textIcon">
-                <i className="fa-solid fa-font text-white"></i>
+                <i className="fa-solid fa-newspaper text-white"></i>
               </div>
               <label
                 style={{
@@ -128,25 +130,14 @@ function NodeLayout({ data }) {
                 Your message
               </label>
             </div>
-            <textarea
-              id="message"
-              className="form-control form-control-sm "
-              value={value}
-              style={{ overflow: "auto" }}
-              onChange={(e) => {
-                setValue(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                autoSize(e);
-              }}
-            ></textarea>
+            <div id="message">{value}</div>
           </div>
           <div
             className="condition-mapping"
             style={{ alignItems: "center", marginTop: "20px" }}
           >
             <div className="replyIcon">
-              <i className="fa-solid fa-reply text-white"></i>
+              <i className="fa-solid fa-shuffle text-white"></i>
             </div>
             <label
               style={{
@@ -159,7 +150,7 @@ function NodeLayout({ data }) {
               Customer's response
             </label>
             <div className="intent">
-              {conditions.map((item) => {
+              {conditions.map((item, idx) => {
                 if (
                   item.predict_type === "INTENT" ||
                   item.predict_type === undefined
@@ -167,13 +158,13 @@ function NodeLayout({ data }) {
                   return (
                     <div
                       className="condition-intent"
-                      key={item.id}
+                      key={++idx}
                       style={{ height: "48px" }}
                     >
                       <ConditionMapping
-                        background="#fffaf4"
-                        color="#F39C12"
-                        border="0.5px solid #FCF3CF "
+                        background="#f4f4f6"
+                        color="#1e3050"
+                        border="0.5px solid #FCF3CF"
                         data={{
                           intents: data.intents,
                           conditionMapping: item,
@@ -192,8 +183,8 @@ function NodeLayout({ data }) {
                     >
                       <Keyword
                         id="keyword"
-                        background="#FDEDEC  "
-                        color=" #E74C3C"
+                        background="#f4f4f6"
+                        color="#1e3050"
                         border="0.2px solid #FADBD8"
                         data={{
                           conditionMapping: item,
@@ -208,32 +199,7 @@ function NodeLayout({ data }) {
             </div>
             <div className="keyword"></div>
           </div>
-          <div id="addCondition" className="addCondition">
-            <Button
-              color="primary"
-              style={{ width: "48%", border: "none" }}
-              onClick={() => {
-                setConditions([
-                  ...conditions,
-                  { id: uniqueID(), intent_id: null, predict_type: "INTENT" },
-                ]);
-              }}
-            >
-              <i className="fa-solid fa-plus"></i> Intent
-            </Button>
-            <Button
-              color="primary"
-              style={{ width: "48%", border: "none" }}
-              onClick={() => {
-                setConditions([
-                  ...conditions,
-                  { id: uniqueID(), predict_type: "KEYWORD", keyword: "" },
-                ]);
-              }}
-            >
-              <i className="fa-solid fa-plus"></i> Keyword
-            </Button>
-          </div>
+
           <>
             <Handle
               id="0"

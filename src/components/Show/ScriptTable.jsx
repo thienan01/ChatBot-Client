@@ -202,6 +202,12 @@ function ScriptTable() {
                       context.setValue({ id: script.id, name: script.name });
                       navigate("/train");
                     }}
+                    style={{
+                      textOverflow: "ellipsis",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      maxWidth: "400px",
+                    }}
                   >
                     {script.name}
                   </td>
@@ -221,7 +227,7 @@ function ScriptTable() {
                   >
                     {script.last_updated_date}
                   </td>
-                  <td className="d-flex action-row">
+                  <td className="d-flex action-row" >
                     <div
                       onClick={() => {
                         alert("dang loi =)");

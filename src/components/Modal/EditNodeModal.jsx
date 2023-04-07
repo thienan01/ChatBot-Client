@@ -5,9 +5,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Label,
   Button,
-  ModalFooter,
   ModalHeader,
 } from "reactstrap";
 import "./css/EditNodeModal.css";
@@ -35,7 +33,10 @@ function EditNodeModal({ open, toggle, nodeData }) {
   };
   const handleSelected = (id) => {
     clearSelected();
-    let item = document.getElementById(id);
+    console.log("selected", id);
+    let item = document.querySelector(".conditionId-" + id);
+    console.log("selected item", item);
+
     item.classList.add("selected-condition-item");
     setCurrentSelectedCondition({
       id: id,
@@ -101,14 +102,13 @@ function EditNodeModal({ open, toggle, nodeData }) {
                 <div className="title">Customer's response</div>
                 <div className="condition-items-section">
                   {conditionMapping.map((condition, index) => {
-                    console.log(
-                      conditionMapping[conditionMapping.length - 1].id
-                    );
                     if (condition.predict_type === "INTENT") {
                       return (
                         <div
-                          className={"condition-item"}
-                          key={condition.id}
+                          className={
+                            "conditionId-" + condition.id + " condition-item"
+                          }
+                          key={index}
                           id={condition.id}
                           onClick={() => {
                             handleSelected(condition.id);
@@ -119,7 +119,12 @@ function EditNodeModal({ open, toggle, nodeData }) {
                             <div className="intent-name col-9">
                               {getIntentName(condition.intent_id)}
                             </div>
-                            <input type="text" value={"intent"} hidden />
+                            <input
+                              type="text"
+                              value={"intent"}
+                              hidden
+                              readOnly
+                            />
                             <div className="col-3 d-flex justify-content-end">
                               <div
                                 className="delete-intent"
@@ -140,7 +145,9 @@ function EditNodeModal({ open, toggle, nodeData }) {
                     if (condition.predict_type === "KEYWORD") {
                       return (
                         <div
-                          className={"condition-item"}
+                          className={
+                            "conditionId-" + condition.id + " condition-item"
+                          }
                           key={condition.id}
                           id={condition.id}
                           onClick={() => {
@@ -222,7 +229,7 @@ function EditNodeModal({ open, toggle, nodeData }) {
                     >
                       <DropdownToggle caret className="dropdown-toggle">
                         <div>
-                          <i class="fa-solid fa-link icon-item"></i>
+                          <i className="fa-solid fa-link icon-item"></i>
                           {getIntentName(
                             getIntentNameByConditionId(
                               currentSelectedCondition.id
@@ -231,11 +238,11 @@ function EditNodeModal({ open, toggle, nodeData }) {
                         </div>
                       </DropdownToggle>
                       <DropdownMenu className="dropdown-menu shadow">
-                        {nodeData.intents.map((intent) => {
+                        {nodeData.intents.map((intent, idx) => {
                           return (
                             <>
                               <DropdownItem
-                                key={intent.id}
+                                key={idx}
                                 value={intent.id}
                                 onClick={() => {
                                   nodeData.setIntent({
@@ -246,7 +253,7 @@ function EditNodeModal({ open, toggle, nodeData }) {
                                 }}
                                 className="d-flex justify-content-start item-dropdown"
                               >
-                                <i class="fa-solid fa-link icon-item"></i>
+                                <i className="fa-solid fa-link icon-item"></i>
 
                                 <div>{intent.name}</div>
                               </DropdownItem>

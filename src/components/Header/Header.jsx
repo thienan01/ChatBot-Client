@@ -4,7 +4,7 @@ import logo from "../../assets/logo.png";
 import { NavLink, Link } from "react-router-dom";
 import "../../styles/header.css";
 import "../../styles/index.css";
-
+import { getCookie } from "../../functionHelper/GetSetCookie";
 const nav__links = [
   {
     display: "HOME",
@@ -29,6 +29,10 @@ const Header = () => {
   const toggleMenu = () => menuRef.current.classList.toggle("show__menu");
   const toggle = () => {
     setOpen(!isOpen);
+  };
+  const checkLogin = () => {
+    const cookie = getCookie("token");
+    return cookie ? true : false;
   };
   return (
     <div className="header shadow bg-white nav__wrapper d-flex align-items-center justify-content-between">
@@ -87,7 +91,7 @@ const Header = () => {
                 fontSize: "15px",
               }}
             ></i>{" "}
-            Get Started
+            {checkLogin() ? "Sign out" : "Login"}
           </Button>
         </Link>
       </div>

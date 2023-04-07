@@ -1,0 +1,113 @@
+.script-toolbar-container {
+  width: 100%;
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  background: #f5f6fa;
+}
+.script-toolbar:hover {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.script-toolbar {
+  background: none;
+  width: 60%;
+  height: 50px;
+  align-items: center;
+  border-bottom: 2px solid #e5f2fb;
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 13px 30px 13px;
+  border-radius: 10px;
+}
+.btn-back {
+  background: #edeef3;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 3px;
+}
+.btn-back:hover {
+  background: #ddf9fd;
+  border: 1px solid #52c8ff;
+}
+.left-bar {
+  display: flex;
+  align-items: center;
+}
+.script-title {
+  margin: 0px 0px 0px 13px;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 5px 10px 5px 10px;
+  border-radius: 10px;
+  color: #8993a5;
+}
+.script-title:hover {
+  background: #c8cbd1;
+  color: black;
+}
+.title {
+  margin-right: 10px;
+  font-size: 20px;
+  font-weight: 500;
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.btn-add {
+  background: #56cc6e !important;
+  border: #56cc6e !important;
+  margin-left: 13px;
+}
+.btn-save {
+  background-color: #00b1ff !important;
+  margin-left: 13px;
+  border: #00b1ff !important;
+}
+
+.modal-setting {
+  margin: 8px 8px 5px auto !important;
+  margin-right: 8px !important;
+  height: 98% !important;
+  max-width: 38% !important;
+}
+.modal-setting .modal-content {
+  border-radius: 12px !important;
+  height: 100%;
+  padding: 2px 8px 8px 8px !important;
+  background-color: #f5f6fa !important;
+}
+.title-m {
+  margin-bottom: 15px;
+}
+.script-name-section {
+  background: white;
+  padding: 20px 15px 20px 15px;
+  border-radius: 15px;
+  margin-top: 15px;
+}
+.script-name-section:hover {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.close-button {
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0px;
+  left: -35px;
+}

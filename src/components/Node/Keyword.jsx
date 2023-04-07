@@ -14,12 +14,11 @@ function Keyword({ color, background, border, data }) {
           height: "40px",
           background,
           color,
-          borderRadius: "12px",
+          borderRadius: "8px",
         }}
       >
         <input
           id="keyword"
-          className="form-control form-control-sm"
           style={{
             width: "89%",
             height: "40px",
@@ -30,6 +29,7 @@ function Keyword({ color, background, border, data }) {
             textAlign: "left",
             display: "inline",
             border: "none",
+            padding: "10px",
           }}
           placeholder="Keyword"
           type="text"
@@ -43,11 +43,6 @@ function Keyword({ color, background, border, data }) {
           //   });
           // }}
         />
-        <i
-          className="fa-solid fa-delete-left deleteCondition"
-          style={{ textAlign: "right" }}
-          onClick={() => data.deleteCondition(data.conditionMapping.id)}
-        ></i>
       </div>
       <Handle
         id={data.conditionMapping.id}

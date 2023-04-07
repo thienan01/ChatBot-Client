@@ -13,25 +13,33 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSignUp, setSignUp] = useState(false);
+  const [isFail, setFail] = useState(false);
   const handleLogin = () => {
     let apiURL = isSignUp ? "api/user/sign_up" : "api/user/login";
     try {
       let body = {
         fullname: fullName,
         username: username,
-        password: password,
+        password: rePassword,
       };
-      POST(BASE_URL + apiURL, JSON.stringify(body)).then((res) => {
-        setLoading(false);
-        if (res.http_status !== "OK") {
-          throw res.exception_code;
-        }
-        setCookie("token", res.token, 3);
-        setCookie("secret_key", res.secret_key, 3);
-        navigate("/home");
-      });
+      POST(BASE_URL + apiURL, JSON.stringify(body))
+        .then((res) => {
+          console.log("login", res);
+          setLoading(false);
+          if (res.http_status !== "OK") {
+            setFail(true);
+            throw res.exception_code;
+          }
+          setCookie("token", res.token, 3);
+          setCookie("secret_key", res.secret_key, 3);
+          navigate("/home");
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     } catch (e) {
       console.log(e);
     }
@@ -40,6 +48,16 @@ const Login = () => {
     if (e.key === "Enter") {
       setLoading(true);
       handleLogin();
+    }
+  };
+  const handleCheckPass = (val) => {
+    setRePassword(val);
+    if (isSignUp) {
+      if (val === password) {
+        setFail(false);
+      } else {
+        setFail(true);
+      }
     }
   };
   return (
@@ -89,6 +107,7 @@ const Login = () => {
 
             <div
               className="wrap-input100 validate-input"
+              hidden={isSignUp ? false : true}
               data-validate="Enter password"
             >
               <input
@@ -102,6 +121,33 @@ const Login = () => {
                 onKeyDown={(e) => handleKeyDown(e)}
               />
             </div>
+            <div
+              className="wrap-input100 validate-input"
+              data-validate="Valid email is: a@b.c"
+              style={{ marginBottom: "0px" }}
+            >
+              <input
+                className="input100"
+                type="password"
+                name="re-enterpass"
+                placeholder="Enter password"
+                value={rePassword}
+                onChange={(e) => {
+                  handleCheckPass(e.target.value);
+                }}
+                onKeyDown={(e) => handleKeyDown(e)}
+              />
+            </div>
+            <p
+              className="text-danger"
+              id="login-fail-text"
+              style={{
+                marginBottom: "37px",
+                visibility: isFail ? "visible" : "hidden",
+              }}
+            >
+              Wrong user or password!!
+            </p>
 
             <div className="wrap-login100-form-btn">
               <div className="login100-form-bgbtn"></div>
@@ -133,6 +179,7 @@ const Login = () => {
                 onClick={() => {
                   setSignUp(!isSignUp);
                 }}
+                style={{ cursor: "pointer" }}
               >
                 {isSignUp ? "Login" : "Sign Up"}
               </p>

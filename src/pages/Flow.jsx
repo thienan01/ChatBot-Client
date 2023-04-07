@@ -1,5 +1,6 @@
-import { useCallback, useState, useEffect, useContext } from "react";
+import { useCallback, useState, useEffect, useContext, useRef } from "react";
 import { Spinner, Button } from "reactstrap";
+import { Spin } from "antd";
 import ModalChatTrial from "../components/Node/ModalChatTrial";
 import ModalSetting from "../components/Node/ModalSetting";
 import { BASE_URL } from "../global/globalVar";
@@ -14,10 +15,13 @@ import ReactFlow, {
   useReactFlow,
   useNodesState,
   useEdgesState,
+  useNodes,
 } from "reactflow";
+import { useNavigate } from "react-router-dom";
 import NodeLayout from "../components/Node/NodeLayout";
 import StartNode from "../components/Node/StartNode";
 import CustomEdge from "../components/Node/ButtonEdge";
+import "./css/Flow.css";
 import "reactflow/dist/style.css";
 import { NotificationManager } from "react-notifications";
 const nodeTypes = {
@@ -49,6 +53,7 @@ const initialNode = [
 ];
 
 function Flow() {
+  const navigate = useNavigate();
   const context = useContext(ScriptContext);
   const defaultEdgeOptions = { animated: true };
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNode);
@@ -56,13 +61,14 @@ function Flow() {
   const [loading, isLoading] = useState(true);
   const [openChat, setOpenChat] = useState(false);
   const [openSetting, setOpenSetting] = useState(false);
-  const [openEditNode, setOpenEditNode] = useState(false);
   const [intents, setIntents] = useState([]);
   const [wrongMsg, setWrongMsg] = useState("");
   const [endMessage, setEndMessage] = useState("");
   const [contextChild, setContextChild] = useState(context.value);
-  const [currentSelectedNode, setCurrentSelectedNode] = useState({});
   const reactFlowInstance = useReactFlow();
+  const connectingNode = useRef(null);
+  const connecting = useRef(null);
+  const reactFlowWrapper = useRef(null);
   useEffect(() => {
     if (contextChild.id !== "") {
       Promise.all([
@@ -203,6 +209,8 @@ function Flow() {
 
   const handleSaveScript = () => {
     let lstNode = reactFlowInstance.getNodes();
+    console.log("Save", lstNode);
+
     let startNodeID = lstNode.filter(
       (node) => node.data.value === "STARTNODE"
     )[0].data.conditionMapping[0].target;
@@ -261,6 +269,7 @@ function Flow() {
     setEndMessage(endMsg);
   };
   const onConnect = useCallback((params) => {
+    connecting.state = true;
     setEdges((eds) =>
       addEdge(
         {
@@ -276,7 +285,57 @@ function Flow() {
       )
     );
   }, []);
+  const onConnectStart = useCallback((_, node) => {
+    connecting.state = false;
+    connectingNode.currentNode = node;
+  }, []);
+  const onConnectEnd = useCallback((event) => {
+    if (connecting.state === false) {
+      let data = nodeObject(
+        [
+          {
+            node_id: uniqueID(),
+            message: "",
+            position: [event.clientX, event.clientY - 130],
+            condition_mappings: [],
+          },
+        ],
+        intents
+      );
+      reactFlowInstance.addNodes(data.lstNode[0]);
+      let newEdg = {
+        id: connectingNode.currentNode.handleId,
+        source: connectingNode.currentNode.nodeId,
+        sourceHandle: connectingNode.currentNode.handleId,
+        target: data.lstNode[0].id,
+        type: "buttonedge",
+        data: {
+          delete: handleDeleteEdge,
+          nodeID: connectingNode.currentNode.nodeId,
+          sourceHandle: connectingNode.currentNode.handleId,
+        },
+      };
+      setEdges((eds) => [...eds, newEdg]);
 
+      setNodes((nodes) =>
+        nodes.map((node) => {
+          if (node.id === connectingNode.currentNode.nodeId) {
+            node.data.conditionMapping.forEach((cdn) => {
+              if (cdn.id === connectingNode.currentNode.handleId) {
+                cdn.next_node_ids = [data.lstNode[0].id];
+                cdn.target = data.lstNode[0].id;
+              }
+            });
+            return node;
+          }
+          return node;
+        })
+      );
+    }
+  }, []);
+  const handleEditScriptName = (value) => {
+    contextChild.name = value;
+  };
 
   return (
     <div style={{ height: "92vh" }}>
@@ -290,61 +349,62 @@ function Flow() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeType}
         style={rfStyle}
-        // onNodeClick={onNodeClick}
+        onConnectStart={onConnectStart}
+        onConnectEnd={onConnectEnd}
       >
         <MiniMap />
         <Controls />
       </ReactFlow>
-      <div
-        className="shadow bg-white"
-        style={{
-          textAlign: "center",
-          position: "relative",
-          top: "-68px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          marginLeft: "10px",
-          width: "400px",
-          padding: "10px",
-          marginBottom: "10px",
-          borderRadius: "10px",
-        }}
-      >
-        <Button
-          onClick={handleCreateNode}
-          className="btn-success"
-          style={{ margin: "0px 3px", width: "90px" }}
-          disabled={loading}
-        >
-          <i className="fa-solid fa-plus"></i> Add
-        </Button>
-        <Button
-          onClick={handleSaveScript}
-          color="primary"
-          style={{ margin: "0px 3px", width: "90px" }}
-          disabled={loading}
-        >
-          <i className="fa-regular fa-floppy-disk"></i> Save
-        </Button>
-        <Button
-          color="warning"
-          style={{ margin: "0px 3px", width: "90px" }}
-          onClick={() => {
-            setOpenChat(!openChat);
-          }}
-          disabled={loading}
-        >
-          <i className="fa-regular fa-square-caret-left"></i> Try
-        </Button>
-        <i
-          className="fa-solid fa-sliders"
-          id="setting"
-          onClick={() => {
-            setOpenSetting(!openSetting);
-          }}
-        ></i>
+      <div className="script-toolbar-container">
+        <div className="script-toolbar">
+          <div className="left-bar">
+            <div
+              className="btn-back"
+              onClick={() => {
+                navigate("/dashboard");
+              }}
+            >
+              <i className="fa-solid fa-arrow-left"></i>
+            </div>
+            <div
+              className="script-title"
+              onClick={() => {
+                setOpenSetting(!openSetting);
+              }}
+            >
+              <span className="title">{contextChild.name}</span>
+              <i className="fa-regular fa-newspaper"></i>
+            </div>
+            <div
+              className="script-title"
+              onClick={() => {
+                setOpenChat(!openChat);
+              }}
+            >
+              <span className="title">Try script</span>
+              <i class="fa-solid fa-comment-dots"></i>
+            </div>
+          </div>
+          <div className="right-bar">
+            <Button
+              onClick={handleCreateNode}
+              className="btn-add"
+              disabled={loading}
+            >
+              <i class="fa-regular fa-square-plus"></i> Create node
+            </Button>
+            <Button
+              onClick={handleSaveScript}
+              className="btn-save"
+              disabled={loading}
+            >
+              <i className="fa-regular fa-floppy-disk"></i> Update
+            </Button>
+          </div>
+        </div>
       </div>
-      <Spinner
+      <Spin
+        size="large"
         animation="border"
         variant="primary"
         className="text-primary"
@@ -362,6 +422,8 @@ function Flow() {
         message={wrongMsg}
         messageEnd={endMessage}
         setMsg={handleWrongMsg}
+        scriptName={contextChild.name}
+        handleEditScriptName={handleEditScriptName}
       />
     </div>
   );
