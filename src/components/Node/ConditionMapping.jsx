@@ -23,7 +23,8 @@ function ConditionMapping({ data }) {
         }}
         style={{
           top: "-30px",
-          left: "275px",
+          // left: "275px",
+          right: "-102%",
           width: "15px",
           height: "15px",
           border: "3px solid #F39C12",

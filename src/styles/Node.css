@@ -66,8 +66,9 @@
 
 #deleteIcon {
   position: absolute;
-  top: 2px;
-  left: 303px;
+  top: -2px;
+  /* left: 303px; */
+  right: -13%;
   width: 35px;
   border-radius: 10px;
   visibility: hidden;
@@ -87,11 +88,11 @@
   margin-top: 10px;
 }
 .hoverSession {
-  width: 40px;
+  width: 70px;
   height: 42px;
   position: absolute;
   top: 0px;
-  left: 300px;
+  right: -12%;
 }
 #deleteEdgeIcon {
   visibility: visible;

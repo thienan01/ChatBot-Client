@@ -89,10 +89,11 @@ function NodeLayout({ data }) {
         id="node"
         className="bg-white"
         style={{
-          width: "300px",
+          width: "min-content",
           background: "white",
           borderRadius: "15px",
           padding: "18px",
+          minWidth: "300px",
         }}
         onClick={handleOpenEditNodeModal}
       >
