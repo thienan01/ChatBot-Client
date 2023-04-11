@@ -1,10 +1,5 @@
-import {
-  Table,
-  Button,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-} from "reactstrap";
+import { Table, Button } from "reactstrap";
+import { Pagination } from "antd";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { GET, POST } from "../../functionHelper/APIFunction";
@@ -27,16 +22,15 @@ function ScriptTable() {
   const [isLoading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [scripts, setScripts] = useState([]);
-  const [filterDate, setFilterDate] = useState({});
-  const [filterSearch, setFilterSearch] = useState("");
   let context = useContext(ScriptContext);
-  const loadScript = (page) => {
+  const loadScript = (page, pageSize) => {
     if (page === undefined) page = 1;
     GET(
       BASE_URL +
         "api/script/get_pagination/by_user_id?page=" +
         page +
-        "&size=10"
+        "&size=" +
+        pageSize
     )
       .then((res) => {
         setLoading(false);
@@ -54,10 +48,13 @@ function ScriptTable() {
         });
         setScripts(res.items);
       })
-      .catch((err) => console.log(err));
+
+      .catch((err) => {
+        console.log(err);
+      });
   };
   useEffect(() => {
-    loadScript();
+    loadScript(1, 12);
   }, []);
 
   const handleToggleModal = () => {
@@ -81,29 +78,6 @@ function ScriptTable() {
         console.log(err);
       });
   };
-  const handleSearching = (val) => {
-    let body = {
-      page: 1,
-      size: 12,
-      keyword: val,
-    };
-    POST(BASE_URL + `api/script/get_pagination/`, JSON.stringify(body)).then(
-      (res) => {
-        res.items.map((item) => {
-          const createdDate = new Date(item.created_date);
-          const updatedDate = new Date(item.last_updated_date);
-          item.created_date = createdDate.toLocaleString("en-US");
-          item.last_updated_date = updatedDate.toLocaleString("en-US");
-          return item;
-        });
-        setScripts(res.items);
-        setPagination({
-          totalItem: res.total_items,
-          totalPage: res.total_pages,
-        });
-      }
-    );
-  };
   const handleFilter = ({ val, date }) => {
     let body = {
       page: 1,
@@ -126,6 +100,10 @@ function ScriptTable() {
     }
     POST(BASE_URL + `api/script/get_pagination/`, JSON.stringify(body)).then(
       (res) => {
+        setPagination({
+          totalPage: res.total_pages,
+          totalItems: res.total_items,
+        });
         res.items.map((item) => {
           const createdDate = new Date(item.created_date);
           const updatedDate = new Date(item.last_updated_date);
@@ -133,13 +111,13 @@ function ScriptTable() {
           item.last_updated_date = updatedDate.toLocaleString("en-US");
           return item;
         });
+        console.log("res in filter", res);
         setScripts(res.items);
-        setPagination({
-          totalItem: res.total_items,
-          totalPage: res.total_pages,
-        });
       }
     );
+  };
+  const handleJumpPagination = (page, pageSize) => {
+    loadScript(page, pageSize);
   };
   return (
     <>
@@ -213,7 +191,10 @@ function ScriptTable() {
                   </td>
                   <td
                     onClick={() => {
-                      context.setValue({ id: script.id, name: script.name });
+                      context.setValue({
+                        id: script.id,
+                        name: script.name,
+                      });
                       navigate("/train");
                     }}
                   >
@@ -227,7 +208,7 @@ function ScriptTable() {
                   >
                     {script.last_updated_date}
                   </td>
-                  <td className="d-flex action-row" >
+                  <td className="d-flex action-row">
                     <div
                       onClick={() => {
                         alert("dang loi =)");
@@ -259,19 +240,13 @@ function ScriptTable() {
             })}
           </tbody>
         </Table>
-        <Pagination aria-label="Page navigation example">
-          {Array.from({ length: pagination.totalPage }, (_, i) => (
-            <PaginationItem key={i}>
-              <PaginationLink
-                onClick={() => {
-                  loadScript(i + 1);
-                }}
-              >
-                {i + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-        </Pagination>
+        <Pagination
+          showQuickJumper
+          defaultCurrent={1}
+          total={pagination.totalItems}
+          pageSize={12}
+          onChange={handleJumpPagination}
+        />
 
         <div className="d-flex justify-content-center">
           <LoadingAnt display={isLoading} />

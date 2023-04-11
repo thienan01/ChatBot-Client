@@ -5,13 +5,13 @@ import {
   MessageOutlined,
   FileSearchOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu } from "antd";
+import { Layout, Menu } from "antd";
 import Footer from "../Footer/Footer";
 import IntentTable from "../Show/IntentTable";
 import ScriptTable from "../Show/ScriptTable";
 import "../../styles/sidebar.css";
-import { Input } from "reactstrap";
 import PatternTable from "../Show/PatternTable";
+import EntityTable from "../Show/EntityTable";
 const { Content, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -25,10 +25,11 @@ const items2 = [
   getItem("Scripts", "SCRIPT", <FileSearchOutlined />),
   getItem("Intents", "INTENT", <TagsOutlined />),
   getItem("Patterns", "PATTERN", <MessageOutlined />),
-  getItem("Entity", "sub2", <TeamOutlined />, [
-    getItem("Entity 1", "6"),
-    getItem("Entity 2", "8"),
-  ]),
+  getItem("Entity", "ENTITY", <TeamOutlined />),
+  // getItem("Team", "sub2", <TeamOutlined />, [
+  //   getItem("Entity 1", "6"),
+  //   getItem("Entity 2", "8"),
+  // ]),
 ];
 const App = () => {
   const [table, setTable] = useState("SCRIPT");
@@ -93,6 +94,9 @@ const App = () => {
                   break;
                 case "PATTERN":
                   return <PatternTable />;
+                  break;
+                case "ENTITY":
+                  return <EntityTable />;
                   break;
                 default:
                   return <div></div>;

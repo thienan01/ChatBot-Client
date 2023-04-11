@@ -1,12 +1,6 @@
-import {
-  Table,
-  Button,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Spinner,
-} from "reactstrap";
+import { Table, Button } from "reactstrap";
 import { useEffect, useState } from "react";
+import { Pagination } from "antd";
 import { GET, POST } from "../../functionHelper/APIFunction";
 import { BASE_URL } from "../../global/globalVar";
 import ModalUpdateIntent from "./ModalUpdateIntent";
@@ -30,14 +24,15 @@ function IntentTable() {
   const [isTraining, setIsTraining] = useState(false);
   const [isLoading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({});
-  const getIntent = (page) => {
+  const getIntent = (page, pageSize) => {
     if (page === undefined) page = 1;
 
     GET(
       BASE_URL +
         `api/intent/get_pagination/by_user_id?page=` +
         page +
-        `&size=12`
+        `&size=` +
+        pageSize
     ).then((res) => {
       res.items.map((item) => {
         const createdDate = new Date(item.created_date);
@@ -73,7 +68,7 @@ function IntentTable() {
       });
   };
 
-  useEffect(() => getIntent(), []);
+  useEffect(() => getIntent(1, 12), []);
 
   const handleToggleUpdateIntent = (id, name, code, type) => {
     setOpenUpdateModal(!openUpdateModal);
@@ -154,6 +149,12 @@ function IntentTable() {
       }
     );
   };
+  const handleTrain = () => {
+    POST(BASE_URL + "api/training/train", JSON.stringify({})).then((res) => {});
+  };
+  const handleJumpPagination = (page, pageSize) => {
+    getIntent(page, pageSize);
+  };
   return (
     <>
       <Breadcrumb className="breadcrumb">
@@ -170,6 +171,14 @@ function IntentTable() {
             }}
           >
             Check status
+          </Button>
+          <Button
+            className="btn-table btn-prim"
+            onClick={() => {
+              handleTrain();
+            }}
+          >
+            Train
           </Button>
         </div>
         <Button
@@ -253,19 +262,13 @@ function IntentTable() {
         <div className="d-flex justify-content-center">
           <LoadingAnt display={isLoading} />
         </div>
-        <Pagination aria-label="Page navigation example">
-          {Array.from({ length: pagination.totalPage }, (_, i) => (
-            <PaginationItem key={i}>
-              <PaginationLink
-                onClick={() => {
-                  getIntent(i + 1);
-                }}
-              >
-                {i + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-        </Pagination>
+        <Pagination
+          showQuickJumper
+          defaultCurrent={1}
+          total={pagination.totalItem}
+          pageSize={12}
+          onChange={handleJumpPagination}
+        />
 
         <ModalUpdateIntent
           open={openUpdateModal}

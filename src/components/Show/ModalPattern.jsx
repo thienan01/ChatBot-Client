@@ -9,11 +9,9 @@ import {
   ModalBody,
   ModalFooter,
   Table,
-  Input,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
 } from "reactstrap";
+import { Pagination } from "antd";
+
 import { BASE_URL } from "../../global/globalVar";
 import "../../styles/common.css";
 import Filter from "../Filter/Filter";
@@ -55,7 +53,7 @@ function ModalPattern({ open, toggle, value }) {
     setContent("");
   };
 
-  const reloadPattern = (page) => {
+  const reloadPattern = (page, pageSize = 10) => {
     if (page === undefined) page = 1;
     GET(
       BASE_URL +
@@ -63,7 +61,8 @@ function ModalPattern({ open, toggle, value }) {
         value.intentID +
         "?page=" +
         page +
-        "&size=10"
+        "&size=" +
+        pageSize
     ).then((res) => {
       res.items.map((item) => {
         const createdDate = new Date(item.created_date);
@@ -149,6 +148,9 @@ function ModalPattern({ open, toggle, value }) {
         });
       }
     );
+  };
+  const handleJumpPagination = (page, pageSize) => {
+    reloadPattern(page, pageSize);
   };
   return (
     <>
@@ -240,24 +242,13 @@ function ModalPattern({ open, toggle, value }) {
                 })}
               </tbody>
             </Table>
-            <Pagination aria-label="Page navigation example">
-              {Array.from(
-                {
-                  length: pagination.totalPage > 17 ? 17 : pagination.totalPage,
-                },
-                (_, i) => (
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      onClick={() => {
-                        reloadPattern(i + 1);
-                      }}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                )
-              )}
-            </Pagination>
+            <Pagination
+              showQuickJumper
+              defaultCurrent={1}
+              total={pagination.totalItem}
+              pageSize={10}
+              onChange={handleJumpPagination}
+            />
           </div>
         </ModalBody>
         <ModalFooter>

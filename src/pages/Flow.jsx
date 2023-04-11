@@ -15,7 +15,6 @@ import ReactFlow, {
   useReactFlow,
   useNodesState,
   useEdgesState,
-  useNodes,
 } from "reactflow";
 import { useNavigate } from "react-router-dom";
 import NodeLayout from "../components/Node/NodeLayout";
@@ -117,6 +116,7 @@ function Flow() {
       let url = contextChild.id === "" ? "api/script/add" : "api/script/update";
       POST(BASE_URL + url, JSON.stringify(body))
         .then((res) => {
+          isLoading(false);
           if (res.http_status === "OK") {
             setContextChild({ id: res.script.id, name: res.script.name });
             context.setValue({ id: res.script.id, name: res.script.name });
@@ -126,6 +126,7 @@ function Flow() {
           }
         })
         .catch((err) => {
+          isLoading(false);
           NotificationManager.error(err, "Error");
         });
     },
@@ -133,6 +134,7 @@ function Flow() {
   );
 
   const nodeObject = (nodes, intents) => {
+    console.log(intents);
     let lstNode = [];
     let lstEdge = [];
     nodes.forEach((node) => {
@@ -208,8 +210,8 @@ function Flow() {
   };
 
   const handleSaveScript = () => {
+    isLoading(true);
     let lstNode = reactFlowInstance.getNodes();
-    console.log("Save", lstNode);
 
     let startNodeID = lstNode.filter(
       (node) => node.data.value === "STARTNODE"
@@ -289,50 +291,53 @@ function Flow() {
     connecting.state = false;
     connectingNode.currentNode = node;
   }, []);
-  const onConnectEnd = useCallback((event) => {
-    if (connecting.state === false) {
-      let data = nodeObject(
-        [
-          {
-            node_id: uniqueID(),
-            message: "",
-            position: [event.clientX, event.clientY - 130],
-            condition_mappings: [],
-          },
-        ],
-        intents
-      );
-      reactFlowInstance.addNodes(data.lstNode[0]);
-      let newEdg = {
-        id: connectingNode.currentNode.handleId,
-        source: connectingNode.currentNode.nodeId,
-        sourceHandle: connectingNode.currentNode.handleId,
-        target: data.lstNode[0].id,
-        type: "buttonedge",
-        data: {
-          delete: handleDeleteEdge,
-          nodeID: connectingNode.currentNode.nodeId,
+  const onConnectEnd = useCallback(
+    (event) => {
+      if (connecting.state === false) {
+        let data = nodeObject(
+          [
+            {
+              node_id: uniqueID(),
+              message: "",
+              position: [event.clientX, event.clientY - 130],
+              condition_mappings: [],
+            },
+          ],
+          intents
+        );
+        reactFlowInstance.addNodes(data.lstNode[0]);
+        let newEdg = {
+          id: connectingNode.currentNode.handleId,
+          source: connectingNode.currentNode.nodeId,
           sourceHandle: connectingNode.currentNode.handleId,
-        },
-      };
-      setEdges((eds) => [...eds, newEdg]);
+          target: data.lstNode[0].id,
+          type: "buttonedge",
+          data: {
+            delete: handleDeleteEdge,
+            nodeID: connectingNode.currentNode.nodeId,
+            sourceHandle: connectingNode.currentNode.handleId,
+          },
+        };
+        setEdges((eds) => [...eds, newEdg]);
 
-      setNodes((nodes) =>
-        nodes.map((node) => {
-          if (node.id === connectingNode.currentNode.nodeId) {
-            node.data.conditionMapping.forEach((cdn) => {
-              if (cdn.id === connectingNode.currentNode.handleId) {
-                cdn.next_node_ids = [data.lstNode[0].id];
-                cdn.target = data.lstNode[0].id;
-              }
-            });
+        setNodes((nodes) =>
+          nodes.map((node) => {
+            if (node.id === connectingNode.currentNode.nodeId) {
+              node.data.conditionMapping.forEach((cdn) => {
+                if (cdn.id === connectingNode.currentNode.handleId) {
+                  cdn.next_node_ids = [data.lstNode[0].id];
+                  cdn.target = data.lstNode[0].id;
+                }
+              });
+              return node;
+            }
             return node;
-          }
-          return node;
-        })
-      );
-    }
-  }, []);
+          })
+        );
+      }
+    },
+    [intents]
+  );
   const handleEditScriptName = (value) => {
     contextChild.name = value;
   };

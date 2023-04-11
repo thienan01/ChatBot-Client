@@ -1,7 +1,9 @@
 import React from "react";
-import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
+import { Modal, ModalBody } from "reactstrap";
 import ChatContent from "../Chat/ChatContent/ChatContent";
+import uniqueID from "../../functionHelper/GenerateID";
 function ModalChatTrial({ openChat, closeModal }) {
+  console.log("re-render");
   return (
     <div>
       <Modal
@@ -10,7 +12,7 @@ function ModalChatTrial({ openChat, closeModal }) {
         className="modal-setting"
       >
         <ModalBody style={{ padding: "0px" }}>
-          <ChatContent />
+          <ChatContent sessionId={uniqueID()} />
         </ModalBody>
         <div className="close-button" onClick={closeModal}>
           <i className="fa-solid fa-circle-xmark"></i>

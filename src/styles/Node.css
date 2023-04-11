@@ -56,13 +56,6 @@
   background: #ebf5fb;
   border: 0.5px solid #3498db;
 }
-.inputKeyword {
-  border: 0px solid #ec7063;
-}
-.inputKeyword:hover {
-  border: 1px solid #ec7063;
-  background: #fff7f6 !important;
-}
 #intent {
   border: 0px solid #ec7063;
 }

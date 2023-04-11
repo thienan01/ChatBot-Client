@@ -1,48 +1,16 @@
-import React from "react";
 import { Handle, Position } from "reactflow";
-import { useState } from "react";
-
-function Keyword({ color, background, border, data }) {
-  const [key, setKey] = useState(data.conditionMapping.keyword);
+import "./css/conditionMapping.css";
+function Keyword({ data }) {
   return (
     <>
-      <div
-        className="inputKeyword"
-        style={{
-          margin: "5px 0px",
-          width: "100%",
-          height: "40px",
-          background,
-          color,
-          borderRadius: "8px",
-        }}
-      >
-        <input
-          id="keyword"
-          style={{
-            width: "89%",
-            height: "40px",
-            background: "none",
-            color,
-            fontSize: "15px",
-            fontWeight: "600",
-            textAlign: "left",
-            display: "inline",
-            border: "none",
-            padding: "10px",
-          }}
-          placeholder="Keyword"
-          type="text"
-          value={data.conditionMapping.keyword}
-          readOnly
-          // onChange={(e) => {
-          //   setKey(e.target.value);
-          //   data.setCondition({
-          //     conditionId: data.conditionMapping.id,
-          //     keyword: e.target.value,
-          //   });
-          // }}
-        />
+      <div className="condition-container-keyword">
+        <div id="keyword">
+          <div className="condition-title">
+            <i class="fa-solid fa-pen-to-square"></i> Keyword
+          </div>
+          <div />
+          {data.conditionMapping.keyword}
+        </div>
       </div>
       <Handle
         id={data.conditionMapping.id}
@@ -52,7 +20,7 @@ function Keyword({ color, background, border, data }) {
           data.setCondition(param);
         }}
         style={{
-          top: "-17px",
+          top: "-30px",
           left: "275px",
           width: "15px",
           height: "15px",

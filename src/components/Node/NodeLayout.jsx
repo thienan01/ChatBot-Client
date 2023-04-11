@@ -2,7 +2,6 @@ import { Fragment, memo, useState, useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import ConditionMapping from "./ConditionMapping";
 import Keyword from "./Keyword";
-import { Button } from "reactstrap";
 import uniqueID from "../../functionHelper/GenerateID";
 import EditNodeModal from "../Modal/EditNodeModal";
 import "../../styles/Node.css";
@@ -10,10 +9,6 @@ const textSize = {
   fontSize: "16px",
 };
 
-const autoSize = (e) => {
-  e.target.style.height = "inherit";
-  e.target.style.height = `${e.target.scrollHeight}px`;
-};
 function NodeLayout({ data }) {
   const [conditions, setConditions] = useState(data.conditionMapping);
   const [value, setValue] = useState(data.value);
@@ -134,7 +129,10 @@ function NodeLayout({ data }) {
           </div>
           <div
             className="condition-mapping"
-            style={{ alignItems: "center", marginTop: "20px" }}
+            style={{
+              alignItems: "center",
+              marginTop: "20px",
+            }}
           >
             <div className="replyIcon">
               <i className="fa-solid fa-shuffle text-white"></i>
@@ -149,7 +147,7 @@ function NodeLayout({ data }) {
             >
               Customer's response
             </label>
-            <div className="intent">
+            <div className="intent" style={{ marginTop: "10px" }}>
               {conditions.map((item, idx) => {
                 if (
                   item.predict_type === "INTENT" ||
@@ -158,13 +156,10 @@ function NodeLayout({ data }) {
                   return (
                     <div
                       className="condition-intent"
+                      style={{ height: "65px" }}
                       key={++idx}
-                      style={{ height: "48px" }}
                     >
                       <ConditionMapping
-                        background="#f4f4f6"
-                        color="#1e3050"
-                        border="0.5px solid #FCF3CF"
                         data={{
                           intents: data.intents,
                           conditionMapping: item,
@@ -179,13 +174,9 @@ function NodeLayout({ data }) {
                     <div
                       className="condition-intent"
                       key={item.id}
-                      style={{ height: "48px" }}
+                      style={{ height: "65px" }}
                     >
                       <Keyword
-                        id="keyword"
-                        background="#f4f4f6"
-                        color="#1e3050"
-                        border="0.2px solid #FADBD8"
                         data={{
                           conditionMapping: item,
                           setCondition: setConditionMappingKeyword,

@@ -15,9 +15,9 @@ import { BASE_URL } from "../../../global/globalVar";
 import { getCookie } from "../../../functionHelper/GetSetCookie";
 import { ScriptContext } from "../../Context/ScriptContext";
 
-function ChatContent() {
+function ChatContent({ sessionId }) {
   const context = useContext(ScriptContext);
-
+  console.log("id chat", sessionId);
   const bottomRef = useRef(null);
   const [chatItems, setChatItems] = useState([]);
   const [currentNode, setCurrentNode] = useState("_BEGIN");
@@ -36,6 +36,8 @@ function ChatContent() {
       script_id: context.value.id,
       current_node_id: currentNode,
       message: value,
+      session_id: sessionId,
+      is_trying: true,
     };
     POST(BASE_URL + "api/training/predict", JSON.stringify(body))
       .then((res) => {

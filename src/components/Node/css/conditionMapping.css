@@ -1,0 +1,32 @@
+.condition-title {
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+.condition-title * {
+  font-size: 10px;
+}
+#intent {
+  background-color: #f4f4f6;
+  border-radius: 8px;
+  padding: 5px 10px;
+  margin-top: 5px;
+}
+#keyword {
+  background-color: #f4f4f6;
+  border-radius: 8px;
+  padding: 5px 10px;
+  margin-top: 5px;
+}
+#intent:hover .condition-title {
+  color: #f5b041;
+}
+.condition-container {
+  margin: 0px;
+}
+#keyword:hover {
+  border: 1px solid #ec7063;
+  background: #fff7f6 !important;
+}
+#keyword:hover .condition-title {
+  color: #ec7063;
+}

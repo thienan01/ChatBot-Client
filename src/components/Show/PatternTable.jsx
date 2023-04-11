@@ -1,4 +1,5 @@
-import { Table, Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { Table, PaginationItem, PaginationLink } from "reactstrap";
+import { Pagination } from "antd";
 import { useEffect, useState } from "react";
 import { GET, POST } from "../../functionHelper/APIFunction";
 import { BASE_URL } from "../../global/globalVar";
@@ -11,12 +12,13 @@ function PatternTable() {
   const [patterns, setPatterns] = useState([]);
   const [pagination, setPagination] = useState({});
   const [isLoading, setLoading] = useState(true);
-  const getPattern = (page) => {
+  const getPattern = (page, pageSize) => {
     GET(
       BASE_URL +
         "api/pattern/get_pagination/by_user_id?page=" +
         page +
-        "&size=12"
+        "&size=" +
+        pageSize
     )
       .then((res) => {
         res.items.map((item) => {
@@ -39,7 +41,7 @@ function PatternTable() {
       });
   };
   useEffect(() => {
-    getPattern(1);
+    getPattern(1, 12);
   }, []);
 
   const handleFilter = ({ val, date }) => {
@@ -78,6 +80,9 @@ function PatternTable() {
         });
       }
     );
+  };
+  const handleJumpPagination = (page, pageSize) => {
+    getPattern(page, pageSize);
   };
   return (
     <>
@@ -148,19 +153,13 @@ function PatternTable() {
           <LoadingAnt display={isLoading} />
         </div>
 
-        {/* <Pagination>
-          {Array.from({ length: pagination.totalPage }, (_, i) => (
-            <PaginationItem key={i}>
-              <PaginationLink
-                onClick={() => {
-                  getPattern(i + 1);
-                }}
-              >
-                {i + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-        </Pagination> */}
+        <Pagination
+          showQuickJumper
+          defaultCurrent={2}
+          total={pagination.totalItem}
+          pagesize={12}
+          onChange={handleJumpPagination}
+        />
       </div>
     </>
   );
