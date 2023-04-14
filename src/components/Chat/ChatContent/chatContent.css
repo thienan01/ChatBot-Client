@@ -106,7 +106,7 @@
   padding-top: 30px;
 }
 .sendNewMessage {
-  background-color: #fff;
+  background-color: #f5f6fa;
   display: flex;
   justify-content: space-between;
   padding: 10px;
@@ -146,4 +146,9 @@
 #sendMsgBtn {
   background-color: #3b5bfe;
   color: #fff;
+}
+.typing {
+  width: 55px;
+  position: absolute;
+  top: 82%;
 }

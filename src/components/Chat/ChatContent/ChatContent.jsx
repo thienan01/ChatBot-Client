@@ -14,7 +14,7 @@ import { NotificationManager } from "react-notifications";
 import { BASE_URL } from "../../../global/globalVar";
 import { getCookie } from "../../../functionHelper/GetSetCookie";
 import { ScriptContext } from "../../Context/ScriptContext";
-
+import typing from "../../../assets/Typing.gif";
 function ChatContent({ sessionId }) {
   const context = useContext(ScriptContext);
   console.log("id chat", sessionId);
@@ -22,7 +22,9 @@ function ChatContent({ sessionId }) {
   const [chatItems, setChatItems] = useState([]);
   const [currentNode, setCurrentNode] = useState("_BEGIN");
   const [value, setValue] = useState("");
+  const [isShowTyping, setShowTyping] = useState(false);
   const handleSendMessage = useCallback(() => {
+    setShowTyping(true);
     setChatItems((citems) => [
       ...citems,
       {
@@ -56,6 +58,7 @@ function ChatContent({ sessionId }) {
         } else {
           NotificationManager.error(res.exception_code, "Error");
         }
+        setShowTyping(false);
       })
       .catch((err) => {
         console.log(err);
@@ -105,6 +108,12 @@ function ChatContent({ sessionId }) {
         </div>
       </div>
       <div className="content__footer">
+        <img
+          src={typing}
+          alt=""
+          className="typing"
+          style={{ display: isShowTyping ? "block" : "none" }}
+        />
         <div className="sendNewMessage">
           <button className="addFiles">
             <i className="ri-add-circle-fill"></i>

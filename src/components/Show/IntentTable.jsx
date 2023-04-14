@@ -86,7 +86,7 @@ function IntentTable() {
       .then((res) => {
         if (res.http_status === "OK") {
           NotificationManager.success("Delete successfully", "success");
-          getIntent();
+          getIntent(1, 12);
         }
       })
       .catch((err) => {

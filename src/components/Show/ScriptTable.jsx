@@ -71,7 +71,7 @@ function ScriptTable() {
       .then((res) => {
         if (res.http_status === "OK") {
           NotificationManager.success("Delete successfully", "success");
-          loadScript();
+          loadScript(1, 12);
         }
       })
       .catch((err) => {

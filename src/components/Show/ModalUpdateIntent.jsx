@@ -33,7 +33,7 @@ function ModalUpdateIntent({ open, toggle, value, reload }) {
     let url = value.type === "save" ? "api/intent/add" : "api/intent/update";
     POST(BASE_URL + url, JSON.stringify(body))
       .then((res) => {
-        reload();
+        reload(1, 12);
         toggle();
         NotificationManager.success("Update successfully", "success");
       })

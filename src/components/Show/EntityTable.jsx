@@ -1,7 +1,7 @@
 import { Table, Button } from "reactstrap";
-import { Pagination } from "antd";
+import { Pagination, theme } from "antd";
 import { useEffect, useState } from "react";
-import { DELETE, GET, POST } from "../../functionHelper/APIFunction";
+import { GET, POST } from "../../functionHelper/APIFunction";
 import { BASE_URL } from "../../global/globalVar";
 import { NotificationManager } from "react-notifications";
 import { Breadcrumb } from "antd";
@@ -10,11 +10,17 @@ import Filter from "../Filter/Filter";
 import SearchBar from "../Filter/SearchBar";
 import LoadingAnt from "../Loading/LoadingAnt";
 import AddEntityModal from "../Modal/AddEntityModal";
+import ShowEntityModal from "../Modal/ShowEntityModal";
+import UpdateEntityModal from "../Modal/UpdateEntityModal";
 function EntityTable() {
   const [entity, setEntity] = useState([]);
   const [pagination, setPagination] = useState({});
   const [isLoading, setLoading] = useState(true);
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [openEntityModal, setOpenEntityModal] = useState(false);
+  const [openUpdateEntityModal, setOpenUpdateEntityModal] = useState(false);
+  const [currentEntity, setCurrentEntity] = useState("");
+  const [currentEntityType, setCurrentEntityType] = useState({});
 
   const loadEntity = (page, pageSize) => {
     let body = {
@@ -24,6 +30,13 @@ function EntityTable() {
     POST(BASE_URL + "api/entity_type/", JSON.stringify(body))
       .then((res) => {
         if (res.http_status !== "OK") throw res;
+        res.items.map((item) => {
+          const createdDate = new Date(item.created_date);
+          const updatedDate = new Date(item.last_updated_date);
+          item.created_date = createdDate.toLocaleString("en-US");
+          item.last_updated_date = updatedDate.toLocaleString("en-US");
+          return item;
+        });
         setEntity(res.items);
         setPagination({
           totalItem: res.total_items,
@@ -59,13 +72,13 @@ function EntityTable() {
       body.keyword = val;
     }
     POST(BASE_URL + `api/entity_type/`, JSON.stringify(body)).then((res) => {
-      //   res.items.map((item) => {
-      //     const createdDate = new Date(item.created_date);
-      //     const updatedDate = new Date(item.last_updated_date);
-      //     item.created_date = createdDate.toLocaleString("en-US");
-      //     item.last_updated_date = updatedDate.toLocaleString("en-US");
-      //     return item;
-      //   });
+      res.items.map((item) => {
+        const createdDate = new Date(item.created_date);
+        const updatedDate = new Date(item.last_updated_date);
+        item.created_date = createdDate.toLocaleString("en-US");
+        item.last_updated_date = updatedDate.toLocaleString("en-US");
+        return item;
+      });
       setEntity(res.items);
       setPagination({
         totalItem: res.total_items,
@@ -93,13 +106,43 @@ function EntityTable() {
     let body = {
       ids: [id],
     };
-    DELETE(BASE_URL + "api/entity_type/delete", JSON.stringify(body))
+    POST(BASE_URL + "api/entity_type/delete", JSON.stringify(body))
       .then((res) => {
-        console.log(res);
+        if (res.http_status === "OK") {
+          loadEntity(1, 12);
+          NotificationManager.success("Deleted successfully", "Success");
+        }
       })
       .catch((e) => {
         console.log(e);
       });
+  };
+  const handleToggleEntityModal = (id) => {
+    setCurrentEntity(id);
+    setOpenEntityModal(!openEntityModal);
+  };
+  const handleToggleUpdateEntityModal = (name, entityTypeId) => {
+    entityTypeId && entityTypeId
+      ? setCurrentEntityType({ id: entityTypeId, name: name })
+      : setCurrentEntityType({});
+    setOpenUpdateEntityModal(!openUpdateEntityModal);
+  };
+  const handleUpdateEntityType = (name, entityTypeId) => {
+    let body = {
+      id: entityTypeId,
+      name: name,
+    };
+    POST(BASE_URL + "api/entity_type/update", JSON.stringify(body))
+      .then((res) => {
+        if (res.http_status === "OK") {
+          NotificationManager.success("Updated successfully!!", "Success");
+          loadEntity(1, 12);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    handleToggleUpdateEntityModal();
   };
   return (
     <>
@@ -137,6 +180,10 @@ function EntityTable() {
                 <span className="vertical" />
                 Entity name
               </th>
+              <th>
+                <span className="vertical" />
+                Created date
+              </th>
               <th style={{ width: "15%" }}>
                 <span className="vertical" />
                 <i className="fa-regular fa-square-minus"></i>
@@ -147,12 +194,31 @@ function EntityTable() {
             {entity.map((entity, idx) => {
               return (
                 <tr key={entity.id}>
-                  <td>{++idx}</td>
-                  <td>{entity.name}</td>
+                  <td
+                    onClick={() => {
+                      handleToggleEntityModal(entity.id);
+                    }}
+                  >
+                    {++idx}
+                  </td>
+                  <td
+                    onClick={() => {
+                      handleToggleEntityModal(entity.id);
+                    }}
+                  >
+                    {entity.name}
+                  </td>
+                  <td
+                    onClick={() => {
+                      handleToggleEntityModal(entity.id);
+                    }}
+                  >
+                    {entity.created_date}
+                  </td>
                   <td className="d-flex action-row">
                     <div
                       onClick={() => {
-                        alert("dang loi =)");
+                        handleToggleUpdateEntityModal(entity.name, entity.id);
                       }}
                     >
                       <i className="fa-solid fa-pen-to-square text-primary"></i>
@@ -187,6 +253,17 @@ function EntityTable() {
         />
       </div>
       <AddEntityModal open={openAddModal} toggle={handleToggleModal} />
+      <ShowEntityModal
+        open={openEntityModal}
+        toggle={handleToggleEntityModal}
+        entityId={currentEntity}
+      />
+      <UpdateEntityModal
+        open={openUpdateEntityModal}
+        toggle={handleToggleUpdateEntityModal}
+        entityType={currentEntityType}
+        func={handleUpdateEntityType}
+      />
     </>
   );
 }
