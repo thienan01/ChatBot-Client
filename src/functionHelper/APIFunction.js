@@ -40,19 +40,27 @@ const DELETE = async (_url, _body) => {
   return res;
 };
 
-const UPLOAD = async (_url, _body) => {
-  let res = await $.ajax({
-    type: "POST",
-    url: _url,
-    data: _body,
-    headers: {
-      Authorization: "Token " + getCookie("token"),
-    },
-    contentType: false,
-    processData: false,
-    cache: false,
+const UPLOAD = async (_url, file) => {
+  return new Promise((resolve, reject) => {
+    var data, xhr;
+
+    data = new FormData();
+    data.append("file", file);
+
+    xhr = new XMLHttpRequest();
+    let res;
+    xhr.open("POST", _url, true);
+    xhr.setRequestHeader("Authorization", "Token " + getCookie("token"));
+    xhr.onreadystatechange = function (response) {
+      if (response.target.readyState === 4) {
+        resolve(JSON.parse(response.target.response));
+      }
+    };
+    xhr.addEventListener("error", function (event) {
+      reject(event);
+    });
+    xhr.send(data);
   });
-  return res;
 };
 
 export { GET, POST, DELETE, UPLOAD };

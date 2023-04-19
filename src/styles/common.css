@@ -85,4 +85,8 @@ tr:hover * {
 .dropdown-menu-import-excel {
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   top: -10px !important;
+  width: auto;
+}
+.icon-import {
+  margin-right: 10px;
 }

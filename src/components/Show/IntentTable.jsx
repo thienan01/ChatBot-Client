@@ -187,12 +187,11 @@ function IntentTable() {
     input.onchange = (e) => {
       var file = e.target.files[0];
       console.log("this file", file);
-      let body = {
-        file: file,
-      };
-      UPLOAD(BASE_URL + "api/pattern/import/excel", body)
+      UPLOAD(BASE_URL + "api/pattern/import/excel", file)
         .then((res) => {
-          console.log(res);
+          if (res.http_status === "OK") {
+            NotificationManager.success("Upload file successfully", "Success");
+          }
         })
         .catch((e) => {
           console.log(e);
@@ -233,14 +232,16 @@ function IntentTable() {
                 className="fa-solid fa-cloud-arrow-up"
                 style={{ marginRight: "4px" }}
               ></i>
-              Upload
+              Import file Excel
             </DropdownToggle>
             <DropdownMenu className="dropdown-menu-import-excel">
               <DropdownItem onClick={() => handleDownloadTmp()}>
+                <i class="fa-solid fa-cloud-arrow-down icon-import"></i>
                 Download template
               </DropdownItem>
               <DropdownItem onClick={handleImportExcel}>
-                Import Excel
+                <i class="fa-solid fa-file-import icon-import"></i>
+                Import file Excel
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
