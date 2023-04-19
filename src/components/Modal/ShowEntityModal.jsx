@@ -1,14 +1,7 @@
 import { useState, useEffect } from "react";
 import { GET, POST } from "../../functionHelper/APIFunction";
 import { NotificationManager } from "react-notifications";
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Table,
-} from "reactstrap";
+import { Button, Modal, ModalHeader, ModalBody, Table } from "reactstrap";
 import { Pagination } from "antd";
 
 import { BASE_URL } from "../../global/globalVar";
@@ -113,29 +106,16 @@ function ShowEntityModal({ open, toggle, entityId }) {
                   return (
                     <tr key={entity.id}>
                       <td>{++idx}</td>
-                      <td>{entity.value}</td>
-                      <td>{entity.pattern.content}</td>
-                      {/* <td className="d-flex action-row">
-                        <div>
-                          <i
-                            className="fa-solid fa-pen-to-square text-primary"
-                            // onClick={() => {
-                            //   handleToggleModal();
-                            //   setCurrentPattern({
-                            //     id: pattern.id,
-                            //     content: pattern.content,
-                            //   });
-                            // }}
-                          ></i>
-                        </div>
-                        <div
-                        //   onClick={() => {
-                        //     handleDeletePattern(pattern.id);
-                        //   }}
-                        >
-                          <i className="fa-solid fa-trash-can text-danger"></i>
-                        </div>
-                      </td> */}
+                      <td>
+                        {entity.hasOwnProperty("value")
+                          ? entity.value
+                          : "Missing data"}
+                      </td>
+                      <td>
+                        {entity.hasOwnProperty("pattern")
+                          ? entity.pattern.content
+                          : "Missing data"}
+                      </td>
                     </tr>
                   );
                 })}

@@ -140,3 +140,10 @@
   margin-right: 5px;
   min-width: 113px;
 }
+#btn-import {
+  border: none !important;
+  background: #56cc6e !important;
+  padding: 6px 12px !important;
+  display: block !important;
+  color: white !important;
+}

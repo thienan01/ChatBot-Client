@@ -61,6 +61,7 @@ function Flow() {
   const [openChat, setOpenChat] = useState(false);
   const [openSetting, setOpenSetting] = useState(false);
   const [intents, setIntents] = useState([]);
+  const [entityType, setEntityType] = useState([]);
   const [wrongMsg, setWrongMsg] = useState("");
   const [endMessage, setEndMessage] = useState("");
   const [contextChild, setContextChild] = useState(context.value);
@@ -73,13 +74,19 @@ function Flow() {
       Promise.all([
         GET(BASE_URL + "api/intent/get_all/by_user_id"),
         GET(BASE_URL + "api/script/get/" + context.value.id),
+        POST(
+          BASE_URL + "api/entity_type/",
+          JSON.stringify({ page: 1, size: 100 })
+        ),
       ])
         .then((res) => {
+          console.log("load", res);
           isLoading(false);
           setIntents(res[0].intents);
+          setEntityType(res[2].items);
           setWrongMsg(res[1].wrong_message);
           setEndMessage(res[1].end_message);
-          let data = nodeObject(res[1].nodes, res[0].intents);
+          let data = nodeObject(res[1].nodes, res[0].intents, res[2].items);
           setNodes((nodes) => [...nodes, ...data.lstNode]);
           setEdges(data.lstEdge);
         })
@@ -90,16 +97,25 @@ function Flow() {
           );
         });
     } else {
-      GET(BASE_URL + "api/intent/get_all/by_user_id")
+      Promise.all([
+        GET(BASE_URL + "api/intent/get_all/by_user_id"),
+        POST(
+          BASE_URL + "api/entity_type/",
+          JSON.stringify({ page: 1, size: 100 })
+        ),
+      ])
         .then((res) => {
           isLoading(false);
-          if (res.http_status !== "OK") {
+          if (res[0].http_status !== "OK" || res[1].http_status !== "OK") {
             throw res.exception_code;
           }
-          setIntents(res.intents);
+          console.log("create", res);
+          setIntents(res[0].intents);
+          setEntityType(res[1].items);
         })
         .catch((err) => {
           console.log(err);
+          NotificationManager.error("Some things went wrong!!", "Error");
         });
     }
   }, []);
@@ -133,8 +149,7 @@ function Flow() {
     [wrongMsg, endMessage, contextChild]
   );
 
-  const nodeObject = (nodes, intents) => {
-    console.log(intents);
+  const nodeObject = (nodes, intents, entityType) => {
     let lstNode = [];
     let lstEdge = [];
     nodes.forEach((node) => {
@@ -153,6 +168,7 @@ function Flow() {
           isFirst: node.is_first_node ? node.is_first_node : false,
           value: node.message,
           intents: intents,
+          entityType: entityType,
           conditionMapping: node.condition_mappings,
           delete: handleDeleteNode,
         },
@@ -204,7 +220,8 @@ function Flow() {
           condition_mappings: [],
         },
       ],
-      intents
+      intents,
+      entityType
     );
     reactFlowInstance.addNodes(data.lstNode[0]);
   };
@@ -303,7 +320,8 @@ function Flow() {
               condition_mappings: [],
             },
           ],
-          intents
+          intents,
+          entityType
         );
         reactFlowInstance.addNodes(data.lstNode[0]);
         let newEdg = {

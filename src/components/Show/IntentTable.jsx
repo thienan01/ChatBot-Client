@@ -1,7 +1,14 @@
-import { Table, Button } from "reactstrap";
+import {
+  Table,
+  Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 import { useEffect, useState } from "react";
 import { Pagination } from "antd";
-import { GET, POST } from "../../functionHelper/APIFunction";
+import { GET, POST, UPLOAD } from "../../functionHelper/APIFunction";
 import { BASE_URL } from "../../global/globalVar";
 import ModalUpdateIntent from "./ModalUpdateIntent";
 import ModalPattern from "./ModalPattern";
@@ -24,6 +31,7 @@ function IntentTable() {
   const [isTraining, setIsTraining] = useState(false);
   const [isLoading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({});
+  const [isToggleImport, setToggleImport] = useState(false);
   const getIntent = (page, pageSize) => {
     if (page === undefined) page = 1;
 
@@ -155,6 +163,43 @@ function IntentTable() {
   const handleJumpPagination = (page, pageSize) => {
     getIntent(page, pageSize);
   };
+
+  const handleToggleImport = () => {
+    setToggleImport((preState) => !preState);
+  };
+  const handleDownloadTmp = () => {
+    GET(BASE_URL + "api/pattern/import/excel/get_template")
+      .then((res) => {
+        if (res.http_status === "OK") {
+          window.location.replace(res.link);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+        NotificationManager.error("Some things went wrong!!", "Error");
+      });
+  };
+  const handleImportExcel = () => {
+    console.log("import");
+    var input = document.createElement("input");
+    input.type = "file";
+
+    input.onchange = (e) => {
+      var file = e.target.files[0];
+      console.log("this file", file);
+      let body = {
+        file: file,
+      };
+      UPLOAD(BASE_URL + "api/pattern/import/excel", body)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    };
+    input.click();
+  };
   return (
     <>
       <Breadcrumb className="breadcrumb">
@@ -181,16 +226,35 @@ function IntentTable() {
             Train
           </Button>
         </div>
-        <Button
-          onClick={() => {
-            handleToggleUpdateIntent("", "", "", "save");
-          }}
-          className="btn-table"
-          style={{ background: "#56cc6e", border: "none" }}
-        >
-          <i className="fa-solid fa-plus" style={{ marginRight: "4px" }}></i>
-          Create
-        </Button>
+        <div className="d-flex">
+          <Dropdown isOpen={isToggleImport} toggle={handleToggleImport}>
+            <DropdownToggle className="btn-table" id="btn-import">
+              <i
+                className="fa-solid fa-cloud-arrow-up"
+                style={{ marginRight: "4px" }}
+              ></i>
+              Upload
+            </DropdownToggle>
+            <DropdownMenu className="dropdown-menu-import-excel">
+              <DropdownItem onClick={() => handleDownloadTmp()}>
+                Download template
+              </DropdownItem>
+              <DropdownItem onClick={handleImportExcel}>
+                Import Excel
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <Button
+            onClick={() => {
+              handleToggleUpdateIntent("", "", "", "save");
+            }}
+            className="btn-table"
+            style={{ background: "#56cc6e", border: "none" }}
+          >
+            <i className="fa-solid fa-plus" style={{ marginRight: "4px" }}></i>
+            Create
+          </Button>
+        </div>
       </div>
 
       <Filter func={handleFilter} />

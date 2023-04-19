@@ -153,3 +153,32 @@
   width: 97% !important;
   border-radius: 7px;
 }
+.select-entity-section {
+  z-index: 6;
+}
+.title-variable {
+  font-size: 14px;
+  color: #aab2bd;
+  margin-right: 10px;
+}
+.variable-item {
+  color: white;
+  font-size: 14px;
+  background: #1e3150;
+  padding: 0px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.icon-entity {
+  color: #52c8ff;
+  margin-right: 10px;
+}
+.closeEntityOptionn {
+  top: 2px !important;
+}
+.show-entity-typee {
+  padding: 0px 12px !important;
+}
+.entity-type-itemss {
+  padding: 0px !important;
+}

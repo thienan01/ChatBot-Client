@@ -25,7 +25,7 @@ const items2 = [
   getItem("Scripts", "SCRIPT", <FileSearchOutlined />),
   getItem("Intents", "INTENT", <TagsOutlined />),
   getItem("Patterns", "PATTERN", <MessageOutlined />),
-  getItem("Entity", "ENTITY", <TeamOutlined />),
+  getItem("Entity type", "ENTITY", <TeamOutlined />),
   // getItem("Team", "sub2", <TeamOutlined />, [
   //   getItem("Entity 1", "6"),
   //   getItem("Entity 2", "8"),

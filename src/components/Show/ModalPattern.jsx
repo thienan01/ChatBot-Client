@@ -115,12 +115,8 @@ function ModalPattern({ open, toggle, value }) {
   const handleToggleModal = () => {
     setOpenModal(!openModal);
   };
-  const handleUpdate = (id, content) => {
-    let body = {
-      id: id,
-      content: content,
-    };
-    POST(BASE_URL + "api/pattern/update", JSON.stringify(body))
+  const handleUpdate = (pattern) => {
+    POST(BASE_URL + "api/pattern/update", JSON.stringify(pattern))
       .then((res) => {
         if (res.http_status === "OK") {
           setOpenModal(!openModal);
@@ -216,7 +212,7 @@ function ModalPattern({ open, toggle, value }) {
       text.selectionEnd - text.selectionStart
     );
 
-    console.log("rrrr", selection);
+    console.log("rrrr", text);
     if (selection !== "") {
       setShowEntityTypeSelection(true);
       setCurrentEntityValue({
@@ -254,6 +250,7 @@ function ModalPattern({ open, toggle, value }) {
         };
         setEntities((entities) => [...entities, entity]);
         setShowEntityTypeSelection(false);
+        handleHighlightText(entity);
       }
     }
   };
@@ -288,6 +285,17 @@ function ModalPattern({ open, toggle, value }) {
       .catch((e) => {
         console.log(e);
       });
+  };
+  const handleDivTag = (value) => {
+    let divValue = document.querySelector(".background-highlight");
+    divValue.innerHTML = value;
+  };
+  const handleHighlightText = (text) => {
+    if (text) {
+      let divValue = document.querySelector(".background-highlight");
+
+      console.log("hihg", entities);
+    }
   };
   return (
     <>
@@ -378,18 +386,22 @@ function ModalPattern({ open, toggle, value }) {
               <div className="createPatternSection">
                 <div className="patternInputArea" id="searchArea">
                   <i className="fa-solid fa-circle-plus"></i>
-                  <input
-                    type="search"
-                    className="patternInput"
-                    placeholder="Enter pattern..."
-                    value={content}
-                    onChange={(e) => {
-                      setContent(e.target.value);
-                    }}
-                    id="pattern-name"
-                    onSelect={getSelectedText}
-                    autoComplete="off"
-                  />
+                  <div className="layout-input">
+                    <input
+                      type="search"
+                      className="patternInput"
+                      // placeholder="Enter pattern..."
+                      value={content}
+                      onChange={(e) => {
+                        setContent(e.target.value);
+                        handleDivTag(e.target.value);
+                      }}
+                      id="pattern-name"
+                      onSelect={getSelectedText}
+                      autoComplete="off"
+                    />
+                    <div className="background-highlight"></div>
+                  </div>
                 </div>
                 <Button
                   style={{ background: "#56cc6e", border: "none" }}
@@ -519,6 +531,9 @@ function ModalPattern({ open, toggle, value }) {
         toggle={handleToggleModal}
         value={currentPattern}
         update={handleUpdate}
+        entityType={entityType}
+        loadEntityType={loadEntityType}
+        handleSearchEntityType={handleSearchEntityType}
       />
     </>
   );

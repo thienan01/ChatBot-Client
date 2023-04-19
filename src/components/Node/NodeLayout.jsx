@@ -216,6 +216,7 @@ function NodeLayout({ data }) {
           message: value,
           conditions: conditions,
           intents: data.intents,
+          entityType: data.entityType,
           handleSetMessage: handleEditNodeByModal,
           setKeyword: setConditionMappingKeyword,
           addKeyword: addKeyword,

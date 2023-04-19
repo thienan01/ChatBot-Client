@@ -59,6 +59,14 @@ tr:hover * {
   width: 100%;
   background: none;
   margin-left: 10px;
+  z-index: 2;
+  position: relative;
+  color: transparent;
+  caret-color: black;
+}
+.patternInput::selection {
+  background-color: #52c8ff;
+  color: white;
 }
 #codeText::-webkit-scrollbar {
   display: none;
@@ -73,4 +81,8 @@ tr:hover * {
 }
 .closeBtn:hover {
   background: #ccedfc !important;
+}
+.dropdown-menu-import-excel {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  top: -10px !important;
 }
