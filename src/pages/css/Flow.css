@@ -57,7 +57,7 @@
 }
 .title {
   margin-right: 10px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   max-width: 200px;
   text-overflow: ellipsis;
@@ -85,7 +85,7 @@
   border-radius: 12px !important;
   height: 100%;
   padding: 2px 8px 8px 8px !important;
-  background-color: #ffffff !important;
+  background: #f5f6fa !important;
 }
 .title-m {
   margin-bottom: 15px;

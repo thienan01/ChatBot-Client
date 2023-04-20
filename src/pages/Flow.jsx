@@ -23,6 +23,7 @@ import CustomEdge from "../components/Node/ButtonEdge";
 import "./css/Flow.css";
 import "reactflow/dist/style.css";
 import { NotificationManager } from "react-notifications";
+import ChatHistoryModal from "../components/Modal/ChatHistoryModal";
 const nodeTypes = {
   nodeLayout: NodeLayout,
   startNode: StartNode,
@@ -59,6 +60,7 @@ function Flow() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [loading, isLoading] = useState(true);
   const [openChat, setOpenChat] = useState(false);
+  const [openChatHistory, setOpenChatHistory] = useState(false);
   const [openSetting, setOpenSetting] = useState(false);
   const [intents, setIntents] = useState([]);
   const [entityType, setEntityType] = useState([]);
@@ -68,7 +70,6 @@ function Flow() {
   const reactFlowInstance = useReactFlow();
   const connectingNode = useRef(null);
   const connecting = useRef(null);
-  const reactFlowWrapper = useRef(null);
   useEffect(() => {
     if (contextChild.id !== "") {
       Promise.all([
@@ -359,7 +360,9 @@ function Flow() {
   const handleEditScriptName = (value) => {
     contextChild.name = value;
   };
-
+  const handleToggleChatHistory = () => {
+    setOpenChatHistory((preState) => !preState);
+  };
   return (
     <div style={{ height: "92vh" }}>
       <ReactFlow
@@ -407,6 +410,15 @@ function Flow() {
               <span className="title">Try script</span>
               <i class="fa-solid fa-comment-dots"></i>
             </div>
+            <div
+              className="script-title"
+              onClick={() => {
+                setOpenChatHistory(!openChatHistory);
+              }}
+            >
+              <span className="title">History</span>
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
           </div>
           <div className="right-bar">
             <Button
@@ -447,6 +459,10 @@ function Flow() {
         setMsg={handleWrongMsg}
         scriptName={contextChild.name}
         handleEditScriptName={handleEditScriptName}
+      />
+      <ChatHistoryModal
+        open={openChatHistory}
+        toggle={handleToggleChatHistory}
       />
     </div>
   );

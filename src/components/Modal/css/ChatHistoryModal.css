@@ -1,0 +1,33 @@
+.chat-history-modal {
+  width: 90% !important;
+  max-width: 100% !important;
+}
+.chat-history-modal .modal-content {
+  background: #f5f6fa !important;
+}
+.session-list {
+  border-radius: 10px;
+  background: #ffff;
+}
+.session-list:hover {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.modal-row {
+  padding: 0px 10px;
+}
+.header-history {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+.history-selected {
+  background: #1e3150;
+  border-radius: 10px !important;
+}
+.history-selected * {
+  color: white;
+}
+.history-selected:hover * {
+  color: white !important;
+}

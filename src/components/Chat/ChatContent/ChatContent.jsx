@@ -39,7 +39,7 @@ function ChatContent({ sessionId }) {
       current_node_id: currentNode,
       message: value,
       session_id: sessionId,
-      is_trying: true,
+      is_trying: false,
     };
     POST(BASE_URL + "api/training/predict", JSON.stringify(body))
       .then((res) => {

@@ -61,7 +61,6 @@ tr:hover * {
   margin-left: 10px;
   z-index: 2;
   position: relative;
-  color: transparent;
   caret-color: black;
 }
 .patternInput::selection {

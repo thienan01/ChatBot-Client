@@ -2,7 +2,6 @@
   flex-grow: 1;
   padding: 10px 20px;
   max-width: 100%;
-  border-right: 1px solid #ebe7fb;
 }
 .content__header {
   padding-bottom: 15px;
@@ -151,4 +150,10 @@
   width: 55px;
   position: absolute;
   top: 82%;
+}
+#highlight-entity {
+  background: red !important;
+  padding: 2px !important;
+  border-radius: 5px !important;
+  color: white !important;
 }
