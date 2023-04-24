@@ -15,6 +15,7 @@ import { BASE_URL } from "../../../global/globalVar";
 import { getCookie } from "../../../functionHelper/GetSetCookie";
 import { ScriptContext } from "../../Context/ScriptContext";
 import typing from "../../../assets/Typing.gif";
+import { Input } from "reactstrap";
 function ChatContent({ sessionId }) {
   const context = useContext(ScriptContext);
   console.log("id chat", sessionId);
@@ -23,6 +24,7 @@ function ChatContent({ sessionId }) {
   const [currentNode, setCurrentNode] = useState("_BEGIN");
   const [value, setValue] = useState("");
   const [isShowTyping, setShowTyping] = useState(false);
+  const [isSaveHistory, setSaveHistory] = useState(false);
   const handleSendMessage = useCallback(() => {
     setShowTyping(true);
     setChatItems((citems) => [
@@ -39,7 +41,7 @@ function ChatContent({ sessionId }) {
       current_node_id: currentNode,
       message: value,
       session_id: sessionId,
-      is_trying: false,
+      is_trying: !isSaveHistory,
     };
     POST(BASE_URL + "api/training/predict", JSON.stringify(body))
       .then((res) => {
@@ -84,10 +86,22 @@ function ChatContent({ sessionId }) {
         </div>
 
         <div className="blocks">
-          <div className="settings">
-            <button className="btn-nobg">
-              <i className="ri-settings-4-fill"></i>
-            </button>
+          <div className="d-flex align-items-center">
+            <div className="settings">
+              <button className="btn-nobg">
+                <i className="ri-settings-4-fill"></i>
+              </button>
+            </div>
+            <div className="settings">
+              <span>Save history: </span>
+              <Input
+                type="checkbox"
+                defaultChecked={isSaveHistory}
+                onChange={(e) => {
+                  setSaveHistory(e.target.checked);
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

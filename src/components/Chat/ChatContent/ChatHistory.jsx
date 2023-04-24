@@ -42,7 +42,6 @@ function ChatContent({ messageData }) {
     } else {
       let msg;
       item.entities.forEach((it) => {
-        console.log("vaaavava", it.value);
         msg = item.message.replace(
           it.value,
           `<span id="highlight-entity">` + it.value + `</span>`

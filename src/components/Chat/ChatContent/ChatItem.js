@@ -9,10 +9,7 @@ export default class ChatItem extends Component {
     let today = new Date();
     let time =
       today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    const convertText = (text) => {
-      let doc = new DOMParser().parseFromString(text, "text/xml");
-      return doc.firstChild.firstChild.innerHTML;
-    };
+
     return (
       <div className={`chat__item ${this.props.user ? this.props.user : ""}`}>
         <div className="chat__item__content">

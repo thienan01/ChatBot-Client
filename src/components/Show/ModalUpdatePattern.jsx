@@ -35,12 +35,12 @@ function ModalUpdatePattern({
           let entities = res.entities.map((entity) => {
             entityType.forEach((item) => {
               if (item.id === entity.entity_type_id) {
-                console.log(item.name);
                 entity.entityType = item.name;
               }
             });
             return entity;
           });
+          console.log("asdasd", entities);
           setEntities(entities);
         }
       })
@@ -76,8 +76,6 @@ function ModalUpdatePattern({
       text.selectionEnd - text.selectionStart
     );
 
-    console.log("rrrr", text);
-    console.log("aaaaa", content);
     if (selection !== "") {
       setShowEntityTypeSelection(true);
       setCurrentEntityValue({
@@ -147,13 +145,7 @@ function ModalUpdatePattern({
       >
         <ModalHeader>Update intent</ModalHeader>
         <ModalBody>
-          {/* <Label>Content:</Label>
-          <Input
-            type="text"
-            value={content || ""}
-            onChange={(e) => setContent(e.target.value)}
-          ></Input> */}
-          <div className="createPatternSection">
+          <div className="createPatternSection" style={{ height: "50px" }}>
             <div
               className="patternInputArea"
               style={{ width: "100%" }}

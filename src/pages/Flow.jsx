@@ -460,10 +460,16 @@ function Flow() {
         scriptName={contextChild.name}
         handleEditScriptName={handleEditScriptName}
       />
-      <ChatHistoryModal
-        open={openChatHistory}
-        toggle={handleToggleChatHistory}
-      />
+      {openChatHistory ? (
+        <ChatHistoryModal
+          open={openChatHistory}
+          toggle={handleToggleChatHistory}
+          scriptId={context.value.id}
+          entityType={entityType}
+        />
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

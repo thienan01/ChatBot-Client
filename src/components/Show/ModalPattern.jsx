@@ -384,7 +384,7 @@ function ModalPattern({ open, toggle, value }) {
             </Tab>
             <Tab eventKey="add-pattern" title="Create pattern">
               <div className="createPatternSection">
-                <div className="patternInputArea" id="searchArea">
+                {/* <div className="patternInputArea" id="searchArea">
                   <i className="fa-solid fa-circle-plus"></i>
                   <div className="layout-input">
                     <input
@@ -402,13 +402,24 @@ function ModalPattern({ open, toggle, value }) {
                     />
                     <div className="background-highlight"></div>
                   </div>
+                </div> */}
+
+                <div className="input-area" style={{ margin: "0px" }}>
+                  <div className="inputTitle">Pattern name</div>
+                  <textarea
+                    style={{ scrollbarWidth: "none" }}
+                    type="search"
+                    className="input inputArea"
+                    id="pattern-name"
+                    placeholder={"Enter pattern name..."}
+                    onSelect={getSelectedText}
+                    autoComplete="off"
+                    value={content}
+                    onChange={(e) => {
+                      setContent(e.target.value);
+                    }}
+                  />
                 </div>
-                <Button
-                  style={{ background: "#56cc6e", border: "none" }}
-                  onClick={handleCreatePattern}
-                >
-                  Create
-                </Button>
               </div>
               <div
                 className="select-entity-section"
@@ -514,6 +525,12 @@ function ModalPattern({ open, toggle, value }) {
           </Tabs>
         </ModalBody>
         <ModalFooter>
+          <Button
+            style={{ background: "#56cc6e", border: "none" }}
+            onClick={handleCreatePattern}
+          >
+            Create
+          </Button>
           <Button
             onClick={() => {
               toggle(value.intentID);

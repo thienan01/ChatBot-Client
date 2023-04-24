@@ -34,8 +34,8 @@ tr:hover * {
   background: #f5f6fa;
 }
 .createPatternSection {
-  display: flex;
-  height: 44px;
+  /* display: flex; */
+  /* height: 44px; */
   width: 100%;
   justify-content: space-between;
 }

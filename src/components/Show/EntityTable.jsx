@@ -148,7 +148,7 @@ function EntityTable() {
     <>
       <Breadcrumb className="breadcrumb">
         <Breadcrumb.Item>Home</Breadcrumb.Item>
-        <Breadcrumb.Item>Entity</Breadcrumb.Item>
+        <Breadcrumb.Item>Entity type</Breadcrumb.Item>
       </Breadcrumb>
       <div className="d-flex justify-content-end">
         <Button
