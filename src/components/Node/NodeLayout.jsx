@@ -18,7 +18,6 @@ function NodeLayout({ data }) {
     data.value = value;
   }, [value, data]);
   useEffect(() => {
-    console.log("check rerender");
     data.conditionMapping = conditions;
   }, [conditions, data]);
 

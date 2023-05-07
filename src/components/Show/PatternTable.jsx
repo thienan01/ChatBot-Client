@@ -13,13 +13,11 @@ function PatternTable() {
   const [pagination, setPagination] = useState({});
   const [isLoading, setLoading] = useState(true);
   const getPattern = (page, pageSize) => {
-    GET(
-      BASE_URL +
-        "api/pattern/get_pagination/by_user_id?page=" +
-        page +
-        "&size=" +
-        pageSize
-    )
+    let body = {
+      page: page,
+      size: pageSize,
+    };
+    POST(BASE_URL + "api/pattern/get_pagination", JSON.stringify(body))
       .then((res) => {
         res.items.map((item) => {
           const createdDate = new Date(item.created_date);

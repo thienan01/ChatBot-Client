@@ -30,7 +30,6 @@ function StartNode({ data }) {
         type="source"
         position={Position.Right}
         onConnect={(param) => {
-          console.log(param);
           setConditionMapping(param);
         }}
         style={{

@@ -5,6 +5,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Spinner,
 } from "reactstrap";
 import { useEffect, useState } from "react";
 import { Pagination } from "antd";
@@ -30,32 +31,34 @@ function IntentTable() {
   const [createIntent, setCreateIntent] = useState(false);
   const [isTraining, setIsTraining] = useState(false);
   const [isLoading, setLoading] = useState(true);
+  const [isLoadingExport, setLoadingExport] = useState(false);
   const [pagination, setPagination] = useState({});
   const [isToggleImport, setToggleImport] = useState(false);
+  const [exportSessionId, setExportSessionId] = useState("");
   const getIntent = (page, pageSize) => {
     if (page === undefined) page = 1;
+    let body = {
+      page: page,
+      size: pageSize,
+    };
 
-    GET(
-      BASE_URL +
-        `api/intent/get_pagination/by_user_id?page=` +
-        page +
-        `&size=` +
-        pageSize
-    ).then((res) => {
-      res.items.map((item) => {
-        const createdDate = new Date(item.created_date);
-        const updatedDate = new Date(item.last_updated_date);
-        item.created_date = createdDate.toLocaleString("en-US");
-        item.last_updated_date = updatedDate.toLocaleString("en-US");
-        return item;
-      });
-      setLoading(false);
-      setIntents(res.items);
-      setPagination({
-        totalItem: res.total_items,
-        totalPage: res.total_pages,
-      });
-    });
+    POST(BASE_URL + `api/intent/get_pagination`, JSON.stringify(body)).then(
+      (res) => {
+        res.items.map((item) => {
+          const createdDate = new Date(item.created_date);
+          const updatedDate = new Date(item.last_updated_date);
+          item.created_date = createdDate.toLocaleString("en-US");
+          item.last_updated_date = updatedDate.toLocaleString("en-US");
+          return item;
+        });
+        setLoading(false);
+        setIntents(res.items);
+        setPagination({
+          totalItem: res.total_items,
+          totalPage: res.total_pages,
+        });
+      }
+    );
   };
 
   const getPattern = (intentID, page) => {
@@ -199,6 +202,82 @@ function IntentTable() {
     };
     input.click();
   };
+
+  const handleExportExcel = () => {
+    POST(BASE_URL + "api/pattern/export/excel", JSON.stringify({}))
+      .then((res) => {
+        if (res.http_status !== "OK") throw res;
+        setLoadingExport(true);
+        setExportSessionId(res.session_id);
+        handleCheckStatusExport(res.session_id);
+      })
+      .catch((e) => {
+        console.log(e);
+        NotificationManager.error("Somethings went wrong!!!", "Error");
+      });
+  };
+  const handleCheckStatusExport = (sessionId) => {
+    let isRes = true;
+    let checking = setInterval(() => {
+      if (isRes) {
+        GET(BASE_URL + "api/pattern/export/excel/status?sessionId=" + sessionId)
+          .then((res) => {
+            isRes = true;
+            if (res.http_status === "OK" && res.status === "DONE") {
+              NotificationManager.success("Export finished", "Success");
+              getFileExcel(res.file_name);
+              setLoadingExport(false);
+              clearInterval(checking);
+            }
+            if (res.http_status === "OK" && res.status === "CRASHED") {
+              setLoadingExport(false);
+              clearInterval(checking);
+            }
+            if (res.http_status === "EXPECTATION_FAILED") {
+              clearInterval(checking);
+              throw res;
+            }
+          })
+          .catch((err) => {
+            setLoadingExport(false);
+            NotificationManager.error("Some things when  wrong!", "error");
+            console.log(err);
+          });
+        isRes = false;
+      }
+    }, 3000);
+  };
+  const getFileExcel = (fileName) => {
+    GET(BASE_URL + "api/pattern/export/excel/get_file/" + fileName)
+      .then((res) => {
+        if (res.http_status !== "OK") throw res;
+        const binaryString = window.atob(res.base64);
+        const binaryLen = binaryString.length;
+        const bytes = new Uint8Array(binaryLen);
+        for (let i = 0; i < binaryLen; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const arrayBuffer = bytes.buffer;
+
+        // Create download link and click it
+        const blob = new Blob([arrayBuffer], {
+          type: "application/vnd.ms-excel",
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      })
+      .catch((e) => {
+        console.log(e);
+        NotificationManager.error("Somethings went wrong!!!", "Error");
+      });
+  };
+
   return (
     <>
       <Breadcrumb className="breadcrumb">
@@ -228,20 +307,30 @@ function IntentTable() {
         <div className="d-flex">
           <Dropdown isOpen={isToggleImport} toggle={handleToggleImport}>
             <DropdownToggle className="btn-table" id="btn-import">
-              <i
-                className="fa-solid fa-cloud-arrow-up"
-                style={{ marginRight: "4px" }}
-              ></i>
-              Import file Excel
+              {isLoadingExport ? (
+                <Spinner className="loadding" />
+              ) : (
+                <>
+                  <i
+                    className="fa-solid fa-cloud-arrow-up"
+                    style={{ marginRight: "4px" }}
+                  ></i>
+                  Import file Excel
+                </>
+              )}
             </DropdownToggle>
             <DropdownMenu className="dropdown-menu-import-excel">
               <DropdownItem onClick={() => handleDownloadTmp()}>
-                <i class="fa-solid fa-cloud-arrow-down icon-import"></i>
+                <i className="fa-solid fa-cloud-arrow-down icon-import"></i>
                 Download template
               </DropdownItem>
               <DropdownItem onClick={handleImportExcel}>
-                <i class="fa-solid fa-file-import icon-import"></i>
+                <i className="fa-solid fa-file-import icon-import"></i>
                 Import file Excel
+              </DropdownItem>
+              <DropdownItem onClick={handleExportExcel}>
+                <i className="fa-solid fa-download icon-import"></i>
+                Export file Excel
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
