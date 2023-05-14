@@ -15,7 +15,7 @@ function ChatContent({ messageData }) {
           return {
             key: uniqueID(),
             type: "me",
-            msg: item.message,
+            msg: highlightEntity(item),
           };
         }
         if (item.from === "BOT") {

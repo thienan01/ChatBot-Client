@@ -13,7 +13,7 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
   const [pagination, setPagination] = useState({});
   const [isFullDetail, setIsFullDetail] = useState(true);
   const [currentEntityDetail, setCurrentEntityDetail] = useState([]);
-  const [maxCol, setMaxCol] = useState(0);
+  const [dataTable, setDataTable] = useState([]);
   const loadMessageHistory = (page, pageSize) => {
     let body = {
       page: page,
@@ -34,24 +34,12 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
           totalItem: res.total_items,
           totalPage: res.total_pages,
         });
-        setMaxCol(findMaxCol(res.items));
+        setDataTable(convertToTable(res.items));
       })
       .catch((e) => {
         console.log(e);
         NotificationManager.error("Some things went wrong!!", "Error");
       });
-  };
-
-  const findMaxCol = (items) => {
-    let max = 0;
-    items.forEach((item) => {
-      if (item.hasOwnProperty("message_entity_histories")) {
-        if (item.message_entity_histories.length > max) {
-          max = item.message_entity_histories.length;
-        }
-      }
-    });
-    return max;
   };
 
   useEffect(() => {
@@ -110,6 +98,39 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
   const handleJumpPagination = (page, pageSize) => {
     loadMessageHistory(page, pageSize);
   };
+  const convertToTable = (messageHistory) => {
+    // messageHistory
+    // entityType.map
+    let lst = messageHistory.map((messHistory) => {
+      let entities = entityType.map((entity) => {
+        if (messHistory.hasOwnProperty("message_entity_histories")) {
+          let val = messHistory.message_entity_histories.filter(
+            (his) => his.entity_type_id === entity.id
+          );
+          if (val.length > 0) {
+            return val[0].hasOwnProperty("values")
+              ? val[0].values.toString()
+              : "";
+          } else {
+            return "";
+          }
+        } else {
+          return "";
+        }
+      });
+
+      console.log("ebti", entities);
+      return {
+        id: messHistory.id,
+        script_id: messHistory.script_id,
+        session_id: messHistory.session_id,
+        created_date: messHistory.created_date,
+        entities: entities,
+      };
+    });
+    console.log("Settable");
+    return lst;
+  };
   return (
     <div>
       <Modal isOpen={open} className="chat-history-modal">
@@ -138,7 +159,13 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
                   </div>
                 </div>
               </div>
-              <Table borderless hover responsive className="tableData">
+              <Table
+                borderless
+                hover
+                responsive
+                className="tableData"
+                scrollAble
+              >
                 <thead style={{ background: "#f6f9fc" }}>
                   <tr>
                     <th style={{ width: "3%" }}>#</th>
@@ -153,17 +180,24 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
                     {!isFullDetail ? (
                       <></>
                     ) : (
-                      [...Array(maxCol)].map((e, i) => (
-                        <th>
+                      // [...Array(maxCol)].map((e, i) => (
+                      //   <th>
+                      //     <span className="vertical" />
+                      //     Entity {++i}
+                      //   </th>
+                      // ))
+                      entityType.map((item) => (
+                        <th style={{ width: "30%" }} className="">
                           <span className="vertical" />
-                          Entity {++i}
+                          {item.name}
                         </th>
                       ))
                     )}
                   </tr>
                 </thead>
                 <tbody>
-                  {messageHistory.map((item, idx) => {
+                  {console.log("king", dataTable)}
+                  {dataTable.map((item, idx) => {
                     return (
                       <tr className={"item-" + item.id} key={idx}>
                         <td>{++idx}</td>
@@ -185,20 +219,8 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
                         </td>
                         {!isFullDetail ? (
                           <></>
-                        ) : !item.hasOwnProperty("message_entity_histories") ? (
-                          [...Array(maxCol)].map((e, i) => (
-                            <td
-                              onClick={() => {
-                                loadDetailMessage(
-                                  item.session_id,
-                                  item.script_id
-                                );
-                                handleSelected(item.id);
-                              }}
-                            ></td>
-                          ))
                         ) : (
-                          item.message_entity_histories.map((entity) => {
+                          item.entities.map((enti, idx) => {
                             return (
                               <td
                                 onClick={() => {
@@ -208,8 +230,9 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
                                   );
                                   handleSelected(item.id);
                                 }}
+                                key={idx}
                               >
-                                {entity.values.toString()}
+                                {enti}
                               </td>
                             );
                           })

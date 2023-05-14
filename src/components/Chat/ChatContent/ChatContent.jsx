@@ -25,21 +25,23 @@ function ChatContent({ sessionId }) {
   const [value, setValue] = useState("");
   const [isShowTyping, setShowTyping] = useState(false);
   const [isSaveHistory, setSaveHistory] = useState(false);
-  const handleSendMessage = useCallback(() => {
+  const [isAutoSend, setAutoSend] = useState(false);
+  const [isRecording, setRecording] = useState(false);
+  const handleSendMessage = useCallback((text) => {
     setShowTyping(true);
     setChatItems((citems) => [
       ...citems,
       {
         key: uniqueID(),
         type: "me",
-        msg: value,
+        msg: isAutoSend ? text : value,
       },
     ]);
     let body = {
       secret_key: getCookie("secret_key"),
       script_id: context.value.id,
       current_node_id: currentNode,
-      message: value,
+      message: isAutoSend ? text : value,
       session_id: sessionId,
       is_trying: !isSaveHistory,
     };
@@ -56,6 +58,9 @@ function ChatContent({ sessionId }) {
                 msg: res.message,
               },
             ]);
+          }
+          if (isAutoSend) {
+            startListening();
           }
         } else {
           NotificationManager.error(res.exception_code, "Error");
@@ -75,6 +80,33 @@ function ChatContent({ sessionId }) {
       handleSendMessage();
     }
   };
+
+  const recognition = new window.webkitSpeechRecognition();
+  recognition.lang = "vi-VN"; // Set language to Vietnamese\
+
+  recognition.onresult = (event) => {
+    const last = event.results.length - 1;
+    const text = event.results[last][0].transcript;
+    setValue((value) => value + (value === "" ? "" : ". ") + text);
+    stopListening();
+    if (isAutoSend) {
+      setValue("");
+      handleSendMessage(text);
+    }
+  };
+
+  const startListening = () => {
+    if (isRecording) {
+      stopListening();
+    } else {
+      setRecording(true);
+      recognition.start();
+    }
+  };
+  const stopListening = () => {
+    setRecording(false);
+    recognition.stop();
+  };
   return (
     <div className="main__chatcontent">
       <div className="content__header">
@@ -92,7 +124,7 @@ function ChatContent({ sessionId }) {
                 <i className="ri-settings-4-fill"></i>
               </button>
             </div>
-            <div className="settings">
+            <div className="settings" style={{ marginRight: "10px" }}>
               <span>Save history: </span>
               <Input
                 type="checkbox"
@@ -102,6 +134,16 @@ function ChatContent({ sessionId }) {
                 }}
               />
             </div>
+            {/* <div className="settings">
+              <span>Auto send: </span>
+              <Input
+                type="checkbox"
+                defaultChecked={isSaveHistory}
+                onChange={(e) => {
+                  setAutoSend(e.target.checked);
+                }}
+              />
+            </div> */}
           </div>
         </div>
       </div>
@@ -121,6 +163,12 @@ function ChatContent({ sessionId }) {
           <div ref={bottomRef} />
         </div>
       </div>
+      <div
+        className="recognition"
+        style={{ display: isRecording ? "flex" : "none" }}
+      >
+        <button class="Rec btn-rec">Recording</button>
+      </div>
       <div className="content__footer">
         <img
           src={typing}
@@ -129,8 +177,8 @@ function ChatContent({ sessionId }) {
           style={{ display: isShowTyping ? "block" : "none" }}
         />
         <div className="sendNewMessage">
-          <button className="addFiles">
-            <i className="ri-add-circle-fill"></i>
+          <button className="addFiles" onClick={startListening}>
+            <i class="fa-solid fa-microphone"></i>
           </button>
           <input
             type="text"

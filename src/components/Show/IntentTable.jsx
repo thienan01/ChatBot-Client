@@ -305,19 +305,34 @@ function IntentTable() {
           </Button>
         </div>
         <div className="d-flex">
-          <Dropdown isOpen={isToggleImport} toggle={handleToggleImport}>
+          <Button
+            onClick={() => {
+              handleExportExcel();
+            }}
+            className="btn-table btn-export-excel"
+            style={{ background: "#56cc6e", border: "none" }}
+            id="btn-import"
+          >
+            {isLoadingExport ? (
+              <Spinner className="loadding" />
+            ) : (
+              <>
+                <i className="fa-solid fa-download icon-import"></i>
+                Export file Excel
+              </>
+            )}
+          </Button>
+          <Dropdown
+            isOpen={isToggleImport}
+            toggle={handleToggleImport}
+            className="btn-import-excel"
+          >
             <DropdownToggle className="btn-table" id="btn-import">
-              {isLoadingExport ? (
-                <Spinner className="loadding" />
-              ) : (
-                <>
-                  <i
-                    className="fa-solid fa-cloud-arrow-up"
-                    style={{ marginRight: "4px" }}
-                  ></i>
-                  Import file Excel
-                </>
-              )}
+              <i
+                className="fa-solid fa-cloud-arrow-up"
+                style={{ marginRight: "4px" }}
+              ></i>
+              Import file Excel
             </DropdownToggle>
             <DropdownMenu className="dropdown-menu-import-excel">
               <DropdownItem onClick={() => handleDownloadTmp()}>
@@ -327,10 +342,6 @@ function IntentTable() {
               <DropdownItem onClick={handleImportExcel}>
                 <i className="fa-solid fa-file-import icon-import"></i>
                 Import file Excel
-              </DropdownItem>
-              <DropdownItem onClick={handleExportExcel}>
-                <i className="fa-solid fa-download icon-import"></i>
-                Export file Excel
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>

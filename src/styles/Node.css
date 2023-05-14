@@ -147,3 +147,9 @@
   display: block !important;
   color: white !important;
 }
+.btn-import-excel {
+  width: fit-content !important;
+}
+.btn-export-excel {
+  width: 165px !important;
+}
