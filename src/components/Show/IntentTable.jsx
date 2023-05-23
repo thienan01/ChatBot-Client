@@ -277,7 +277,21 @@ function IntentTable() {
         NotificationManager.error("Somethings went wrong!!!", "Error");
       });
   };
-
+  const handleCheckStatusInterval = () => {
+    let checking = setInterval(() => {
+      GET(BASE_URL + "api/training/get_server_status")
+        .then((res) => {
+          if (res.http_status === "OK" && res.status === "FREE") {
+            NotificationManager.success("Training finished", "success");
+            setIsTraining(false);
+            clearInterval(checking);
+          }
+        })
+        .catch((err) => {
+          NotificationManager.error("Some things when  wrong!", "error");
+        });
+    }, 4000);
+  };
   return (
     <>
       <Breadcrumb className="breadcrumb">
@@ -299,9 +313,22 @@ function IntentTable() {
             className="btn-table btn-prim"
             onClick={() => {
               handleTrain();
+              setIsTraining(true);
+              handleCheckStatusInterval();
             }}
           >
-            Train
+            {isTraining ? (
+              <Spinner
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  fontSize: "10px",
+                  marginRight: "5px",
+                }}
+              />
+            ) : (
+              "Train"
+            )}
           </Button>
         </div>
         <div className="d-flex">
