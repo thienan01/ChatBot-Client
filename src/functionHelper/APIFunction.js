@@ -62,5 +62,18 @@ const UPLOAD = async (_url, file) => {
     xhr.send(data);
   });
 };
-
-export { GET, POST, DELETE, UPLOAD };
+const VOICE = async (_url, _body) => {
+  let res = await $.ajax({
+    type: "POST",
+    url: _url,
+    data: _body,
+    dataType: "json",
+    headers: {
+      api_key: "8Q5DtBjxVwSAvgUymtivQP5e9TnRVBlU ",
+      voice: "banmai",
+    },
+    contentType: "application/json; charset=utf-8",
+  });
+  return res;
+};
+export { GET, POST, DELETE, UPLOAD, VOICE };
