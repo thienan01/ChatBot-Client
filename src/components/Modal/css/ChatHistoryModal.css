@@ -68,3 +68,35 @@
   padding: 0px !important;
   border-left: 1px solid #eaebf1;
 }
+table.tableData1.table.table-borderless.table-hover{
+  width: 1700px;
+}
+
+.scrollable{
+  overflow: scroll;
+}
+.session-list1 {
+  border-radius: 10px;
+  background: #ffff;
+  padding-bottom: 15px;
+  transition: width linear 0.2s;
+  max-height: 792px;
+  height: 792px;
+}
+.session-list1:hover {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.session-list1 table.tableData1.table.table-borderless.table-hover{
+  width: 100%;
+}
+.scrollable::-webkit-scrollbar{
+  height: 10px;
+}
+.scrollable::-webkit-scrollbar-thumb {
+  background-color: #1e3150;
+  border-radius: 10px;
+  
+}
+.scrollable::-webkit-scrollbar-track{
+  border-radius: 10px;
+}

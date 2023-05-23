@@ -138,7 +138,7 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
           <div className="row modal-row">
             <div
               className={
-                isFullDetail ? "session-list col-12" : "session-list col-5"
+                isFullDetail ? "session-list col-12" : "session-list1 col-5"
               }
             >
               <div className="row">
@@ -159,11 +159,11 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
                   </div>
                 </div>
               </div>
+              <div className="scrollable">
               <Table
                 borderless
                 hover
-                responsive
-                className="tableData"
+                className="tableData1"
                 scrollAble
               >
                 <thead style={{ background: "#f6f9fc" }}>
@@ -187,7 +187,7 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
                       //   </th>
                       // ))
                       entityType.map((item) => (
-                        <th style={{ width: "30%" }} className="">
+                        <th style={{width:"20px"}} className="">
                           <span className="vertical" />
                           {item.name}
                         </th>
@@ -242,6 +242,7 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
                   })}
                 </tbody>
               </Table>
+              </div>
               {messageHistory.length === 0 ? (
                 <div className="d-flex justify-content-center text-secondary">
                   No data to show...
