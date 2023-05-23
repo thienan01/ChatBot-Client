@@ -160,88 +160,89 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
                 </div>
               </div>
               <div className="scrollable">
-              <Table
-                borderless
-                hover
-                className="tableData1"
-                scrollAble
-              >
-                <thead style={{ background: "#f6f9fc" }}>
-                  <tr>
-                    <th style={{ width: "3%" }}>#</th>
-                    <th style={{ width: "20%" }}>
-                      <span className="vertical" />
-                      Session id
-                    </th>
-                    <th style={{ width: "30%" }}>
-                      <span className="vertical" />
-                      Created at
-                    </th>
-                    {!isFullDetail ? (
-                      <></>
-                    ) : (
-                      // [...Array(maxCol)].map((e, i) => (
-                      //   <th>
-                      //     <span className="vertical" />
-                      //     Entity {++i}
-                      //   </th>
-                      // ))
-                      entityType.map((item) => (
-                        <th style={{width:"20px"}} className="">
-                          <span className="vertical" />
-                          {item.name}
-                        </th>
-                      ))
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {console.log("king", dataTable)}
-                  {dataTable.map((item, idx) => {
-                    return (
-                      <tr className={"item-" + item.id} key={idx}>
-                        <td>{++idx}</td>
-                        <td
-                          onClick={() => {
-                            loadDetailMessage(item.session_id, item.script_id);
-                            handleSelected(item.id);
-                          }}
-                        >
-                          {item.session_id}
-                        </td>
-                        <td
-                          onClick={() => {
-                            loadDetailMessage(item.session_id, item.script_id);
-                            handleSelected(item.id);
-                          }}
-                        >
-                          {item.created_date}
-                        </td>
-                        {!isFullDetail ? (
-                          <></>
-                        ) : (
-                          item.entities.map((enti, idx) => {
-                            return (
-                              <td
-                                onClick={() => {
-                                  loadDetailMessage(
-                                    item.session_id,
-                                    item.script_id
-                                  );
-                                  handleSelected(item.id);
-                                }}
-                                key={idx}
-                              >
-                                {enti}
-                              </td>
-                            );
-                          })
-                        )}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+                <Table borderless hover className="tableData1" scrollAble>
+                  <thead style={{ background: "#f6f9fc" }}>
+                    <tr>
+                      <th style={{ width: "3%" }}>#</th>
+                      <th style={{ width: "20%" }}>
+                        <span className="vertical" />
+                        Session id
+                      </th>
+                      <th style={{ width: "30%" }}>
+                        <span className="vertical" />
+                        Created at
+                      </th>
+                      {!isFullDetail ? (
+                        <></>
+                      ) : (
+                        // [...Array(maxCol)].map((e, i) => (
+                        //   <th>
+                        //     <span className="vertical" />
+                        //     Entity {++i}
+                        //   </th>
+                        // ))
+                        entityType.map((item) => (
+                          <th style={{}} className="">
+                            <span className="vertical" />
+                            {item.name}
+                          </th>
+                        ))
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {console.log("king", dataTable)}
+                    {dataTable.map((item, idx) => {
+                      return (
+                        <tr className={"item-" + item.id} key={idx}>
+                          <td>{++idx}</td>
+                          <td
+                            onClick={() => {
+                              loadDetailMessage(
+                                item.session_id,
+                                item.script_id
+                              );
+                              handleSelected(item.id);
+                            }}
+                          >
+                            {item.session_id}
+                          </td>
+                          <td
+                            onClick={() => {
+                              loadDetailMessage(
+                                item.session_id,
+                                item.script_id
+                              );
+                              handleSelected(item.id);
+                            }}
+                          >
+                            {item.created_date}
+                          </td>
+                          {!isFullDetail ? (
+                            <></>
+                          ) : (
+                            item.entities.map((enti, idx) => {
+                              return (
+                                <td
+                                  onClick={() => {
+                                    loadDetailMessage(
+                                      item.session_id,
+                                      item.script_id
+                                    );
+                                    handleSelected(item.id);
+                                  }}
+                                  key={idx}
+                                >
+                                  {enti}
+                                </td>
+                              );
+                            })
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
               </div>
               {messageHistory.length === 0 ? (
                 <div className="d-flex justify-content-center text-secondary">

@@ -68,11 +68,11 @@
   padding: 0px !important;
   border-left: 1px solid #eaebf1;
 }
-table.tableData1.table.table-borderless.table-hover{
+table.tableData1.table.table-borderless.table-hover {
   width: 1700px;
 }
 
-.scrollable{
+.scrollable {
   overflow: scroll;
 }
 .session-list1 {
@@ -86,17 +86,22 @@ table.tableData1.table.table-borderless.table-hover{
 .session-list1:hover {
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
-.session-list1 table.tableData1.table.table-borderless.table-hover{
+.session-list1 table.tableData1.table.table-borderless.table-hover {
   width: 100%;
 }
-.scrollable::-webkit-scrollbar{
+.scrollable::-webkit-scrollbar {
   height: 10px;
 }
 .scrollable::-webkit-scrollbar-thumb {
-  background-color: #1e3150;
+  background-color: #e9eaed;
   border-radius: 10px;
-  
 }
-.scrollable::-webkit-scrollbar-track{
+/* .scrollable::-webkit-scrollbar-thumb:hover {
+  background: ;
+} */
+.scrollable::-webkit-scrollbar-track {
   border-radius: 10px;
+}
+.tableData1 {
+  white-space: nowrap;
 }
