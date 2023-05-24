@@ -116,14 +116,22 @@ function ChatContent({ sessionId }) {
         // const audioURL = URL.createObjectURL(audioBlob);
         setTimeout(function () {
           //your code to be executed after 1 second
+          // const audio = new Audio(res.async);
+          // audio.play();
           const audio = new Audio(res.async);
-          audio.play();
-        }, 1000);
+          audio
+            .play()
+            .then()
+            .catch((e) => {
+              console.log("Error when play audio");
+            });
+        }, 3000);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
+
   return (
     <div className="main__chatcontent">
       <div className="content__header">
