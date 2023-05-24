@@ -36,7 +36,8 @@ function Code() {
 <script src="https://kit.fontawesome.com/6a72490e9a.js" crossorigin="anonymous"></script>
 
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/thienan01/pluggin-cdns@latest/handleChat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/thienan01/newpluggin@latest/handleChat.min.js"></script>
+
     `;
 }
 export default Code;
