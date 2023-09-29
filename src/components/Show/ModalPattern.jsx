@@ -11,8 +11,6 @@ import {
   Table,
 } from "reactstrap";
 import { Pagination } from "antd";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
 import { BASE_URL } from "../../global/globalVar";
 import "../../styles/common.css";
 import Filter from "../Filter/Filter";
@@ -20,18 +18,26 @@ import SearchBar from "../Filter/SearchBar";
 import "./css/ModalPattern.css";
 import InputTitle from "../Input/InputTitle";
 import uniqueID from "../../functionHelper/GenerateID";
-import { render } from "@testing-library/react";
+import {
+  TabContent,
+  TabPane,
+  Nav,
+  NavItem,
+  NavLink,
+  Row,
+  Col,
+} from "reactstrap";
 function ModalPattern({ open, toggle, value }) {
   const [patterns, setPatterns] = useState([]);
   const [currentPattern, setCurrentPattern] = useState({});
   const [content, setContent] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [pagination, setPagination] = useState({});
-  const [key, setKey] = useState("pattern-list");
   const [entityType, setEntityType] = useState([]);
   const [entityTypeValue, setEntityValue] = useState("");
   const [entities, setEntities] = useState([]);
   const [currentEntityValue, setCurrentEntityValue] = useState({});
+  const [activeTab, setActiveTab] = useState("tab1");
   const [isShowEntityTypeSelection, setShowEntityTypeSelection] =
     useState(false);
   const [searchEntityTypeValue, setSearchEntityTypeValue] = useState("");
@@ -68,6 +74,12 @@ function ModalPattern({ open, toggle, value }) {
   useEffect(() => {
     loadEntityType(1, 100);
   }, []);
+
+  const toggleTab = (tab) => {
+    if (activeTab !== tab) {
+      setActiveTab(tab);
+    }
+  };
   const handleCreatePattern = () => {
     console.log("value of", entities);
     if (content !== "") {
@@ -306,223 +318,224 @@ function ModalPattern({ open, toggle, value }) {
       >
         <ModalHeader>Pattern information</ModalHeader>
         <ModalBody style={{ padding: "10px 30px", minHeight: "750px" }}>
-          <Tabs
-            id="controlled-tab-example"
-            activeKey={key}
-            onSelect={(k) => setKey(k)}
-            className="mb-3"
-          >
-            <Tab eventKey="pattern-list" title="Patterns">
-              <Filter func={handleFilter} />
-
-              <div className="shadow-sm table-area">
-                <div className="header-Table">
-                  <SearchBar func={handleFilter} />
-                  <span className="total-script">
-                    Total:{pagination.totalItem} Patterns
-                  </span>
-                </div>
-                <Table borderless hover responsive className="tableData">
-                  <thead style={{ background: "#f6f9fc" }}>
-                    <tr>
-                      <th>#</th>
-                      <th>
-                        <span className="vertical" />
-                        Content
-                      </th>
-                      <th>
-                        <span className="vertical" />
-                        Created at
-                      </th>
-                      <th style={{ width: "15%" }}>
-                        <span className="vertical" />
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {patterns.map((pattern, idx) => {
-                      return (
-                        <tr key={pattern.id}>
-                          <td>{++idx}</td>
-                          <td>{pattern.content}</td>
-                          <td>{pattern.created_date}</td>
-                          <td className="d-flex action-row">
-                            <div>
-                              <i
-                                className="fa-solid fa-pen-to-square text-primary"
-                                onClick={() => {
-                                  handleToggleModal();
-                                  setCurrentPattern({
-                                    id: pattern.id,
-                                    content: pattern.content,
-                                  });
-                                }}
-                              ></i>
-                            </div>
-                            <div
-                              onClick={() => {
-                                handleDeletePattern(pattern.id);
-                              }}
-                            >
-                              <i className="fa-solid fa-trash-can text-danger"></i>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-                <Pagination
-                  showQuickJumper
-                  defaultCurrent={1}
-                  total={pagination.totalItem}
-                  pageSize={10}
-                  onChange={handleJumpPagination}
-                />
-              </div>
-            </Tab>
-            <Tab eventKey="add-pattern" title="Create pattern">
-              <div className="createPatternSection">
-                {/* <div className="patternInputArea" id="searchArea">
-                  <i className="fa-solid fa-circle-plus"></i>
-                  <div className="layout-input">
-                    <input
-                      type="search"
-                      className="patternInput"
-                      // placeholder="Enter pattern..."
-                      value={content}
-                      onChange={(e) => {
-                        setContent(e.target.value);
-                        handleDivTag(e.target.value);
-                      }}
-                      id="pattern-name"
-                      onSelect={getSelectedText}
-                      autoComplete="off"
-                    />
-                    <div className="background-highlight"></div>
-                  </div>
-                </div> */}
-
-                <div className="input-area" style={{ margin: "0px" }}>
-                  <div className="inputTitle">Pattern name</div>
-                  <textarea
-                    style={{ scrollbarWidth: "none" }}
-                    type="search"
-                    className="input inputArea"
-                    id="pattern-name"
-                    placeholder={"Enter pattern name..."}
-                    onSelect={getSelectedText}
-                    autoComplete="off"
-                    value={content}
-                    onChange={(e) => {
-                      setContent(e.target.value);
-                    }}
-                  />
-                </div>
-              </div>
-              <div
-                className="select-entity-section"
-                style={{
-                  display: isShowEntityTypeSelection ? "block" : "none",
-                }}
+          <Nav tabs>
+            <NavItem>
+              <NavLink
+                className={activeTab === "tab1" ? "active" : ""}
+                onClick={() => toggleTab("tab1")}
               >
-                <div className="row">
-                  <i
-                    class="fa-solid fa-circle-xmark text-danger closeEntityOption"
-                    onClick={() => {
-                      setShowEntityTypeSelection(false);
-                    }}
-                  ></i>
-                  <div className="col-6 show-entity-type">
-                    <div className="searchEntityType d-flex justify-content-center">
-                      <div
-                        className="searchArea"
-                        id="searchArea"
-                        style={{ width: "89%" }}
-                      >
-                        <i className="fa-solid fa-magnifying-glass"></i>
-                        <input
-                          type="search"
-                          className="searchInput searchInputTable"
-                          placeholder="Find your records..."
-                          value={searchEntityTypeValue}
-                          onKeyDown={(e) => handleKey(e)}
-                          onChange={(e) => handleClearInput(e)}
-                        />
-                      </div>
+                Pattern
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={activeTab === "tab2" ? "active" : ""}
+                onClick={() => toggleTab("tab2")}
+              >
+                Create Pattern
+              </NavLink>
+            </NavItem>
+          </Nav>
+          <TabContent activeTab={activeTab}>
+            <TabPane tabId="tab1">
+              <Row>
+                <Col>
+                  <Filter func={handleFilter} />
+
+                  <div className="shadow-sm table-area">
+                    <div className="header-Table">
+                      <SearchBar func={handleFilter} />
+                      <span className="total-script">
+                        Total:{pagination.totalItem} Patterns
+                      </span>
                     </div>
-                    <div className="entity-type-items">
-                      {entityType.map((item) => {
-                        return (
-                          <div
-                            className="entity-type-item"
-                            key={item.id}
-                            onClick={() =>
-                              handleChooseEntityType({
-                                id: item.id,
-                                name: item.name,
-                              })
-                            }
-                          >
-                            <span>{item.name}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div className="col-6 create-entity-type">
-                    <div className="title">Object / Entity</div>
-                    <InputTitle
-                      title={"Entity name"}
-                      placeHolder={"Enter entity name..."}
-                      val={entityTypeValue}
-                      func={onChangeEntityTypeValue}
+                    <Table borderless hover responsive className="tableData">
+                      <thead style={{ background: "#f6f9fc" }}>
+                        <tr>
+                          <th>#</th>
+                          <th>
+                            <span className="vertical" />
+                            Content
+                          </th>
+                          <th>
+                            <span className="vertical" />
+                            Created at
+                          </th>
+                          <th style={{ width: "15%" }}>
+                            <span className="vertical" />
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {patterns.map((pattern, idx) => {
+                          return (
+                            <tr key={pattern.id}>
+                              <td>{++idx}</td>
+                              <td>{pattern.content}</td>
+                              <td>{pattern.created_date}</td>
+                              <td className="d-flex action-row">
+                                <div>
+                                  <i
+                                    className="fa-solid fa-pen-to-square text-primary"
+                                    onClick={() => {
+                                      handleToggleModal();
+                                      setCurrentPattern({
+                                        id: pattern.id,
+                                        content: pattern.content,
+                                      });
+                                    }}
+                                  ></i>
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    handleDeletePattern(pattern.id);
+                                  }}
+                                >
+                                  <i className="fa-solid fa-trash-can text-danger"></i>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </Table>
+                    <Pagination
+                      showQuickJumper
+                      defaultCurrent={1}
+                      total={pagination.totalItem}
+                      pageSize={10}
+                      onChange={handleJumpPagination}
                     />
-                    <div className="d-flex justify-content-end">
-                      <Button
-                        style={{ background: "#56cc6e", border: "none" }}
-                        onClick={handleCreateEntityType}
-                      >
-                        Create
-                      </Button>
+                  </div>
+                </Col>
+              </Row>
+            </TabPane>
+            <TabPane tabId="tab2">
+              <Row>
+                <Col>
+                  <div className="createPatternSection">
+                    <div className="input-area" style={{ margin: "0px" }}>
+                      <div className="inputTitle">Pattern name</div>
+                      <textarea
+                        style={{ scrollbarWidth: "none" }}
+                        type="search"
+                        className="input inputArea"
+                        id="pattern-name"
+                        placeholder={"Enter pattern name..."}
+                        onSelect={getSelectedText}
+                        autoComplete="off"
+                        value={content}
+                        onChange={(e) => {
+                          setContent(e.target.value);
+                        }}
+                      />
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="entity-container">
-                <div className="row entity-header">
-                  <div className="col-5">Entity type</div>
-                  <div className="col-5">Value</div>
-                  <div className="col-2">Action</div>
-                </div>
-                <div className="entity-item-section">
-                  {entities.length === 0 ? (
-                    <span className="empty">
-                      Highlight the keyword in the input to add entity
-                    </span>
-                  ) : (
-                    entities.map((item) => {
-                      return (
-                        <div className="row entity-item" key={item.id}>
-                          <div className="col-5">{item.entityType}</div>
-                          <div className="col-5">{item.value}</div>
-                          <div className="col-2 d-flex justify-content-end  align-items-center">
-                            <i
-                              class="fa-solid fa-circle-xmark text-danger"
-                              onClick={() => {
-                                handleDeleteEntity(item.id);
-                              }}
-                            ></i>
+                  <div
+                    className="select-entity-section"
+                    style={{
+                      display: isShowEntityTypeSelection ? "block" : "none",
+                    }}
+                  >
+                    <div className="row">
+                      <i
+                        class="fa-solid fa-circle-xmark text-danger closeEntityOption"
+                        onClick={() => {
+                          setShowEntityTypeSelection(false);
+                        }}
+                      ></i>
+                      <div className="col-6 show-entity-type">
+                        <div className="searchEntityType d-flex justify-content-center">
+                          <div
+                            className="searchArea"
+                            id="searchArea"
+                            style={{ width: "89%" }}
+                          >
+                            <i className="fa-solid fa-magnifying-glass"></i>
+                            <input
+                              type="search"
+                              className="searchInput searchInputTable"
+                              placeholder="Find your records..."
+                              value={searchEntityTypeValue}
+                              onKeyDown={(e) => handleKey(e)}
+                              onChange={(e) => handleClearInput(e)}
+                            />
                           </div>
                         </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            </Tab>
-          </Tabs>
+                        <div className="entity-type-items">
+                          {entityType.map((item) => {
+                            return (
+                              <div
+                                className="entity-type-item"
+                                key={item.id}
+                                onClick={() =>
+                                  handleChooseEntityType({
+                                    id: item.id,
+                                    name: item.name,
+                                  })
+                                }
+                              >
+                                <span>{item.name}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <div className="col-6 create-entity-type">
+                        <div className="title">Object / Entity</div>
+                        <InputTitle
+                          title={"Entity name"}
+                          placeHolder={"Enter entity name..."}
+                          val={entityTypeValue}
+                          func={onChangeEntityTypeValue}
+                        />
+                        <div className="d-flex justify-content-end">
+                          <Button
+                            style={{ background: "#56cc6e", border: "none" }}
+                            onClick={handleCreateEntityType}
+                          >
+                            Create
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="entity-container">
+                    <div className="row entity-header">
+                      <div className="col-5">Entity type</div>
+                      <div className="col-5">Value</div>
+                      <div className="col-2">Action</div>
+                    </div>
+                    <div className="entity-item-section">
+                      {entities.length === 0 ? (
+                        <span className="empty">
+                          Highlight the keyword in the input to add entity
+                        </span>
+                      ) : (
+                        entities.map((item) => {
+                          return (
+                            <div className="row entity-item" key={item.id}>
+                              <div className="col-5">{item.entityType}</div>
+                              <div className="col-5">{item.value}</div>
+                              <div className="col-2 d-flex justify-content-end  align-items-center">
+                                <i
+                                  class="fa-solid fa-circle-xmark text-danger"
+                                  onClick={() => {
+                                    handleDeleteEntity(item.id);
+                                  }}
+                                ></i>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </TabPane>
+          </TabContent>
         </ModalBody>
         <ModalFooter>
           <Button

@@ -178,7 +178,7 @@ function ScriptTable() {
                   <td
                     onClick={() => {
                       context.setValue({ id: script.id, name: script.name });
-                      navigate("/train");
+                      navigate("/script-detail/" + script.id.toString());
                     }}
                     style={{
                       textOverflow: "ellipsis",
@@ -195,7 +195,7 @@ function ScriptTable() {
                         id: script.id,
                         name: script.name,
                       });
-                      navigate("/train");
+                      navigate("/script-detail/");
                     }}
                   >
                     {script.created_date}
@@ -203,7 +203,7 @@ function ScriptTable() {
                   <td
                     onClick={() => {
                       context.setValue({ id: script.id, name: script.name });
-                      navigate("/train");
+                      navigate("/script-detail/");
                     }}
                   >
                     {script.last_updated_date}

@@ -13,9 +13,12 @@ const Routers = () => {
       <Route path="/home" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/train" element={<FlowContainer />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/script-detail">
+        <Route index element={<Home />} />
+        <Route path=":id" element={<FlowContainer />} />
+      </Route>
     </Routes>
   );
 };

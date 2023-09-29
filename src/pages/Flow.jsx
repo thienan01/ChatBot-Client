@@ -16,7 +16,7 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
 } from "reactflow";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NodeLayout from "../components/Node/NodeLayout";
 import StartNode from "../components/Node/StartNode";
 import CustomEdge from "../components/Node/ButtonEdge";
@@ -53,6 +53,7 @@ const initialNode = [
 ];
 
 function Flow() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const context = useContext(ScriptContext);
   const defaultEdgeOptions = { animated: true };
@@ -70,8 +71,9 @@ function Flow() {
   const reactFlowInstance = useReactFlow();
   const connectingNode = useRef(null);
   const connecting = useRef(null);
+
   useEffect(() => {
-    if (contextChild.id !== "") {
+    if (id !== "new") {
       Promise.all([
         GET(BASE_URL + "api/intent/get_all/by_user_id"),
         GET(BASE_URL + "api/script/get/" + context.value.id),
