@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { BASE_URL } from "../global/globalVar";
 import { useNavigate } from "react-router-dom";
 import "../styles/main.css";
 import "../styles/util.css";
@@ -23,7 +22,7 @@ const Login = () => {
         username: username,
         password: rePassword,
       };
-      POST(BASE_URL + apiURL, JSON.stringify(body))
+      POST(process.env.REACT_APP_BASE_URL + apiURL, JSON.stringify(body))
         .then((res) => {
           console.log("login", res);
           setLoading(false);

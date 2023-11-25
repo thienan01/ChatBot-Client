@@ -9,11 +9,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 import "./css/EditNodeModal.css";
-import InputTitleTextArea from "../Input/InputTitleTextArea";
-import InputTitle from "../Input/InputTitle";
 import { useEffect, useState } from "react";
 import { POST } from "../../functionHelper/APIFunction";
-import { BASE_URL } from "../../global/globalVar";
 
 function EditNodeModal({ open, toggle, nodeData }) {
   console.log("data entity type", nodeData.entityType);
@@ -114,7 +111,10 @@ function EditNodeModal({ open, toggle, nodeData }) {
       size: 100,
       keyword: value,
     };
-    POST(BASE_URL + "api/entity_type/", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/entity_type/",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         setEntityType(res.items);

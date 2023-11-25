@@ -10,7 +10,6 @@ import {
 import { useEffect, useState } from "react";
 import { Pagination } from "antd";
 import { GET, POST, UPLOAD } from "../../functionHelper/APIFunction";
-import { BASE_URL } from "../../global/globalVar";
 import ModalUpdateIntent from "./ModalUpdateIntent";
 import ModalPattern from "./ModalPattern";
 import { NotificationManager } from "react-notifications";
@@ -42,28 +41,29 @@ function IntentTable() {
       size: pageSize,
     };
 
-    POST(BASE_URL + `api/intent/get_pagination`, JSON.stringify(body)).then(
-      (res) => {
-        res.items.map((item) => {
-          const createdDate = new Date(item.created_date);
-          const updatedDate = new Date(item.last_updated_date);
-          item.created_date = createdDate.toLocaleString("en-US");
-          item.last_updated_date = updatedDate.toLocaleString("en-US");
-          return item;
-        });
-        setLoading(false);
-        setIntents(res.items);
-        setPagination({
-          totalItem: res.total_items,
-          totalPage: res.total_pages,
-        });
-      }
-    );
+    POST(
+      process.env.REACT_APP_BASE_URL + `api/intent/get_pagination`,
+      JSON.stringify(body)
+    ).then((res) => {
+      res.items.map((item) => {
+        const createdDate = new Date(item.created_date);
+        const updatedDate = new Date(item.last_updated_date);
+        item.created_date = createdDate.toLocaleString("en-US");
+        item.last_updated_date = updatedDate.toLocaleString("en-US");
+        return item;
+      });
+      setLoading(false);
+      setIntents(res.items);
+      setPagination({
+        totalItem: res.total_items,
+        totalPage: res.total_pages,
+      });
+    });
   };
 
   const getPattern = (intentID, page) => {
     GET(
-      BASE_URL +
+      process.env.REACT_APP_BASE_URL +
         "api/pattern/get_pagination/by_intent_id/" +
         intentID +
         "?page=" +
@@ -93,7 +93,10 @@ function IntentTable() {
     let body = {
       id: id,
     };
-    POST(BASE_URL + "api/intent/delete", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/intent/delete",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status === "OK") {
           NotificationManager.success("Delete successfully", "success");
@@ -106,7 +109,7 @@ function IntentTable() {
   };
 
   const handleCheckStatus = () => {
-    GET(BASE_URL + "api/training/get_server_status")
+    GET(process.env.REACT_APP_BASE_URL + "api/training/get_server_status")
       .then((res) => {
         if (res.http_status === "OK" && res.status === "FREE") {
           NotificationManager.success("Training finished", "success");
@@ -143,25 +146,29 @@ function IntentTable() {
     if (val) {
       body.keyword = val;
     }
-    POST(BASE_URL + `api/intent/get_pagination/`, JSON.stringify(body)).then(
-      (res) => {
-        res.items.map((item) => {
-          const createdDate = new Date(item.created_date);
-          const updatedDate = new Date(item.last_updated_date);
-          item.created_date = createdDate.toLocaleString("en-US");
-          item.last_updated_date = updatedDate.toLocaleString("en-US");
-          return item;
-        });
-        setIntents(res.items);
-        setPagination({
-          totalItem: res.total_items,
-          totalPage: res.total_pages,
-        });
-      }
-    );
+    POST(
+      process.env.REACT_APP_BASE_URL + `api/intent/get_pagination/`,
+      JSON.stringify(body)
+    ).then((res) => {
+      res.items.map((item) => {
+        const createdDate = new Date(item.created_date);
+        const updatedDate = new Date(item.last_updated_date);
+        item.created_date = createdDate.toLocaleString("en-US");
+        item.last_updated_date = updatedDate.toLocaleString("en-US");
+        return item;
+      });
+      setIntents(res.items);
+      setPagination({
+        totalItem: res.total_items,
+        totalPage: res.total_pages,
+      });
+    });
   };
   const handleTrain = () => {
-    POST(BASE_URL + "api/training/train", JSON.stringify({})).then((res) => {});
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/training/train",
+      JSON.stringify({})
+    ).then((res) => {});
   };
   const handleJumpPagination = (page, pageSize) => {
     getIntent(page, pageSize);
@@ -171,7 +178,9 @@ function IntentTable() {
     setToggleImport((preState) => !preState);
   };
   const handleDownloadTmp = () => {
-    GET(BASE_URL + "api/pattern/import/excel/get_template")
+    GET(
+      process.env.REACT_APP_BASE_URL + "api/pattern/import/excel/get_template"
+    )
       .then((res) => {
         if (res.http_status === "OK") {
           window.location.replace(res.link);
@@ -190,7 +199,7 @@ function IntentTable() {
     input.onchange = (e) => {
       var file = e.target.files[0];
       console.log("this file", file);
-      UPLOAD(BASE_URL + "api/pattern/import/excel", file)
+      UPLOAD(process.env.REACT_APP_BASE_URL + "api/pattern/import/excel", file)
         .then((res) => {
           if (res.http_status === "OK") {
             NotificationManager.success("Upload file successfully", "Success");
@@ -204,7 +213,10 @@ function IntentTable() {
   };
 
   const handleExportExcel = () => {
-    POST(BASE_URL + "api/pattern/export/excel", JSON.stringify({}))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/pattern/export/excel",
+      JSON.stringify({})
+    )
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         setLoadingExport(true);
@@ -220,7 +232,11 @@ function IntentTable() {
     let isRes = true;
     let checking = setInterval(() => {
       if (isRes) {
-        GET(BASE_URL + "api/pattern/export/excel/status?sessionId=" + sessionId)
+        GET(
+          process.env.REACT_APP_BASE_URL +
+            "api/pattern/export/excel/status?sessionId=" +
+            sessionId
+        )
           .then((res) => {
             isRes = true;
             if (res.http_status === "OK" && res.status === "DONE") {
@@ -248,7 +264,11 @@ function IntentTable() {
     }, 3000);
   };
   const getFileExcel = (fileName) => {
-    GET(BASE_URL + "api/pattern/export/excel/get_file/" + fileName)
+    GET(
+      process.env.REACT_APP_BASE_URL +
+        "api/pattern/export/excel/get_file/" +
+        fileName
+    )
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         const binaryString = window.atob(res.base64);
@@ -279,7 +299,7 @@ function IntentTable() {
   };
   const handleCheckStatusInterval = () => {
     let checking = setInterval(() => {
-      GET(BASE_URL + "api/training/get_server_status")
+      GET(process.env.REACT_APP_BASE_URL + "api/training/get_server_status")
         .then((res) => {
           if (res.http_status === "OK" && res.status === "FREE") {
             NotificationManager.success("Training finished", "success");

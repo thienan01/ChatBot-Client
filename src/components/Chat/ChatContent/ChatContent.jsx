@@ -11,7 +11,6 @@ import Avatar from "../ChatList/Avatar";
 import ChatItem from "./ChatItem";
 import { POST, VOICE } from "../../../functionHelper/APIFunction";
 import { NotificationManager } from "react-notifications";
-import { BASE_URL } from "../../../global/globalVar";
 import { getCookie } from "../../../functionHelper/GetSetCookie";
 import { ScriptContext } from "../../Context/ScriptContext";
 import typing from "../../../assets/Typing.gif";
@@ -46,7 +45,10 @@ function ChatContent({ sessionId }) {
       session_id: sessionId,
       is_trying: !isSaveHistory,
     };
-    POST(BASE_URL + "api/training/predict", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/training/predict",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status === "OK") {
           console.log("curr note", res.current_node_id);

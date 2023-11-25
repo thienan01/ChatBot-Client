@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
-import { GET, POST } from "../../functionHelper/APIFunction";
-import { NotificationManager } from "react-notifications";
+import { POST } from "../../functionHelper/APIFunction";
 import { Button, Modal, ModalHeader, ModalBody, Table } from "reactstrap";
 import { Pagination } from "antd";
 
-import { BASE_URL } from "../../global/globalVar";
 import "../../styles/common.css";
-import Filter from "../Filter/Filter";
 import SearchBar from "../Filter/SearchBar";
 
 function ShowEntityModal({ open, toggle, entityId }) {
@@ -21,7 +18,7 @@ function ShowEntityModal({ open, toggle, entityId }) {
         entity_type_ids: [entityId],
         has_pattern: true,
       };
-      POST(BASE_URL + "api/entity/", JSON.stringify(body))
+      POST(process.env.REACT_APP_BASE_URL + "api/entity/", JSON.stringify(body))
         .then((res) => {
           setEntities(res.items);
           setPagination({
@@ -59,7 +56,10 @@ function ShowEntityModal({ open, toggle, entityId }) {
     if (val) {
       body.keyword = val;
     }
-    POST(BASE_URL + `api/entity/`, JSON.stringify(body)).then((res) => {
+    POST(
+      process.env.REACT_APP_BASE_URL + `api/entity/`,
+      JSON.stringify(body)
+    ).then((res) => {
       setEntities(res.items);
       setPagination({
         totalItem: res.total_items,

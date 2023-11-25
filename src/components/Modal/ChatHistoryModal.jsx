@@ -6,7 +6,6 @@ import ChatHistory from "../Chat/ChatContent/ChatHistory";
 import { Pagination } from "antd";
 import "../../styles/common.css";
 import "./css/ChatHistoryModal.css";
-import { BASE_URL } from "../../global/globalVar";
 function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
   const [currentSessionDetail, setCurrentSessionDetail] = useState([]);
   const [messageHistory, setMessageHistory] = useState([]);
@@ -21,7 +20,10 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
       script_id: scriptId,
       has_message_entity_histories: true,
     };
-    POST(BASE_URL + "api/message_history_group/", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/message_history_group/",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         res.items.map((item) => {
@@ -55,8 +57,14 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
     };
 
     Promise.all([
-      POST(BASE_URL + "api/message_history/", JSON.stringify(body)),
-      POST(BASE_URL + "api/message_entity_history/", JSON.stringify(body)),
+      POST(
+        process.env.REACT_APP_BASE_URL + "api/message_history/",
+        JSON.stringify(body)
+      ),
+      POST(
+        process.env.REACT_APP_BASE_URL + "api/message_entity_history/",
+        JSON.stringify(body)
+      ),
     ])
       .then((res) => {
         if (res[0].http_status !== "OK" || res[1].http_status !== "OK")

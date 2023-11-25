@@ -11,7 +11,6 @@ import {
   Table,
 } from "reactstrap";
 import { Pagination } from "antd";
-import { BASE_URL } from "../../global/globalVar";
 import "../../styles/common.css";
 import Filter from "../Filter/Filter";
 import SearchBar from "../Filter/SearchBar";
@@ -61,7 +60,10 @@ function ModalPattern({ open, toggle, value }) {
       page: page,
       size: pageSize,
     };
-    POST(BASE_URL + "api/entity_type/", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/entity_type/",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         setEntityType(res.items);
@@ -88,7 +90,10 @@ function ModalPattern({ open, toggle, value }) {
         intent_id: value.intentID,
         entities: entities,
       };
-      POST(BASE_URL + "api/pattern/add", JSON.stringify(body)).then((res) => {
+      POST(
+        process.env.REACT_APP_BASE_URL + "api/pattern/add",
+        JSON.stringify(body)
+      ).then((res) => {
         if (res.http_status === "OK") {
           NotificationManager.success("Created successfully!!", "Success");
           reloadPattern();
@@ -102,7 +107,7 @@ function ModalPattern({ open, toggle, value }) {
   const reloadPattern = (page, pageSize = 10) => {
     if (page === undefined) page = 1;
     GET(
-      BASE_URL +
+      process.env.REACT_APP_BASE_URL +
         "api/pattern/get_pagination/by_intent_id/" +
         value.intentID +
         "?page=" +
@@ -128,7 +133,10 @@ function ModalPattern({ open, toggle, value }) {
     setOpenModal(!openModal);
   };
   const handleUpdate = (pattern) => {
-    POST(BASE_URL + "api/pattern/update", JSON.stringify(pattern))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/pattern/update",
+      JSON.stringify(pattern)
+    )
       .then((res) => {
         if (res.http_status === "OK") {
           setOpenModal(!openModal);
@@ -144,7 +152,10 @@ function ModalPattern({ open, toggle, value }) {
     let body = {
       id: id,
     };
-    POST(BASE_URL + "api/pattern/delete", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/pattern/delete",
+      JSON.stringify(body)
+    )
       .then((res) => {
         NotificationManager.success("Delete successfully", "success");
         reloadPattern();
@@ -174,22 +185,23 @@ function ModalPattern({ open, toggle, value }) {
     if (val) {
       body.keyword = val;
     }
-    POST(BASE_URL + `api/pattern/get_pagination/`, JSON.stringify(body)).then(
-      (res) => {
-        res.items.map((item) => {
-          const createdDate = new Date(item.created_date);
-          const updatedDate = new Date(item.last_updated_date);
-          item.created_date = createdDate.toLocaleString("en-US");
-          item.last_updated_date = updatedDate.toLocaleString("en-US");
-          return item;
-        });
-        setPatterns(res.items);
-        setPagination({
-          totalItem: res.total_items,
-          totalPage: res.total_pages,
-        });
-      }
-    );
+    POST(
+      process.env.REACT_APP_BASE_URL + `api/pattern/get_pagination/`,
+      JSON.stringify(body)
+    ).then((res) => {
+      res.items.map((item) => {
+        const createdDate = new Date(item.created_date);
+        const updatedDate = new Date(item.last_updated_date);
+        item.created_date = createdDate.toLocaleString("en-US");
+        item.last_updated_date = updatedDate.toLocaleString("en-US");
+        return item;
+      });
+      setPatterns(res.items);
+      setPagination({
+        totalItem: res.total_items,
+        totalPage: res.total_pages,
+      });
+    });
   };
   const handleJumpPagination = (page, pageSize) => {
     reloadPattern(page, pageSize);
@@ -202,7 +214,10 @@ function ModalPattern({ open, toggle, value }) {
       let body = {
         name: entityTypeValue,
       };
-      POST(BASE_URL + "api/entity_type/add", JSON.stringify(body))
+      POST(
+        process.env.REACT_APP_BASE_URL + "api/entity_type/add",
+        JSON.stringify(body)
+      )
         .then((res) => {
           if (res.http_status !== "OK") throw res;
           NotificationManager.success("Created successfully", "Success");
@@ -289,7 +304,10 @@ function ModalPattern({ open, toggle, value }) {
       size: 100,
       keyword: value,
     };
-    POST(BASE_URL + "api/entity_type/", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/entity_type/",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         setEntityType(res.items);

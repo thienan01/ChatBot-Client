@@ -3,7 +3,6 @@ import { Pagination } from "antd";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { GET, POST } from "../../functionHelper/APIFunction";
-import { BASE_URL } from "../../global/globalVar";
 import { NotificationManager } from "react-notifications";
 import { ScriptContext } from "../Context/ScriptContext";
 import ModalUpdateScript from "./ModalUpdateScript";
@@ -26,7 +25,7 @@ function ScriptTable() {
   const loadScript = (page, pageSize) => {
     if (page === undefined) page = 1;
     GET(
-      BASE_URL +
+      process.env.REACT_APP_BASE_URL +
         "api/script/get_pagination/by_user_id?page=" +
         page +
         "&size=" +
@@ -67,7 +66,10 @@ function ScriptTable() {
     let body = {
       id: id,
     };
-    POST(BASE_URL + "api/script/delete", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/script/delete",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status === "OK") {
           NotificationManager.success("Delete successfully", "success");
@@ -98,23 +100,24 @@ function ScriptTable() {
     if (val) {
       body.keyword = val;
     }
-    POST(BASE_URL + `api/script/get_pagination/`, JSON.stringify(body)).then(
-      (res) => {
-        setPagination({
-          totalPage: res.total_pages,
-          totalItems: res.total_items,
-        });
-        res.items.map((item) => {
-          const createdDate = new Date(item.created_date);
-          const updatedDate = new Date(item.last_updated_date);
-          item.created_date = createdDate.toLocaleString("en-US");
-          item.last_updated_date = updatedDate.toLocaleString("en-US");
-          return item;
-        });
-        console.log("res in filter", res);
-        setScripts(res.items);
-      }
-    );
+    POST(
+      process.env.REACT_APP_BASE_URL + `api/script/get_pagination/`,
+      JSON.stringify(body)
+    ).then((res) => {
+      setPagination({
+        totalPage: res.total_pages,
+        totalItems: res.total_items,
+      });
+      res.items.map((item) => {
+        const createdDate = new Date(item.created_date);
+        const updatedDate = new Date(item.last_updated_date);
+        item.created_date = createdDate.toLocaleString("en-US");
+        item.last_updated_date = updatedDate.toLocaleString("en-US");
+        return item;
+      });
+      console.log("res in filter", res);
+      setScripts(res.items);
+    });
   };
   const handleJumpPagination = (page, pageSize) => {
     loadScript(page, pageSize);

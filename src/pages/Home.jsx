@@ -35,9 +35,6 @@ const Home = () => {
     <Helmet title="Home">
       <section>
         <Container>
-          {console.log("Aa", process.env)}
-          {console.log("Aa", process.env.REACT_APP_BASE_URL)}
-
           <Row>
             <Col lg="6" md="6">
               <div className="hero__content">

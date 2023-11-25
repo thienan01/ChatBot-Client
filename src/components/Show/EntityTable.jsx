@@ -2,7 +2,6 @@ import { Table, Button } from "reactstrap";
 import { Pagination, theme } from "antd";
 import { useEffect, useState } from "react";
 import { GET, POST } from "../../functionHelper/APIFunction";
-import { BASE_URL } from "../../global/globalVar";
 import { NotificationManager } from "react-notifications";
 import { Breadcrumb } from "antd";
 import "../../styles/common.css";
@@ -27,7 +26,10 @@ function EntityTable() {
       page: page,
       size: pageSize,
     };
-    POST(BASE_URL + "api/entity_type/", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/entity_type/",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         res.items.map((item) => {
@@ -71,7 +73,10 @@ function EntityTable() {
     if (val) {
       body.keyword = val;
     }
-    POST(BASE_URL + `api/entity_type/`, JSON.stringify(body)).then((res) => {
+    POST(
+      process.env.REACT_APP_BASE_URL + `api/entity_type/`,
+      JSON.stringify(body)
+    ).then((res) => {
       res.items.map((item) => {
         const createdDate = new Date(item.created_date);
         const updatedDate = new Date(item.last_updated_date);
@@ -92,7 +97,10 @@ function EntityTable() {
       let body = {
         name: val,
       };
-      POST(BASE_URL + "api/entity_type/add", JSON.stringify(body))
+      POST(
+        process.env.REACT_APP_BASE_URL + "api/entity_type/add",
+        JSON.stringify(body)
+      )
         .then((res) => {
           if (res.http_status !== "OK") throw res;
           loadEntity(1, 12);
@@ -106,7 +114,10 @@ function EntityTable() {
     let body = {
       ids: [id],
     };
-    POST(BASE_URL + "api/entity_type/delete", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/entity_type/delete",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status === "OK") {
           loadEntity(1, 12);
@@ -132,7 +143,10 @@ function EntityTable() {
       id: entityTypeId,
       name: name,
     };
-    POST(BASE_URL + "api/entity_type/update", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/entity_type/update",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status === "OK") {
           NotificationManager.success("Updated successfully!!", "Success");
