@@ -33,12 +33,12 @@
     "react-flow-renderer": "^10.3.17",
     "react-highlight-words": "^0.18.0",
     "react-notifications": "^1.7.4",
-    "react-redux": "^8.0.5",
-    "react-router-dom": "^6.4.3",
+    "react-router-dom": "^6.20.0",
     "react-scripts": "^5.0.1",
     "reactflow": "^11.2.0",
     "reactstrap": "^9.1.5",
     "remixicon": "^2.5.0",
+    "styled-components": "^6.1.1",
     "uuid": "^9.0.0"
   },
   "scripts": {
