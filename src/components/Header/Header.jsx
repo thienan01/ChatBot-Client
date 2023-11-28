@@ -18,7 +18,7 @@ const nav__links = [
   },
   {
     display: "CONTACT",
-    path: "/contact",
+    path: "/profile",
     icon: "fa-regular fa-address-card",
   },
 ];

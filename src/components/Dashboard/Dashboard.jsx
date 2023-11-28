@@ -4,6 +4,7 @@ import {
   TagsOutlined,
   MessageOutlined,
   FileSearchOutlined,
+  SketchOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
 import Footer from "../Footer/Footer";
@@ -12,6 +13,7 @@ import ScriptTable from "../Show/ScriptTable";
 import "../../styles/sidebar.css";
 import PatternTable from "../Show/PatternTable";
 import EntityTable from "../Show/EntityTable";
+import Plan from "../ChoosePlan/Plan"
 const { Content, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -22,6 +24,7 @@ function getItem(label, key, icon, children) {
   };
 }
 const items2 = [
+  getItem("Upgrade", "PREMIUM", <SketchOutlined />),
   getItem("Scripts", "SCRIPT", <FileSearchOutlined />),
   getItem("Intents", "INTENT", <TagsOutlined />),
   getItem("Patterns", "PATTERN", <MessageOutlined />),
@@ -87,6 +90,8 @@ const App = () => {
           >
             {(() => {
               switch (table) {
+                case "PREMIUM":
+                    return <Plan />;
                 case "SCRIPT":
                   return <ScriptTable />;
                 case "INTENT":
@@ -97,6 +102,7 @@ const App = () => {
                   break;
                 case "ENTITY":
                   return <EntityTable />;
+                  
                   break;
                 default:
                   return <div></div>;
