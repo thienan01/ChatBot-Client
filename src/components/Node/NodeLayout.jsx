@@ -13,7 +13,7 @@ function NodeLayout({ data }) {
   const [conditions, setConditions] = useState(data.conditionMapping);
   const [value, setValue] = useState(data.value);
   const [openEditNode, setOpenEditNode] = useState(false);
-
+  const [intentList, setIntentList] = useState(data.intents);
   useEffect(() => {
     data.value = value;
   }, [value, data]);
@@ -81,6 +81,9 @@ function NodeLayout({ data }) {
       ...conditions,
       { id: uniqueID(), intent_id: null, predict_type: "INTENT" },
     ]);
+  };
+  const reloadIntents = (intentLst) => {
+    setIntentList(intentLst);
   };
   return (
     <Fragment>
@@ -161,7 +164,7 @@ function NodeLayout({ data }) {
                     >
                       <ConditionMapping
                         data={{
-                          intents: data.intents,
+                          intents: intentList,
                           conditionMapping: item,
                           setCondition: setConditionMappingIntent,
                           deleteCondition: deleteCondition,
@@ -214,7 +217,7 @@ function NodeLayout({ data }) {
         nodeData={{
           message: value,
           conditions: conditions,
-          intents: data.intents,
+          intents: intentList,
           entityType: data.entityType,
           handleSetMessage: handleEditNodeByModal,
           setKeyword: setConditionMappingKeyword,
@@ -222,6 +225,7 @@ function NodeLayout({ data }) {
           deleteCondition: deleteCondition,
           addIntent: addIntent,
           setIntent: setConditionMappingIntent,
+          reloadIntents: reloadIntents,
         }}
       />
     </Fragment>
