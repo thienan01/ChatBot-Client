@@ -3,6 +3,7 @@ import { Button, Modal, ModalBody } from "reactstrap";
 import { POST } from "../../functionHelper/APIFunction";
 import { NotificationManager } from "react-notifications";
 import InputTitle from "../Input/InputTitle";
+
 function ModalUpdateIntent({ open, toggle, value, reload }) {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
@@ -24,7 +25,8 @@ function ModalUpdateIntent({ open, toggle, value, reload }) {
     let url = value.type === "save" ? "api/intent/add" : "api/intent/update";
     POST(process.env.REACT_APP_BASE_URL + url, JSON.stringify(body))
       .then((res) => {
-        reload(1, 12);
+        res.name = name;
+        reload(1, 12, res);
         toggle();
         NotificationManager.success("Update successfully", "success");
       })

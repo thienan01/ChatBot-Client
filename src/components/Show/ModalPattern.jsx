@@ -40,6 +40,7 @@ function ModalPattern({ open, toggle, value }) {
   const [isShowEntityTypeSelection, setShowEntityTypeSelection] =
     useState(false);
   const [searchEntityTypeValue, setSearchEntityTypeValue] = useState("");
+
   useEffect(() => {
     value.patterns.items.map((item) => {
       const createdDate = new Date(item.created_date);

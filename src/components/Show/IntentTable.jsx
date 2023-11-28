@@ -130,7 +130,6 @@ function IntentTable() {
     let body = {
       page: 1,
       size: 12,
-      // keyword: val,
     };
     if (date) {
       let fromDate = new Date(date.fromDate + " 00:00:00");
