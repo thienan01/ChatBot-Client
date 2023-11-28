@@ -13,7 +13,6 @@ import ScriptTable from "../Show/ScriptTable";
 import "../../styles/sidebar.css";
 import PatternTable from "../Show/PatternTable";
 import EntityTable from "../Show/EntityTable";
-import Plan from "../ChoosePlan/Plan"
 const { Content, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -90,8 +89,7 @@ const App = () => {
           >
             {(() => {
               switch (table) {
-                case "PREMIUM":
-                    return <Plan />;
+                
                 case "SCRIPT":
                   return <ScriptTable />;
                 case "INTENT":

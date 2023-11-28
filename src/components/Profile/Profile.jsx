@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import Helmet from '../Helmet/Helmet'
 import styled from 'styled-components';
-import premium from '../../../assets/images/diamond.png'
-import gold from '../../../assets/images/gold.png'
+import premium from '../../assets/images/diamond.png'
+import gold from '../../assets/images/gold.png'
 import { BASE_URL } from '../../global/globalVar';
 import {GET, POST} from '../../functionHelper/APIFunction'
 
