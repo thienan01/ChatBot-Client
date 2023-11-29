@@ -5,7 +5,7 @@ import premium from '../../assets/images/diamond.png'
 import gold from '../../assets/images/gold.png'
 
 import {GET, POST} from '../../functionHelper/APIFunction'
-const BASE_URL = process.env.REACT_APP_API_URL
+const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const StyledComponent = styled.div` 
 @-ms-viewport {

@@ -34,7 +34,7 @@ function ModalUpdateScript({ open, toggle }) {
               className="btn-prim"
               onClick={() => {
                 context.setValue({ id: "", name: name });
-                navigate("/train");
+                navigate("/script-detail/new");
               }}
             >
               Create

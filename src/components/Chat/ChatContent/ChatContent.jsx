@@ -9,9 +9,8 @@ import uniqueID from "../../../functionHelper/GenerateID";
 import "./chatContent.css";
 import Avatar from "../ChatList/Avatar";
 import ChatItem from "./ChatItem";
-import { POST } from "../../../functionHelper/APIFunction";
+import { POST, VOICE } from "../../../functionHelper/APIFunction";
 import { NotificationManager } from "react-notifications";
-import { BASE_URL } from "../../../global/globalVar";
 import { getCookie } from "../../../functionHelper/GetSetCookie";
 import { ScriptContext } from "../../Context/ScriptContext";
 import typing from "../../../assets/Typing.gif";
@@ -25,7 +24,7 @@ function ChatContent({ sessionId }) {
   const [value, setValue] = useState("");
   const [isShowTyping, setShowTyping] = useState(false);
   const [isSaveHistory, setSaveHistory] = useState(false);
-  const [isAutoSend, setAutoSend] = useState(false);
+  const [isSpeech, setSpeech] = useState(false);
   const [isRecording, setRecording] = useState(false);
   const handleSendMessage = useCallback((text) => {
     setShowTyping(true);
@@ -34,33 +33,40 @@ function ChatContent({ sessionId }) {
       {
         key: uniqueID(),
         type: "me",
-        msg: isAutoSend ? text : value,
+        msg: value,
       },
     ]);
+    console.log("ass", currentNode);
     let body = {
       secret_key: getCookie("secret_key"),
       script_id: context.value.id,
       current_node_id: currentNode,
-      message: isAutoSend ? text : value,
+      message: value,
       session_id: sessionId,
       is_trying: !isSaveHistory,
     };
-    POST(BASE_URL + "api/training/predict", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/training/predict",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status === "OK") {
+          console.log("curr note", res.current_node_id);
           setCurrentNode(res.current_node_id);
-          if (res.message != null && res.message.trim() != "") {
+          if (res.message !== null && res.message.trim() !== "") {
+            var convertedString = res.message.replace(/\n/g, "<br>");
             setChatItems((citems) => [
               ...citems,
               {
                 key: uniqueID(),
                 type: "other",
-                msg: res.message,
+                msg: convertedString,
               },
             ]);
           }
-          if (isAutoSend) {
-            startListening();
+          if (isSpeech) {
+            // startListening();
+            textToSpeech(res.message);
           }
         } else {
           NotificationManager.error(res.exception_code, "Error");
@@ -89,10 +95,6 @@ function ChatContent({ sessionId }) {
     const text = event.results[last][0].transcript;
     setValue((value) => value + (value === "" ? "" : ". ") + text);
     stopListening();
-    if (isAutoSend) {
-      setValue("");
-      handleSendMessage(text);
-    }
   };
 
   const startListening = () => {
@@ -107,6 +109,31 @@ function ChatContent({ sessionId }) {
     setRecording(false);
     recognition.stop();
   };
+
+  const textToSpeech = (text) => {
+    const apiUrl = "https://api.fpt.ai/hmi/tts/v5";
+
+    VOICE(apiUrl, text)
+      .then((res) => {
+        // const audioURL = URL.createObjectURL(audioBlob);
+        setTimeout(function () {
+          //your code to be executed after 1 second
+          // const audio = new Audio(res.async);
+          // audio.play();
+          const audio = new Audio(res.async);
+          audio
+            .play()
+            .then()
+            .catch((e) => {
+              console.log("Error when play audio");
+            });
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
   return (
     <div className="main__chatcontent">
       <div className="content__header">
@@ -114,6 +141,7 @@ function ChatContent({ sessionId }) {
           <div className="current-chatting-user">
             <Avatar isOnline="active" />
             <p>Try your chatbot</p>
+            {console.log("re-renderchat", currentNode)}
           </div>
         </div>
 
@@ -134,16 +162,16 @@ function ChatContent({ sessionId }) {
                 }}
               />
             </div>
-            {/* <div className="settings">
-              <span>Auto send: </span>
+            <div className="settings">
+              <span>Speech: </span>
               <Input
                 type="checkbox"
                 defaultChecked={isSaveHistory}
                 onChange={(e) => {
-                  setAutoSend(e.target.checked);
+                  setSpeech(e.target.checked);
                 }}
               />
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

@@ -2,7 +2,6 @@ import { Table, PaginationItem, PaginationLink } from "reactstrap";
 import { Pagination } from "antd";
 import { useEffect, useState } from "react";
 import { GET, POST } from "../../functionHelper/APIFunction";
-import { BASE_URL } from "../../global/globalVar";
 import { NotificationManager } from "react-notifications";
 import "../../styles/common.css";
 import Filter from "../Filter/Filter";
@@ -17,7 +16,10 @@ function PatternTable() {
       page: page,
       size: pageSize,
     };
-    POST(BASE_URL + "api/pattern/get_pagination", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/pattern/get_pagination",
+      JSON.stringify(body)
+    )
       .then((res) => {
         res.items.map((item) => {
           const createdDate = new Date(item.created_date);
@@ -62,22 +64,23 @@ function PatternTable() {
     if (val) {
       body.keyword = val;
     }
-    POST(BASE_URL + `api/pattern/get_pagination/`, JSON.stringify(body)).then(
-      (res) => {
-        res.items.map((item) => {
-          const createdDate = new Date(item.created_date);
-          const updatedDate = new Date(item.last_updated_date);
-          item.created_date = createdDate.toLocaleString("en-US");
-          item.last_updated_date = updatedDate.toLocaleString("en-US");
-          return item;
-        });
-        setPatterns(res.items);
-        setPagination({
-          totalItem: res.total_items,
-          totalPage: res.total_pages,
-        });
-      }
-    );
+    POST(
+      process.env.REACT_APP_BASE_URL + `api/pattern/get_pagination/`,
+      JSON.stringify(body)
+    ).then((res) => {
+      res.items.map((item) => {
+        const createdDate = new Date(item.created_date);
+        const updatedDate = new Date(item.last_updated_date);
+        item.created_date = createdDate.toLocaleString("en-US");
+        item.last_updated_date = updatedDate.toLocaleString("en-US");
+        return item;
+      });
+      setPatterns(res.items);
+      setPagination({
+        totalItem: res.total_items,
+        totalPage: res.total_pages,
+      });
+    });
   };
   const handleJumpPagination = (page, pageSize) => {
     getPattern(page, pageSize);

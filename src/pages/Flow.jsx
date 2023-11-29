@@ -1,9 +1,8 @@
 import { useCallback, useState, useEffect, useContext, useRef } from "react";
-import { Spinner, Button } from "reactstrap";
+import { Button } from "reactstrap";
 import { Spin } from "antd";
 import ModalChatTrial from "../components/Node/ModalChatTrial";
 import ModalSetting from "../components/Node/ModalSetting";
-import { BASE_URL } from "../global/globalVar";
 import uniqueID from "../functionHelper/GenerateID";
 import { GET, POST } from "../functionHelper/APIFunction";
 import { ScriptContext } from "../components/Context/ScriptContext";
@@ -16,7 +15,7 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
 } from "reactflow";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NodeLayout from "../components/Node/NodeLayout";
 import StartNode from "../components/Node/StartNode";
 import CustomEdge from "../components/Node/ButtonEdge";
@@ -53,6 +52,7 @@ const initialNode = [
 ];
 
 function Flow() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const context = useContext(ScriptContext);
   const defaultEdgeOptions = { animated: true };
@@ -70,13 +70,16 @@ function Flow() {
   const reactFlowInstance = useReactFlow();
   const connectingNode = useRef(null);
   const connecting = useRef(null);
+
   useEffect(() => {
-    if (contextChild.id !== "") {
+    if (id !== "new") {
       Promise.all([
-        GET(BASE_URL + "api/intent/get_all/by_user_id"),
-        GET(BASE_URL + "api/script/get/" + context.value.id),
+        GET(process.env.REACT_APP_BASE_URL + "api/intent/get_all/by_user_id"),
+        GET(
+          process.env.REACT_APP_BASE_URL + "api/script/get/" + context.value.id
+        ),
         POST(
-          BASE_URL + "api/entity_type/",
+          process.env.REACT_APP_BASE_URL + "api/entity_type/",
           JSON.stringify({ page: 1, size: 100 })
         ),
       ])
@@ -99,9 +102,9 @@ function Flow() {
         });
     } else {
       Promise.all([
-        GET(BASE_URL + "api/intent/get_all/by_user_id"),
+        GET(process.env.REACT_APP_BASE_URL + "api/intent/get_all/by_user_id"),
         POST(
-          BASE_URL + "api/entity_type/",
+          process.env.REACT_APP_BASE_URL + "api/entity_type/",
           JSON.stringify({ page: 1, size: 100 })
         ),
       ])
@@ -131,7 +134,7 @@ function Flow() {
         nodes: nodes,
       };
       let url = contextChild.id === "" ? "api/script/add" : "api/script/update";
-      POST(BASE_URL + url, JSON.stringify(body))
+      POST(process.env.REACT_APP_BASE_URL + url, JSON.stringify(body))
         .then((res) => {
           isLoading(false);
           if (res.http_status === "OK") {

@@ -89,7 +89,6 @@ const App = () => {
           >
             {(() => {
               switch (table) {
-                
                 case "SCRIPT":
                   return <ScriptTable />;
                 case "INTENT":
@@ -100,7 +99,6 @@ const App = () => {
                   break;
                 case "ENTITY":
                   return <EntityTable />;
-                  
                   break;
                 default:
                   return <div></div>;

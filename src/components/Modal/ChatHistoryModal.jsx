@@ -6,7 +6,6 @@ import ChatHistory from "../Chat/ChatContent/ChatHistory";
 import { Pagination } from "antd";
 import "../../styles/common.css";
 import "./css/ChatHistoryModal.css";
-import { BASE_URL } from "../../global/globalVar";
 function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
   const [currentSessionDetail, setCurrentSessionDetail] = useState([]);
   const [messageHistory, setMessageHistory] = useState([]);
@@ -21,7 +20,10 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
       script_id: scriptId,
       has_message_entity_histories: true,
     };
-    POST(BASE_URL + "api/message_history_group/", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/message_history_group/",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         res.items.map((item) => {
@@ -55,8 +57,14 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
     };
 
     Promise.all([
-      POST(BASE_URL + "api/message_history/", JSON.stringify(body)),
-      POST(BASE_URL + "api/message_entity_history/", JSON.stringify(body)),
+      POST(
+        process.env.REACT_APP_BASE_URL + "api/message_history/",
+        JSON.stringify(body)
+      ),
+      POST(
+        process.env.REACT_APP_BASE_URL + "api/message_entity_history/",
+        JSON.stringify(body)
+      ),
     ])
       .then((res) => {
         if (res[0].http_status !== "OK" || res[1].http_status !== "OK")
@@ -160,88 +168,89 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
                 </div>
               </div>
               <div className="scrollable">
-              <Table
-                borderless
-                hover
-                className="tableData1"
-                scrollAble
-              >
-                <thead style={{ background: "#f6f9fc" }}>
-                  <tr>
-                    <th style={{ width: "3%" }}>#</th>
-                    <th style={{ width: "20%" }}>
-                      <span className="vertical" />
-                      Session id
-                    </th>
-                    <th style={{ width: "30%" }}>
-                      <span className="vertical" />
-                      Created at
-                    </th>
-                    {!isFullDetail ? (
-                      <></>
-                    ) : (
-                      // [...Array(maxCol)].map((e, i) => (
-                      //   <th>
-                      //     <span className="vertical" />
-                      //     Entity {++i}
-                      //   </th>
-                      // ))
-                      entityType.map((item) => (
-                        <th style={{width:"20px"}} className="">
-                          <span className="vertical" />
-                          {item.name}
-                        </th>
-                      ))
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {console.log("king", dataTable)}
-                  {dataTable.map((item, idx) => {
-                    return (
-                      <tr className={"item-" + item.id} key={idx}>
-                        <td>{++idx}</td>
-                        <td
-                          onClick={() => {
-                            loadDetailMessage(item.session_id, item.script_id);
-                            handleSelected(item.id);
-                          }}
-                        >
-                          {item.session_id}
-                        </td>
-                        <td
-                          onClick={() => {
-                            loadDetailMessage(item.session_id, item.script_id);
-                            handleSelected(item.id);
-                          }}
-                        >
-                          {item.created_date}
-                        </td>
-                        {!isFullDetail ? (
-                          <></>
-                        ) : (
-                          item.entities.map((enti, idx) => {
-                            return (
-                              <td
-                                onClick={() => {
-                                  loadDetailMessage(
-                                    item.session_id,
-                                    item.script_id
-                                  );
-                                  handleSelected(item.id);
-                                }}
-                                key={idx}
-                              >
-                                {enti}
-                              </td>
-                            );
-                          })
-                        )}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+                <Table borderless hover className="tableData1" scrollAble>
+                  <thead style={{ background: "#f6f9fc" }}>
+                    <tr>
+                      <th style={{ width: "3%" }}>#</th>
+                      <th style={{ width: "20%" }}>
+                        <span className="vertical" />
+                        Session id
+                      </th>
+                      <th style={{ width: "30%" }}>
+                        <span className="vertical" />
+                        Created at
+                      </th>
+                      {!isFullDetail ? (
+                        <></>
+                      ) : (
+                        // [...Array(maxCol)].map((e, i) => (
+                        //   <th>
+                        //     <span className="vertical" />
+                        //     Entity {++i}
+                        //   </th>
+                        // ))
+                        entityType.map((item) => (
+                          <th style={{}} className="">
+                            <span className="vertical" />
+                            {item.name}
+                          </th>
+                        ))
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {console.log("king", dataTable)}
+                    {dataTable.map((item, idx) => {
+                      return (
+                        <tr className={"item-" + item.id} key={idx}>
+                          <td>{++idx}</td>
+                          <td
+                            onClick={() => {
+                              loadDetailMessage(
+                                item.session_id,
+                                item.script_id
+                              );
+                              handleSelected(item.id);
+                            }}
+                          >
+                            {item.session_id}
+                          </td>
+                          <td
+                            onClick={() => {
+                              loadDetailMessage(
+                                item.session_id,
+                                item.script_id
+                              );
+                              handleSelected(item.id);
+                            }}
+                          >
+                            {item.created_date}
+                          </td>
+                          {!isFullDetail ? (
+                            <></>
+                          ) : (
+                            item.entities.map((enti, idx) => {
+                              return (
+                                <td
+                                  onClick={() => {
+                                    loadDetailMessage(
+                                      item.session_id,
+                                      item.script_id
+                                    );
+                                    handleSelected(item.id);
+                                  }}
+                                  key={idx}
+                                >
+                                  {enti}
+                                </td>
+                              );
+                            })
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
               </div>
               {messageHistory.length === 0 ? (
                 <div className="d-flex justify-content-center text-secondary">

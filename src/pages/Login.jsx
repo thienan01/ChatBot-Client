@@ -1,20 +1,17 @@
 import React, { useState } from "react";
-import { BASE_URL } from "../global/globalVar";
-import logo from "../assets/pngegg.png";
 import { useNavigate } from "react-router-dom";
 import "../styles/main.css";
 import "../styles/util.css";
 import { POST } from "../functionHelper/APIFunction";
 import { setCookie } from "../functionHelper/GetSetCookie";
-import Spinner from "react-bootstrap/Spinner";
-
+import { Spin } from "antd";
 const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isSignUp, setSignUp] = useState(false);
   const [isFail, setFail] = useState(false);
   const handleLogin = () => {
@@ -25,7 +22,7 @@ const Login = () => {
         username: username,
         password: rePassword,
       };
-      POST(BASE_URL + apiURL, JSON.stringify(body))
+      POST(process.env.REACT_APP_BASE_URL + apiURL, JSON.stringify(body))
         .then((res) => {
           console.log("login", res);
           setLoading(false);
@@ -160,7 +157,10 @@ const Login = () => {
                 style={{ background: "#00235b" }}
               >
                 {loading ? (
-                  <Spinner style={{ width: "30px", height: "30px" }} />
+                  <Spin
+                    size="small"
+                    style={{ width: "30px", height: "30px" }}
+                  />
                 ) : isSignUp ? (
                   "Register"
                 ) : (

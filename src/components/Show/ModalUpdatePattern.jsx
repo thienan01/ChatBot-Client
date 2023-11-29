@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { GET, POST, DELETE } from "../../functionHelper/APIFunction";
-import { BASE_URL } from "../../global/globalVar";
+import { Button, Modal, ModalHeader, ModalBody } from "reactstrap";
+import { GET, POST } from "../../functionHelper/APIFunction";
 import { NotificationManager } from "react-notifications";
 import uniqueID from "../../functionHelper/GenerateID";
 import InputTitle from "../Input/InputTitle";
@@ -26,7 +25,7 @@ function ModalUpdatePattern({
     handleLoadPattern();
   }, [value]);
   const handleLoadPattern = () => {
-    GET(BASE_URL + "api/pattern/get/" + value.id)
+    GET(process.env.REACT_APP_BASE_URL + "api/pattern/get/" + value.id)
       .then((res) => {
         console.log("pattern", res);
         setPatternDetail(res);
@@ -53,7 +52,10 @@ function ModalUpdatePattern({
       let body = {
         name: entityTypeValue,
       };
-      POST(BASE_URL + "api/entity_type/add", JSON.stringify(body))
+      POST(
+        process.env.REACT_APP_BASE_URL + "api/entity_type/add",
+        JSON.stringify(body)
+      )
         .then((res) => {
           if (res.http_status !== "OK") throw res;
           NotificationManager.success("Created successfully", "Success");

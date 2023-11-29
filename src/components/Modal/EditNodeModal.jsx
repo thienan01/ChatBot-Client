@@ -9,14 +9,12 @@ import {
   ModalHeader,
 } from "reactstrap";
 import "./css/EditNodeModal.css";
-import InputTitleTextArea from "../Input/InputTitleTextArea";
-import InputTitle from "../Input/InputTitle";
 import { useEffect, useState } from "react";
-import { POST } from "../../functionHelper/APIFunction";
-import { BASE_URL } from "../../global/globalVar";
+import { GET, POST } from "../../functionHelper/APIFunction";
+import ModalUpdateIntent from "../Show/ModalUpdateIntent";
+import ModalPattern from "../Show/ModalPattern";
 
 function EditNodeModal({ open, toggle, nodeData }) {
-  console.log("data entity type", nodeData.entityType);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [currentSelectedCondition, setCurrentSelectedCondition] = useState({});
   const [conditionMapping, setConditionMapping] = useState([]);
@@ -25,6 +23,10 @@ function EditNodeModal({ open, toggle, nodeData }) {
   const [currentCursor, setCurrentCursor] = useState("");
   const [searchEntityTypeValue, setSearchEntityTypeValue] = useState("");
   const [entityType, setEntityType] = useState([]);
+  const [isOpenEditIntent, setOpenEditIntent] = useState(false);
+  const [isOpenModalPattern, setOpenModalPattern] = useState(false);
+  const [currentIntent, setCurrentIntent] = useState("");
+
   useEffect(() => {
     setConditionMapping(nodeData.conditions);
     setEntityType(nodeData.entityType);
@@ -114,7 +116,10 @@ function EditNodeModal({ open, toggle, nodeData }) {
       size: 100,
       keyword: value,
     };
-    POST(BASE_URL + "api/entity_type/", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/entity_type/",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         setEntityType(res.items);
@@ -122,6 +127,32 @@ function EditNodeModal({ open, toggle, nodeData }) {
       .catch((e) => {
         console.log(e);
       });
+  };
+  const handleOpenAddIntent = () => {
+    setOpenEditIntent(!isOpenEditIntent);
+  };
+
+  const handleReloadIntent = (pageNum, pageSize, intent) => {
+    GET(
+      process.env.REACT_APP_BASE_URL + `api/intent/get_all/by_user_id`,
+      JSON.stringify({})
+    )
+      .then((res) => {
+        nodeData.reloadIntents(res.intents);
+        setCurrentIntent(intent.id);
+        handleOpenAddPattern();
+
+        nodeData.setIntent({
+          conditionId: currentSelectedCondition.id,
+          intentId: intent.id,
+          intentName: intent.name,
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleOpenAddPattern = () => {
+    setOpenModalPattern(!isOpenModalPattern);
   };
   return (
     <div>
@@ -332,51 +363,64 @@ function EditNodeModal({ open, toggle, nodeData }) {
                   </div>
                 ) : currentSelectedCondition.currentSelectedType ===
                   "intent" ? (
-                  <div className="intent-choice">
-                    <div className="input-title">
-                      Topic / Intent <span className="text-danger">*</span>
-                    </div>
-                    <Dropdown
-                      isOpen={dropdownOpen}
-                      toggle={toggleDropDown}
-                      className="dropdown"
-                    >
-                      <DropdownToggle caret className="dropdown-toggle">
-                        <div>
-                          <i className="fa-solid fa-link icon-item"></i>
-                          {getIntentName(
-                            getIntentNameByConditionId(
-                              currentSelectedCondition.id
-                            )
-                          )}
-                        </div>
-                      </DropdownToggle>
-                      <DropdownMenu className="dropdown-menu shadow">
-                        {nodeData.intents.map((intent, idx) => {
-                          return (
-                            <>
-                              <DropdownItem
-                                key={idx}
-                                value={intent.id}
-                                onClick={() => {
-                                  nodeData.setIntent({
-                                    conditionId: currentSelectedCondition.id,
-                                    intentId: intent.id,
-                                    intentName: intent.name,
-                                  });
-                                }}
-                                className="d-flex justify-content-start item-dropdown"
-                              >
-                                <i className="fa-solid fa-link icon-item"></i>
+                  <>
+                    <div className="intent-choice">
+                      <div className="input-title">
+                        Topic / Intent <span className="text-danger">*</span>
+                      </div>
+                      <Dropdown
+                        isOpen={dropdownOpen}
+                        toggle={toggleDropDown}
+                        className="dropdown"
+                      >
+                        <DropdownToggle caret className="dropdown-toggle">
+                          <div>
+                            <i className="fa-solid fa-link icon-item"></i>
+                            {getIntentName(
+                              getIntentNameByConditionId(
+                                currentSelectedCondition.id
+                              )
+                            )}
+                          </div>
+                        </DropdownToggle>
+                        <DropdownMenu className="dropdown-menu shadow">
+                          {nodeData.intents.map((intent, idx) => {
+                            return (
+                              <>
+                                <DropdownItem
+                                  key={idx}
+                                  value={intent.id}
+                                  onClick={() => {
+                                    nodeData.setIntent({
+                                      conditionId: currentSelectedCondition.id,
+                                      intentId: intent.id,
+                                      intentName: intent.name,
+                                    });
+                                  }}
+                                  className="d-flex justify-content-start item-dropdown"
+                                >
+                                  <i className="fa-solid fa-link icon-item"></i>
 
-                                <div>{intent.name}</div>
-                              </DropdownItem>
-                            </>
-                          );
-                        })}
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div>
+                                  <div>{intent.name}</div>
+                                </DropdownItem>
+                              </>
+                            );
+                          })}
+                        </DropdownMenu>
+                      </Dropdown>
+                    </div>
+                    <Button
+                      className="btn-add"
+                      style={{
+                        marginLeft: "0px",
+                        width: "100%",
+                        marginTop: "10px",
+                      }}
+                      onClick={handleOpenAddIntent}
+                    >
+                      New Intent
+                    </Button>
+                  </>
                 ) : (
                   <></>
                 )}
@@ -395,6 +439,24 @@ function EditNodeModal({ open, toggle, nodeData }) {
           <i className="fa-solid fa-circle-xmark"></i>
         </div>
       </Modal>
+      {isOpenEditIntent ? (
+        <ModalUpdateIntent
+          open={isOpenEditIntent}
+          toggle={handleOpenAddIntent}
+          value={{ name: "", code: "", type: "save" }}
+          reload={handleReloadIntent}
+        />
+      ) : (
+        <></>
+      )}
+      <ModalPattern
+        open={isOpenModalPattern}
+        toggle={handleOpenAddPattern}
+        value={{
+          intentID: currentIntent,
+          patterns: { items: [] },
+        }}
+      />
     </div>
   );
 }
