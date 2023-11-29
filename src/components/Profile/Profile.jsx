@@ -3,8 +3,9 @@ import Helmet from '../Helmet/Helmet'
 import styled from 'styled-components';
 import premium from '../../assets/images/diamond.png'
 import gold from '../../assets/images/gold.png'
-import { BASE_URL } from '../../global/globalVar';
+
 import {GET, POST} from '../../functionHelper/APIFunction'
+const BASE_URL = process.env.REACT_APP_API_URL
 
 const StyledComponent = styled.div` 
 @-ms-viewport {
@@ -1991,7 +1992,7 @@ const StyledComponent = styled.div`
   }
 `;
 const Profile = () => {
- 
+console.log(BASE_URL)
 const [username, setUsename] = useState("")
 const [phonenumber, setPhoneNumber] = useState("")
 const [fullname, setFulname] = useState("")
