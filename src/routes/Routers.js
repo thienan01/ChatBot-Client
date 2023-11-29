@@ -7,6 +7,8 @@ import FlowContainer from "../pages/Flow";
 import Chat from "../pages/Chat";
 import Dashboard from "../components/Dashboard/Dashboard";
 import Profile from "../components/Profile/Profile";
+import Success from "../components/ChoosePlan/Success";
+import ConfirmPayment from "../components/ChoosePlan/ConfirmPayment";
 const Routers = () => {
   return (
     <Routes>
@@ -17,7 +19,9 @@ const Routers = () => {
       <Route path="/train" element={<FlowContainer />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/payment/paypal/success" element={<Success />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/payment/paypal/review_payment" element={<ConfirmPayment />} />
     </Routes>
   );
 };
