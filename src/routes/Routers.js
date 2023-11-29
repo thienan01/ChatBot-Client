@@ -9,6 +9,7 @@ import Dashboard from "../components/Dashboard/Dashboard";
 import Profile from "../components/Profile/Profile";
 import Success from "../components/ChoosePlan/Success";
 import ConfirmPayment from "../components/ChoosePlan/ConfirmPayment";
+import Plan from "../components/ChoosePlan/Plan";
 const Routers = () => {
   return (
     <Routes>

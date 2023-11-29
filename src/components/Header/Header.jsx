@@ -4,6 +4,7 @@ import logo from "../../assets/logo.png";
 import { NavLink, Link } from "react-router-dom";
 import "../../styles/header.css";
 import "../../styles/index.css";
+import { Base } from "../../functionHelper/APIFunction";
 import { getCookie } from "../../functionHelper/GetSetCookie";
 const nav__links = [
   {
@@ -34,6 +35,10 @@ const Header = () => {
     const cookie = getCookie("token");
     return cookie ? true : false;
   };
+  const logout =()=>{
+    Base.setCookie("token", null, 0);
+    window.location.href = "/login"
+  }
   return (
     <div className="header shadow bg-white nav__wrapper d-flex align-items-center justify-content-between">
       <div className="logo-nav logo" style={{ width: "500px" }}>
@@ -82,6 +87,7 @@ const Header = () => {
             href="https://www.creative-tim.com/product/paper-kit-pro-react?ref=pkr-index-navbar"
             target="_blank"
             style={{ borderRadius: "30px" }}
+            onClick={logout}
           >
             <i
               className="fa-solid fa-rocket"
