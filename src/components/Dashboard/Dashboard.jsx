@@ -4,6 +4,7 @@ import {
   TagsOutlined,
   MessageOutlined,
   FileSearchOutlined,
+  SketchOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
 import Footer from "../Footer/Footer";
@@ -22,6 +23,7 @@ function getItem(label, key, icon, children) {
   };
 }
 const items2 = [
+  getItem("Upgrade", "PREMIUM", <SketchOutlined />),
   getItem("Scripts", "SCRIPT", <FileSearchOutlined />),
   getItem("Intents", "INTENT", <TagsOutlined />),
   getItem("Patterns", "PATTERN", <MessageOutlined />),
