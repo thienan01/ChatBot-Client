@@ -19,7 +19,7 @@ const Plan = () => {
     let apiURL = "api/payment/paypal/authorize_payment";
 
     POST(
-      BASE_URL + apiURL, JSON.stringify()
+      process.env.REACT_APP_BASE_URL + apiURL, JSON.stringify()
     ).then((res) => {
       if (res.http_status === "OK") {
         console.log("success")
@@ -37,6 +37,7 @@ const Plan = () => {
       })
   }
   const paymentPremium = () => {
+    setLoading(true);
     paymentData()
   }
   const paymentPremium1 = () => {
