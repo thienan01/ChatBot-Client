@@ -11,7 +11,7 @@ const Login = () => {
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isSignUp, setSignUp] = useState(false);
   const [isFail, setFail] = useState(false);
   const handleLogin = () => {
@@ -32,7 +32,8 @@ const Login = () => {
           setCookie("token", res.token, 3);
           setCookie("secret_key", res.secret_key, 3);
           setCookie("role", res.role, 3);
-          navigate("/home");
+          // navigate("/home");
+          window.location.href = "/home";
         })
         .catch((e) => {
           console.log(e);

@@ -16,6 +16,7 @@ import PatternTable from "../Show/PatternTable";
 import EntityTable from "../Show/EntityTable";
 import UserManagementTable from "../Show/UserManagementTable";
 import { getCookie } from "../../functionHelper/GetSetCookie";
+import Plan from "../ChoosePlan/Plan";
 const { Content, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -26,12 +27,12 @@ function getItem(label, key, icon, children) {
   };
 }
 const items2 = [
-  getItem("Upgrade", "PREMIUM", <SketchOutlined />),
   getItem("Scripts", "SCRIPT", <FileSearchOutlined />),
   getItem("Intents", "INTENT", <TagsOutlined />),
   getItem("Patterns", "PATTERN", <MessageOutlined />),
   getItem("Entity type", "ENTITY", <SmileOutlined />),
   getItem("User Management", "USER_MANAGEMENT", <TeamOutlined />),
+  getItem("Upgrade", "PREMIUM", <SketchOutlined />),
 
   // getItem("Team", "sub2", <TeamOutlined />, [
   //   getItem("Entity 1", "6"),
@@ -106,6 +107,8 @@ const App = () => {
                   break;
                 case "ENTITY":
                   return <EntityTable />;
+                case "PREMIUM":
+                  return <Plan />;
                   break;
                 case "USER_MANAGEMENT":
                   return <UserManagementTable />;
