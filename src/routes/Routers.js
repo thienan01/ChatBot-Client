@@ -9,6 +9,7 @@ import Dashboard from "../components/Dashboard/Dashboard";
 import Profile from "../components/Profile/Profile";
 import Success from "../components/ChoosePlan/Success";
 import ConfirmPayment from "../components/ChoosePlan/ConfirmPayment";
+import CancelPayment from "../components/ChoosePlan/CancelPayment";
 import Plan from "../components/ChoosePlan/Plan";
 const Routers = () => {
   return (
@@ -28,6 +29,10 @@ const Routers = () => {
       <Route
         path="/payment/paypal/review_payment"
         element={<ConfirmPayment />}
+      />
+      <Route
+        path="/payment/paypal/cancel_payment"
+        element={<CancelPayment />}
       />
     </Routes>
   );
