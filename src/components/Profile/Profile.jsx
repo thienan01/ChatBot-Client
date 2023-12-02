@@ -5,7 +5,6 @@ import premium from '../../assets/images/diamond.png'
 import gold from '../../assets/images/gold.png'
 
 import {GET, POST} from '../../functionHelper/APIFunction'
-const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const StyledComponent = styled.div` 
 @-ms-viewport {
@@ -1992,7 +1991,6 @@ const StyledComponent = styled.div`
   }
 `;
 const Profile = () => {
-console.log(BASE_URL)
 const [username, setUsename] = useState("")
 const [phonenumber, setPhoneNumber] = useState("")
 const [fullname, setFulname] = useState("")
@@ -2004,7 +2002,7 @@ const [showGold, setShowGold] = useState(false)
 const getData = () => {
   let apiURL = "api/user/get_profile";
     GET(
-      BASE_URL + apiURL
+      process.env.REACT_APP_BASE_URL + apiURL
     ).then((res) => {
       console.log(res.username);
       setUsename(res.username);

@@ -13,6 +13,7 @@ import ScriptTable from "../Show/ScriptTable";
 import "../../styles/sidebar.css";
 import PatternTable from "../Show/PatternTable";
 import EntityTable from "../Show/EntityTable";
+import Plan from "../ChoosePlan/Plan"
 const { Content, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -23,11 +24,12 @@ function getItem(label, key, icon, children) {
   };
 }
 const items2 = [
-  getItem("Upgrade", "PREMIUM", <SketchOutlined />),
   getItem("Scripts", "SCRIPT", <FileSearchOutlined />),
   getItem("Intents", "INTENT", <TagsOutlined />),
   getItem("Patterns", "PATTERN", <MessageOutlined />),
   getItem("Entity type", "ENTITY", <TeamOutlined />),
+  getItem("Upgrade", "PREMIUM", <SketchOutlined />),
+  
   // getItem("Team", "sub2", <TeamOutlined />, [
   //   getItem("Entity 1", "6"),
   //   getItem("Entity 2", "8"),
@@ -99,6 +101,8 @@ const App = () => {
                   break;
                 case "ENTITY":
                   return <EntityTable />;
+                case "PREMIUM":
+                  return <Plan />;
                   break;
                 default:
                   return <div></div>;
