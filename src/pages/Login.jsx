@@ -24,7 +24,6 @@ const Login = () => {
       };
       POST(process.env.REACT_APP_BASE_URL + apiURL, JSON.stringify(body))
         .then((res) => {
-          console.log("login", res);
           setLoading(false);
           if (res.http_status !== "OK") {
             setFail(true);
@@ -32,8 +31,9 @@ const Login = () => {
           }
           setCookie("token", res.token, 3);
           setCookie("secret_key", res.secret_key, 3);
-          window.location.href = "/home"
-          
+          setCookie("role", res.role, 3);
+          // navigate("/home");
+          window.location.href = "/home";
         })
         .catch((e) => {
           console.log(e);

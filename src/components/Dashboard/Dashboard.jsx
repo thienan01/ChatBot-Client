@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   TeamOutlined,
   TagsOutlined,
   MessageOutlined,
   FileSearchOutlined,
   SketchOutlined,
+  SmileOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
 import Footer from "../Footer/Footer";
@@ -13,8 +14,10 @@ import ScriptTable from "../Show/ScriptTable";
 import "../../styles/sidebar.css";
 import PatternTable from "../Show/PatternTable";
 import EntityTable from "../Show/EntityTable";
-import Plan from "../ChoosePlan/Plan"
+import Plan from "../ChoosePlan/Plan";
 import { useGlobalContext } from "../GlobalContext/GlobalContext";
+import UserManagementTable from "../Show/UserManagementTable";
+import { getCookie } from "../../functionHelper/GetSetCookie";
 const { Content, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -28,29 +31,28 @@ const items2 = [
   getItem("Scripts", "SCRIPT", <FileSearchOutlined />),
   getItem("Intents", "INTENT", <TagsOutlined />),
   getItem("Patterns", "PATTERN", <MessageOutlined />),
-  getItem("Entity type", "ENTITY", <TeamOutlined />),
+  getItem("Entity type", "ENTITY", <SmileOutlined />),
+  getItem("User Management", "USER_MANAGEMENT", <TeamOutlined />),
   getItem("Upgrade", "PREMIUM", <SketchOutlined />),
-  
+
   // getItem("Team", "sub2", <TeamOutlined />, [
   //   getItem("Entity 1", "6"),
   //   getItem("Entity 2", "8"),
   // ]),
 ];
-
 const App = () => {
-const { globalRole, setGlobalRole } = useGlobalContext();
-  
+  const { globalRole, setGlobalRole } = useGlobalContext();
+
   const [table, setTable] = useState("SCRIPT");
   // const {
   //   token: { colorBgContainer },
   // } = theme.useToken();
 
-  const filteredItems = items2.filter(item => {
-    if (item.key === "PREMIUM" && `${globalRole}` === "ADMIN") {
-      return false;
-    }
-    return true;
-  });
+  const checkRole = (items) => {
+    return globalRole === "ADMIN"
+      ? items.filter((item) => item.key !== "PREMIUM")
+      : items.filter((item) => item.key !== "USER_MANAGEMENT");
+  };
 
   return (
     <div style={{ background: "#f5f6fa" }}>
@@ -80,7 +82,7 @@ const { globalRole, setGlobalRole } = useGlobalContext();
               background: "none",
               fontSize: "18px",
             }}
-            items={filteredItems}
+            items={checkRole(items2)}
           ></Menu>
         </Sider>
 
@@ -115,6 +117,9 @@ const { globalRole, setGlobalRole } = useGlobalContext();
                   return <EntityTable />;
                 case "PREMIUM":
                   return <Plan />;
+                  break;
+                case "USER_MANAGEMENT":
+                  return <UserManagementTable />;
                   break;
                 default:
                   return <div></div>;
