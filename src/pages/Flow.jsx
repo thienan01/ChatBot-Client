@@ -66,8 +66,8 @@ function Flow() {
   const [entityType, setEntityType] = useState([]);
   const [wrongMsg, setWrongMsg] = useState("");
   const [endMessage, setEndMessage] = useState("");
-  const [contextChild, setContextChild] = useState(context.value);
   const [scriptId, setScriptId] = useState(id);
+  const [scriptName, setScriptName] = useState(context.value.name);
   const reactFlowInstance = useReactFlow();
   const connectingNode = useRef(null);
   const connecting = useRef(null);
@@ -87,6 +87,7 @@ function Flow() {
           setEntityType(res[2].items);
           setWrongMsg(res[1].wrong_message);
           setEndMessage(res[1].end_message);
+          setScriptName(res[1].name);
           let data = nodeObject(res[1].nodes, res[0].intents, res[2].items);
           setNodes((nodes) => [...nodes, ...data.lstNode]);
           setEdges(data.lstEdge);
@@ -110,7 +111,6 @@ function Flow() {
           if (res[0].http_status !== "OK" || res[1].http_status !== "OK") {
             throw res.exception_code;
           }
-          console.log("create", res);
           setIntents(res[0].intents);
           setEntityType(res[1].items);
         })
@@ -124,19 +124,19 @@ function Flow() {
   const saveScript = useCallback(
     (nodes) => {
       let body = {
-        id: contextChild.id,
-        name: contextChild.name,
+        id: scriptId,
+        name: scriptName,
         wrong_message: wrongMsg,
         end_message: endMessage,
         nodes: nodes,
       };
-      let url = contextChild.id === "" ? "api/script/add" : "api/script/update";
+      let url = scriptId === "new" ? "api/script/add" : "api/script/update";
       POST(process.env.REACT_APP_BASE_URL + url, JSON.stringify(body))
         .then((res) => {
           isLoading(false);
           if (res.http_status === "OK") {
-            setContextChild({ id: res.script.id, name: res.script.name });
-            context.setValue({ id: res.script.id, name: res.script.name });
+            setScriptId(res.script.id);
+            setScriptName(res.script.name);
             NotificationManager.success("Update successfully", "Success");
           } else {
             throw res.exception_code;
@@ -147,7 +147,7 @@ function Flow() {
           NotificationManager.error(err, "Error");
         });
     },
-    [wrongMsg, endMessage, contextChild]
+    [wrongMsg, endMessage, scriptId, scriptName]
   );
 
   const nodeObject = (nodes, intents, entityType) => {
@@ -358,7 +358,8 @@ function Flow() {
     [intents]
   );
   const handleEditScriptName = (value) => {
-    contextChild.name = value;
+    console.log("log name", value);
+    setScriptName(value);
   };
   const handleToggleChatHistory = () => {
     setOpenChatHistory((preState) => !preState);
@@ -398,7 +399,7 @@ function Flow() {
                 setOpenSetting(!openSetting);
               }}
             >
-              <span className="title">{contextChild.name}</span>
+              <span className="title">{scriptName}</span>
               <i className="fa-regular fa-newspaper"></i>
             </div>
             <div
@@ -457,14 +458,14 @@ function Flow() {
         message={wrongMsg}
         messageEnd={endMessage}
         setMsg={handleWrongMsg}
-        scriptName={contextChild.name}
+        scriptName={scriptName}
         handleEditScriptName={handleEditScriptName}
       />
       {openChatHistory ? (
         <ChatHistoryModal
           open={openChatHistory}
           toggle={handleToggleChatHistory}
-          scriptId={context.value.id}
+          scriptId={scriptId}
           entityType={entityType}
         />
       ) : (
