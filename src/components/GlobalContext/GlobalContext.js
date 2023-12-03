@@ -5,6 +5,7 @@ const GlobalContext = createContext();
 const GlobalProvider = ({ children }) => {
 
   const [globalPackage, setGlobalPackage] = useState('Initial Value');
+  const [globalRole, setGlobalRole] = useState('Initial Value');
 
   const getData = () => {
     let apiURL = "api/user/get_profile";
@@ -12,12 +13,13 @@ const GlobalProvider = ({ children }) => {
         process.env.REACT_APP_BASE_URL + apiURL
       ).then((res) => {
         setGlobalPackage(res.current_service_pack)
+        setGlobalRole(res.role)
       })
     
   };
   useEffect(() => getData(), []);
   return (
-    <GlobalContext.Provider value={{ globalPackage, setGlobalPackage }}>
+    <GlobalContext.Provider value={{ globalPackage, setGlobalPackage , globalRole, setGlobalRole} }>
       {children}
     </GlobalContext.Provider>
   );

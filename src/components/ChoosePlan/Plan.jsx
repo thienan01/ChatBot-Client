@@ -108,19 +108,7 @@ const Plan = () => {
                 </div>
                 {/* //FEATURE LIST END */}
                 {/* BUTTON START */}
-                {`${globalPackage}` === "NORMAL" ? (
-                  <div className="generic_price_btn clearfix p-b-37"
-                    onClick={navigateToDashboard}
-                  >
-                    
-                  </div>
-                ) : (
-                  <div className="generic_price_btn clearfix p-b-37"
-                    
-                  >
-                    
-                  </div>
-                )}
+                  <div className="generic_price_btn clearfix p-b-37">  </div>
                 {/* //BUTTON END */}
               </div>
               {/* //PRICE CONTENT END */}
@@ -179,7 +167,7 @@ const Plan = () => {
 
                 {`${globalPackage}` === "PREMIUM" ? (
                   <div className="generic_price_btn clearfix p-b-37"
-                    onClick={navigateToDashboard}
+                    
                   >
                     
                   </div>

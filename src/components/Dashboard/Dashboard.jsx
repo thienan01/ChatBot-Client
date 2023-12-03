@@ -14,6 +14,7 @@ import "../../styles/sidebar.css";
 import PatternTable from "../Show/PatternTable";
 import EntityTable from "../Show/EntityTable";
 import Plan from "../ChoosePlan/Plan"
+import { useGlobalContext } from "../GlobalContext/GlobalContext";
 const { Content, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -35,11 +36,22 @@ const items2 = [
   //   getItem("Entity 2", "8"),
   // ]),
 ];
+
 const App = () => {
+const { globalRole, setGlobalRole } = useGlobalContext();
+  
   const [table, setTable] = useState("SCRIPT");
   // const {
   //   token: { colorBgContainer },
   // } = theme.useToken();
+
+  const filteredItems = items2.filter(item => {
+    if (item.key === "PREMIUM" && `${globalRole}` === "ADMIN") {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <div style={{ background: "#f5f6fa" }}>
       <Layout style={{ background: "none" }}>
@@ -68,7 +80,7 @@ const App = () => {
               background: "none",
               fontSize: "18px",
             }}
-            items={items2}
+            items={filteredItems}
           ></Menu>
         </Sider>
 
