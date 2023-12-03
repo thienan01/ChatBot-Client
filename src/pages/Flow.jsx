@@ -67,24 +67,21 @@ function Flow() {
   const [wrongMsg, setWrongMsg] = useState("");
   const [endMessage, setEndMessage] = useState("");
   const [contextChild, setContextChild] = useState(context.value);
+  const [scriptId, setScriptId] = useState(id);
   const reactFlowInstance = useReactFlow();
   const connectingNode = useRef(null);
   const connecting = useRef(null);
-
   useEffect(() => {
     if (id !== "new") {
       Promise.all([
         GET(process.env.REACT_APP_BASE_URL + "api/intent/get_all/by_user_id"),
-        GET(
-          process.env.REACT_APP_BASE_URL + "api/script/get/" + context.value.id
-        ),
+        GET(process.env.REACT_APP_BASE_URL + "api/script/get/" + scriptId),
         POST(
           process.env.REACT_APP_BASE_URL + "api/entity_type/",
           JSON.stringify({ page: 1, size: 100 })
         ),
       ])
         .then((res) => {
-          console.log("load", res);
           isLoading(false);
           setIntents(res[0].intents);
           setEntityType(res[2].items);

@@ -85,6 +85,14 @@ function NodeLayout({ data }) {
   const reloadIntents = (intentLst) => {
     setIntentList(intentLst);
   };
+  useEffect(() => {
+    if (document.querySelector(".condition-items-section")) {
+      setTimeout(() => {
+        document.querySelector(".condition-items-section").scrollTop =
+          document.querySelector(".condition-items-section").scrollHeight;
+      }, 100);
+    }
+  }, [conditions]);
   return (
     <Fragment>
       <div
