@@ -37,7 +37,7 @@ function FilterModal({ open, toggle }) {
             <Button
               className="btn-prim"
               onClick={() => {
-                toggle({ fromDate: fromDate, toDate: toDate });
+                toggle({ fromDate: fromDate, toDate: toDate }, "DateTime");
               }}
             >
               Apply
