@@ -1,11 +1,20 @@
 import $ from "jquery";
 import { getCookie } from "./GetSetCookie";
+
+const checkFilterUser = (url) => {
+  var user = getCookie("filterUser");
+  return user && !url.includes("admin")
+    ? JSON.parse(user).id
+    : getCookie("userId");
+};
+
 const GET = async (_url) => {
   let res = await $.get({
     url: _url,
     dataType: "json",
     headers: {
       Authorization: "Token " + getCookie("token"),
+      userId: checkFilterUser(_url),
     },
     contentType: "application/json",
   });
@@ -20,6 +29,7 @@ const POST = async (_url, _body) => {
     dataType: "json",
     headers: {
       Authorization: "Token " + getCookie("token"),
+      userId: checkFilterUser(_url),
     },
     contentType: "application/json; charset=utf-8",
   });
@@ -34,6 +44,7 @@ const DELETE = async (_url, _body) => {
     dataType: "json",
     headers: {
       Authorization: "Token " + getCookie("token"),
+      userId: checkFilterUser(_url),
     },
     contentType: "application/json; charset=utf-8",
   });
@@ -51,6 +62,7 @@ const UPLOAD = async (_url, file) => {
     let res;
     xhr.open("POST", _url, true);
     xhr.setRequestHeader("Authorization", "Token " + getCookie("token"));
+    xhr.setRequestHeader("userId", checkFilterUser(_url));
     xhr.onreadystatechange = function (response) {
       if (response.target.readyState === 4) {
         resolve(JSON.parse(response.target.response));
