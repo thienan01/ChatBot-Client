@@ -194,11 +194,8 @@ function ScriptTable() {
                   </td>
                   <td
                     onClick={() => {
-                      context.setValue({
-                        id: script.id,
-                        name: script.name,
-                      });
-                      navigate("/script-detail/");
+                      context.setValue({ id: script.id, name: script.name });
+                      navigate("/script-detail/" + script.id.toString());
                     }}
                   >
                     {script.created_date}
@@ -206,7 +203,7 @@ function ScriptTable() {
                   <td
                     onClick={() => {
                       context.setValue({ id: script.id, name: script.name });
-                      navigate("/script-detail/");
+                      navigate("/script-detail/" + script.id.toString());
                     }}
                   >
                     {script.last_updated_date}

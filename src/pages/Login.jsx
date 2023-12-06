@@ -32,6 +32,7 @@ const Login = () => {
           setCookie("token", res.token, 3);
           setCookie("secret_key", res.secret_key, 3);
           setCookie("role", res.role, 3);
+          setCookie("userId", res.user_id, 3);
           // navigate("/home");
           window.location.href = "/home";
         })

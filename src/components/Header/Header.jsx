@@ -5,7 +5,7 @@ import { NavLink, Link } from "react-router-dom";
 import "../../styles/header.css";
 import "../../styles/index.css";
 import { Base } from "../../functionHelper/APIFunction";
-import { getCookie } from "../../functionHelper/GetSetCookie";
+import { getCookie, deleteAllCookies } from "../../functionHelper/GetSetCookie";
 const nav__links = [
   {
     display: "HOME",
@@ -35,10 +35,10 @@ const Header = () => {
     const cookie = getCookie("token");
     return cookie ? true : false;
   };
-  const logout =()=>{
-    Base.setCookie("token", null, 0);
-    window.location.href = "/login"
-  }
+  const logout = () => {
+    deleteAllCookies();
+    window.location.href = "/login";
+  };
   return (
     <div className="header shadow bg-white nav__wrapper d-flex align-items-center justify-content-between">
       <div className="logo-nav logo" style={{ width: "500px" }}>
