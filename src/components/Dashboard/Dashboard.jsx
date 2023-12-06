@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   TeamOutlined,
   TagsOutlined,
   MessageOutlined,
   FileSearchOutlined,
   SketchOutlined,
+  SmileOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
 import Footer from "../Footer/Footer";
@@ -13,6 +14,9 @@ import ScriptTable from "../Show/ScriptTable";
 import "../../styles/sidebar.css";
 import PatternTable from "../Show/PatternTable";
 import EntityTable from "../Show/EntityTable";
+import UserManagementTable from "../Show/UserManagementTable";
+import { getCookie } from "../../functionHelper/GetSetCookie";
+import Plan from "../ChoosePlan/Plan";
 const { Content, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -23,21 +27,25 @@ function getItem(label, key, icon, children) {
   };
 }
 const items2 = [
-  getItem("Upgrade", "PREMIUM", <SketchOutlined />),
   getItem("Scripts", "SCRIPT", <FileSearchOutlined />),
   getItem("Intents", "INTENT", <TagsOutlined />),
   getItem("Patterns", "PATTERN", <MessageOutlined />),
-  getItem("Entity type", "ENTITY", <TeamOutlined />),
+  getItem("Entity type", "ENTITY", <SmileOutlined />),
+  getItem("User Management", "USER_MANAGEMENT", <TeamOutlined />),
+  getItem("Upgrade", "PREMIUM", <SketchOutlined />),
+
   // getItem("Team", "sub2", <TeamOutlined />, [
   //   getItem("Entity 1", "6"),
   //   getItem("Entity 2", "8"),
   // ]),
 ];
+const checkRole = (items) => {
+  return getCookie("role") === "ADMIN"
+    ? items
+    : items.filter((item) => item.key !== "USER_MANAGEMENT");
+};
 const App = () => {
   const [table, setTable] = useState("SCRIPT");
-  // const {
-  //   token: { colorBgContainer },
-  // } = theme.useToken();
   return (
     <div style={{ background: "#f5f6fa" }}>
       <Layout style={{ background: "none" }}>
@@ -66,7 +74,7 @@ const App = () => {
               background: "none",
               fontSize: "18px",
             }}
-            items={items2}
+            items={checkRole(items2)}
           ></Menu>
         </Sider>
 
@@ -99,6 +107,11 @@ const App = () => {
                   break;
                 case "ENTITY":
                   return <EntityTable />;
+                case "PREMIUM":
+                  return <Plan />;
+                  break;
+                case "USER_MANAGEMENT":
+                  return <UserManagementTable />;
                   break;
                 default:
                   return <div></div>;

@@ -199,7 +199,6 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {console.log("king", dataTable)}
                     {dataTable.map((item, idx) => {
                       return (
                         <tr className={"item-" + item.id} key={idx}>

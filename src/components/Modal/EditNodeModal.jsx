@@ -245,7 +245,10 @@ function EditNodeModal({ open, toggle, nodeData }) {
             <div className="node-info-section row">
               <div className="condition-section col-5">
                 <div className="title">Customer's response</div>
-                <div className="condition-items-section">
+                <div
+                  className="condition-items-section"
+                  style={{ overflowX: "hidden", maxHeight: "550px" }}
+                >
                   {conditionMapping.map((condition, index) => {
                     if (condition.predict_type === "INTENT") {
                       return (
@@ -374,7 +377,13 @@ function EditNodeModal({ open, toggle, nodeData }) {
                         className="dropdown"
                       >
                         <DropdownToggle caret className="dropdown-toggle">
-                          <div>
+                          <div
+                            style={{
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                              maxWidth: "100%",
+                            }}
+                          >
                             <i className="fa-solid fa-link icon-item"></i>
                             {getIntentName(
                               getIntentNameByConditionId(
