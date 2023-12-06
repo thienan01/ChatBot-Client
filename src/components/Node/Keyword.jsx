@@ -8,8 +8,16 @@ function Keyword({ data }) {
           <div className="condition-title">
             <i class="fa-solid fa-pen-to-square"></i> Keyword
           </div>
-          <div />
-          {data.conditionMapping.keyword}
+          <div
+            style={{
+              overflow: "hidden",
+              maxWidth: "400px",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {data.conditionMapping.keyword}
+          </div>
         </div>
       </div>
       <Handle
@@ -21,7 +29,8 @@ function Keyword({ data }) {
         }}
         style={{
           top: "-30px",
-          left: "275px",
+          // left: "275px",
+          right: "-102%",
           width: "15px",
           height: "15px",
           border: "3px solid #E74C3C ",

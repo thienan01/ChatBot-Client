@@ -12,7 +12,16 @@ function ConditionMapping({ data }) {
         <div className="condition-title">
           <i className="fa-solid fa-arrows-split-up-and-left"></i> Topic/Intent
         </div>
-        <div>{getIntentName(data.conditionMapping.intent_id)}</div>
+        <div
+          style={{
+            overflow: "hidden",
+            maxWidth: "400px",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {getIntentName(data.conditionMapping.intent_id)}
+        </div>
       </div>
       <Handle
         id={data.conditionMapping.id}
