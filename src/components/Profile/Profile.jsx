@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import Helmet from '../Helmet/Helmet'
 import styled from 'styled-components';
 import premium from '../../assets/images/diamond.png'
-import gold from '../../assets/images/gold.png'
+import gold from '../../assets/images/platium.png'
 
 import {GET, POST} from '../../functionHelper/APIFunction'
 
@@ -2010,7 +2010,7 @@ const getData = () => {
       setPhoneNumber(res.phone);
       setRole(res.role);
       setZaloInf(res.zalo_group_link);
-      setGgMeet(res.ggMeet)
+      setGgMeet(res.google_meet_link)
       if (res.current_service_pack == "PREMIUM")
       {
         setShowPremium(true)
@@ -2051,7 +2051,7 @@ useEffect(() => getData(), []);
                 <div className="row justify-content-center">
                   <div className="col-lg-3 order-lg-2">
                     <div className="card-profile-image">
-                      <a href="#">
+                     <span> <a href="#">
                       {showPremium === true}
                       {showPremium &&   <img
                           src={premium}
@@ -2062,7 +2062,7 @@ useEffect(() => getData(), []);
                           src={gold}
                           className="rounded-circle"
                         /> }
-                      </a>
+                      </a></span>
                     </div>
                   </div>
                 </div>
@@ -2102,14 +2102,14 @@ useEffect(() => getData(), []);
                     </div>
                     {showPremium === true}
                       
-                    {showPremium && <a href="#" className="btn btn-sm btn-default float-center" style={{fontSize:"17px"}}>
+                    {showPremium &&<span> <a href="#" className="btn btn-sm btn-default float-center" style={{fontSize:"17px"}}>
                       PREMIUM
-                    </a>}
+                    </a></span>}
                     {showGold === true}
                       
-                    {showGold && <a href="#" className="btn btn-sm btn-default float-center" style={{fontSize:"17px"}}>
+                    {showGold && <span> <a href="#" className="btn btn-sm btn-default float-center" style={{fontSize:"17px", background:"#3b3b3b", border:"#3b3b3b"}}>
                       NORMAL
-                    </a>}
+                    </a></span>}
                     
                     <div>
                     
@@ -2128,9 +2128,9 @@ useEffect(() => getData(), []);
                       <h3 className="mb-0">My account</h3>
                     </div>
                     <div className="col-4 text-right">
-                      <a href="#!" className="btn btn-sm btn-primary">
+                      <span><a href="#!" className="btn btn-sm btn-primary">
                         Settings
-                      </a>
+                      </a></span>
                     </div>
                   </div>
                 </div>
@@ -2237,70 +2237,7 @@ useEffect(() => getData(), []);
                       </div>
                     </div>
                     <hr className="my-2" />
-                    {/* Address */}
-                    {/* <h6 className="heading-small text-muted mb-4">Contact information</h6>
-                    <div className="pl-lg-4">
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="form-group focused">
-                            <label className="form-control-label" htmlFor="input-address">
-                              Address
-                            </label>
-                            <input
-                              id="input-address"
-                              className="form-control form-control-alternative"
-                              placeholder="Home Address"
-                              value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
-                              type="text"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-lg-4">
-                          <div className="form-group focused">
-                            <label className="form-control-label" htmlFor="input-city">
-                              City
-                            </label>
-                            <input
-                              type="text"
-                              id="input-city"
-                              className="form-control form-control-alternative"
-                              placeholder="City"
-                              value="New York"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-lg-4">
-                          <div className="form-group focused">
-                            <label className="form-control-label" htmlFor="input-country">
-                              Country
-                            </label>
-                            <input
-                              type="text"
-                              id="input-country"
-                              className="form-control form-control-alternative"
-                              placeholder="Country"
-                              value="United States"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-lg-4">
-                          <div className="form-group">
-                            <label className="form-control-label" htmlFor="input-country">
-                              Postal code
-                            </label>
-                            <input
-                              type="number"
-                              id="input-postal-code"
-                              className="form-control form-control-alternative"
-                              placeholder="Postal code"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div> */}
-                    {/* Description */}
+                    
                     <h6 className="heading-small text-muted mb-4">About me</h6>
                     <div className="pl-lg-4">
                       <div className="form-group focused">
