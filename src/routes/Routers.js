@@ -10,7 +10,7 @@ import Profile from "../components/Profile/Profile";
 import Success from "../components/ChoosePlan/Success";
 import ConfirmPayment from "../components/ChoosePlan/ConfirmPayment";
 import CancelPayment from "../components/ChoosePlan/CancelPayment";
-import Plan from "../components/ChoosePlan/Plan";
+import ChatApp from "../components/Message/Chat";
 const Routers = () => {
   return (
     <Routes>
@@ -40,6 +40,7 @@ const Routers = () => {
         path="/payment/paypal/cancel_payment"
         element={<CancelPayment />}
       />
+      <Route path="/receive-from-client" element={<ChatApp/>}/>
     </Routes>
   );
 };
