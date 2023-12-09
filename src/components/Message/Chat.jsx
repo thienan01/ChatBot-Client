@@ -19,10 +19,9 @@ const ChatApp = () => {
     let body = {
       page: 1,
       size: 100,
-      //session_id: sessionId,
-      //script_id: scriptId
-      session_id: "234960326672",
-      script_id: "652a9a852a247b032b3d071f",
+      session_id: sessionId,
+      script_id: scriptId
+      
     };
     POST(
       process.env.REACT_APP_BASE_URL + "api/message_history/",
@@ -56,13 +55,13 @@ const ChatApp = () => {
         //handleReceivedMessage(JSON.parse(message.body));
 
         const currentNodeIDNew = JSON.parse(message.body).current_node_id;
-        const messageReceived = JSON.parse(message.body).message;
-        const initialMessage = { text: "Xin chào!", user: 'Customer' };
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          initialMessage
-        ]);
-        console.log(initialMessage)
+        // const messageReceived = JSON.parse(message.body).message;
+        // const initialMessage = { text: "Xin chào!", user: 'Customer' };
+        // setMessages((prevMessages) => [
+        //   ...prevMessages,
+        //   initialMessage
+        // ]);
+       // console.log(initialMessage)
         sendMessage(currentNodeIDNew)
       });
     };

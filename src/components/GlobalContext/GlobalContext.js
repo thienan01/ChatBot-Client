@@ -26,7 +26,7 @@ const GlobalProvider = ({ children }) => {
         setGlobalPackage(res.current_service_pack)
         setGlobalUserID(res.id)
         const topic = `/chat-listener/${res.id}`;
-        showModal(res.id, res.id, res.id)
+       // showModal(res.id, res.id, res.id)
         const onConnect = () => {
           console.log('Connected to WebSocket');
           stompClient.subscribe(topic, (message) => {
