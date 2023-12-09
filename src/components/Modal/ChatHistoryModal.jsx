@@ -70,7 +70,6 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
         if (res[0].http_status !== "OK" || res[1].http_status !== "OK")
           throw res;
         setCurrentSessionDetail(res[0].items);
-        console.log("type", entityType);
         let entities = entityType.map((item) => {
           let temp;
           res[1].items.forEach((entity) => {
@@ -127,7 +126,6 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
         }
       });
 
-      console.log("ebti", entities);
       return {
         id: messHistory.id,
         script_id: messHistory.script_id,
@@ -136,7 +134,6 @@ function ChatHistoryModal({ open, toggle, scriptId, entityType }) {
         entities: entities,
       };
     });
-    console.log("Settable");
     return lst;
   };
   return (

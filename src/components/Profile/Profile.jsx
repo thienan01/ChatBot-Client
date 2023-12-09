@@ -2004,7 +2004,6 @@ const getData = () => {
     GET(
       process.env.REACT_APP_BASE_URL + apiURL
     ).then((res) => {
-      console.log(res.username);
       setUsename(res.username);
       setFulname(res.fullname);
       setPhoneNumber(res.phone);

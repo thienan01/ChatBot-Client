@@ -115,7 +115,6 @@ function ScriptTable() {
         item.last_updated_date = updatedDate.toLocaleString("en-US");
         return item;
       });
-      console.log("res in filter", res);
       setScripts(res.items);
     });
   };

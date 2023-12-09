@@ -219,23 +219,27 @@ function NodeLayout({ data }) {
           </>
         </div>
       </div>
-      <EditNodeModal
-        open={openEditNode}
-        toggle={handleOpenEditNodeModal}
-        nodeData={{
-          message: value,
-          conditions: conditions,
-          intents: intentList,
-          entityType: data.entityType,
-          handleSetMessage: handleEditNodeByModal,
-          setKeyword: setConditionMappingKeyword,
-          addKeyword: addKeyword,
-          deleteCondition: deleteCondition,
-          addIntent: addIntent,
-          setIntent: setConditionMappingIntent,
-          reloadIntents: reloadIntents,
-        }}
-      />
+      {openEditNode ? (
+        <EditNodeModal
+          open={openEditNode}
+          toggle={handleOpenEditNodeModal}
+          nodeData={{
+            message: value,
+            conditions: conditions,
+            intents: intentList,
+            entityType: data.entityType,
+            handleSetMessage: handleEditNodeByModal,
+            setKeyword: setConditionMappingKeyword,
+            addKeyword: addKeyword,
+            deleteCondition: deleteCondition,
+            addIntent: addIntent,
+            setIntent: setConditionMappingIntent,
+            reloadIntents: reloadIntents,
+          }}
+        />
+      ) : (
+        <></>
+      )}
     </Fragment>
   );
 }

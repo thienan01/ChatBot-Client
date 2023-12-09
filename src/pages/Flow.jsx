@@ -358,7 +358,6 @@ function Flow() {
     [intents]
   );
   const handleEditScriptName = (value) => {
-    console.log("log name", value);
     setScriptName(value);
   };
   const handleToggleChatHistory = () => {

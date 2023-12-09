@@ -71,14 +71,13 @@ function ModalPattern({ open, toggle, value }) {
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         setEntityType(res.items);
-        console.log("entype", res.items);
       })
       .catch((e) => {
         console.log(e);
       });
   };
   useEffect(() => {
-    loadEntityType(1, 100);
+    loadEntityType(1, 1000);
   }, []);
 
   const toggleTab = (tab) => {
@@ -224,7 +223,7 @@ function ModalPattern({ open, toggle, value }) {
         .then((res) => {
           if (res.http_status !== "OK") throw res;
           NotificationManager.success("Created successfully", "Success");
-          loadEntityType(1, 12);
+          loadEntityType(1, 1000);
           setEntityValue("");
         })
         .catch((e) => {
@@ -300,7 +299,6 @@ function ModalPattern({ open, toggle, value }) {
   };
 
   const handleSearchEntityType = (value) => {
-    console.log("search", value);
     let body = {
       page: 1,
       size: 100,
@@ -318,15 +316,9 @@ function ModalPattern({ open, toggle, value }) {
         console.log(e);
       });
   };
-  const handleDivTag = (value) => {
-    let divValue = document.querySelector(".background-highlight");
-    divValue.innerHTML = value;
-  };
   const handleHighlightText = (text) => {
     if (text) {
       let divValue = document.querySelector(".background-highlight");
-
-      console.log("hihg", entities);
     }
   };
   const handleCreatePatternByGPT = (data) => {
@@ -342,11 +334,11 @@ function ModalPattern({ open, toggle, value }) {
       JSON.stringify(body)
     )
       .then((res) => {
-        if (res.http_status === "OK"){
+        if (res.http_status === "OK") {
           NotificationManager.success("Generate succeed!", "success");
           reloadPattern();
-        }
-        else NotificationManager.error("Something went wrong!", "Error");
+          loadEntityType(1, 1000);
+        } else NotificationManager.error("Something went wrong!", "Error");
         setPending(false);
       })
       .catch((err) => {
@@ -390,30 +382,31 @@ function ModalPattern({ open, toggle, value }) {
                   <Filter func={handleFilter} />
 
                   <div className="shadow-sm table-area">
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "end",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      <Button
-                        className="btn-table"
-                        style={{ background: "#56cc6e", border: "none" }}
-                        onClick={handleToggleGenerateGPT}
-                      >
-                        <i
-                          className="fa-solid fa-plus"
-                          style={{ marginRight: "4px" }}
-                        ></i>
-                        Create by GPT
-                      </Button>
-                    </div>
                     <div className="header-Table">
                       <SearchBar func={handleFilter} />
-                      <span className="total-script">
-                        Total:{pagination.totalItem} Patterns
-                      </span>
+                      <div
+                        className="gpt-generate-section"
+                        style={{ alignItems: "center" }}
+                      >
+                        <span className="total-script">
+                          Total:{pagination.totalItem} Patterns
+                        </span>
+                        <Button
+                          className="btn-table"
+                          style={{
+                            background: "#56cc6e",
+                            border: "none",
+                            marginRight: "0px",
+                          }}
+                          onClick={handleToggleGenerateGPT}
+                        >
+                          <i
+                            className="fa-solid fa-plus"
+                            style={{ marginRight: "4px" }}
+                          ></i>
+                          Create by GPT
+                        </Button>
+                      </div>
                     </div>
                     <Table borderless hover responsive className="tableData">
                       <thead style={{ background: "#f6f9fc" }}>
