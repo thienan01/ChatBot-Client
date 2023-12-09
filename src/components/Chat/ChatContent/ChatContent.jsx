@@ -191,7 +191,7 @@ function ChatContent({ sessionId }) {
         className="recognition"
         style={{ display: isRecording ? "flex" : "none" }}
       >
-        <button class="Rec btn-rec">Recording</button>
+        <button className="Rec btn-rec">Recording</button>
       </div>
       <div className="content__footer">
         <img
@@ -202,7 +202,7 @@ function ChatContent({ sessionId }) {
         />
         <div className="sendNewMessage">
           <button className="addFiles" onClick={startListening}>
-            <i class="fa-solid fa-microphone"></i>
+            <i className="fa-solid fa-microphone"></i>
           </button>
           <input
             type="text"

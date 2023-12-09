@@ -246,6 +246,10 @@ function IntentTable() {
               setLoadingExport(false);
               clearInterval(checking);
             }
+            if (res.http_status === "OK" && res.status === "ERROR") {
+              setLoadingExport(false);
+              clearInterval(checking);
+            }
             if (res.http_status === "EXPECTATION_FAILED") {
               clearInterval(checking);
               throw res;

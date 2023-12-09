@@ -135,8 +135,9 @@ function EditNodeModal({ open, toggle, nodeData }) {
       JSON.stringify({})
     )
       .then((res) => {
-        nodeData.reloadIntents(res.intents);
-        setIntents(res.intents);
+        let intentsResult = res.intents === undefined ? [] : res.intents;
+        nodeData.reloadIntents(intentsResult);
+        setIntents(intentsResult);
         setCurrentIntent(intent.id);
         handleOpenAddPattern();
         nodeData.setIntent({
@@ -153,8 +154,10 @@ function EditNodeModal({ open, toggle, nodeData }) {
       JSON.stringify({})
     ).then((res) => {
       if (res.http_status === "OK") {
-        setIntents(res.intents);
-        nodeData.reloadIntents(res.intents);
+        let intentsResult = res.intents === undefined ? [] : res.intents;
+
+        setIntents(intentsResult);
+        nodeData.reloadIntents(intentsResult);
       }
     });
   };

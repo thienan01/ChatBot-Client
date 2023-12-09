@@ -10,16 +10,19 @@ import Profile from "../components/Profile/Profile";
 import Success from "../components/ChoosePlan/Success";
 import ConfirmPayment from "../components/ChoosePlan/ConfirmPayment";
 import CancelPayment from "../components/ChoosePlan/CancelPayment";
-import Plan from "../components/ChoosePlan/Plan";
+import Authentication from "../components/Auth/Authentication";
 const Routers = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/home" element={<Home />} />
+      <Route path="/" element={<Authentication component={Home} />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/chat" element={<Chat />} />
-      <Route path="/dashboard" element={<Dashboard />}>
+      <Route exact path="/home" element={<Authentication component={Home} />} />
+      <Route path="/chat" element={<Authentication component={Chat} />} />
+      <Route
+        path="/dashboard"
+        element={<Authentication component={Dashboard} />}
+      >
         <Route index element={<Home />} />
         <Route path="" element={<Dashboard />} />
         <Route path="user-control">
@@ -29,9 +32,12 @@ const Routers = () => {
       <Route path="/payment/paypal/success" element={<Success />} />
       <Route path="/script-detail">
         <Route index element={<Home />} />
-        <Route path=":id" element={<FlowContainer />} />
+        <Route
+          path=":id"
+          element={<Authentication component={FlowContainer} />}
+        />
       </Route>
-      <Route path="/profile" element={<Profile />} />
+      <Route path="/profile" element={<Authentication component={Profile} />} />
       <Route
         path="/payment/paypal/review_payment"
         element={<ConfirmPayment />}
