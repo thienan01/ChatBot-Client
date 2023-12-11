@@ -10,8 +10,7 @@ const ChatApp = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const bottomRef = useRef(null);
-  const socket = new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint');
-  const stompClient = Stomp.over(socket)
+  
   let sessionId = Base.getAllUrlParams().sessionId
   let scriptId = Base.getAllUrlParams().scriptId
   let currentNodeID = Base.getAllUrlParams().currentNodeId
@@ -49,6 +48,8 @@ const ChatApp = () => {
   }, []);
 
   useEffect(() => {
+    const socket = new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint');
+  const stompClient = Stomp.over(() => new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint'));
     const onConnect = () => {
       console.log('Connected to WebSockettt');
       const topic = `/chat/${sessionId}/receive-from-client`;
@@ -108,6 +109,9 @@ const ChatApp = () => {
       sendMessageSubmit();
     }
   };
+  const handleOnChange = (e) => {
+    setNewMessage(e.target.value)
+  }
   return (
     <Helmet title={sessionId}>
     <div>
@@ -121,7 +125,7 @@ const ChatApp = () => {
           placeholder="Type a message here"
           id="msgText"
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
+          onChange={handleOnChange}
           onKeyDown={(e) => handleKeyDown(e)}
         />
         <button

@@ -22,7 +22,6 @@ import { Stomp } from '@stomp/stompjs';
 function ChatContent({ sessionId }) {
   const context = useContext(ScriptContext);
   const { id } = useParams();
-  console.log("id chat:", sessionId);
   const bottomRef = useRef(null);
   const [chatItems, setChatItems] = useState([]);
   const [value, setValue] = useState("");
@@ -32,13 +31,11 @@ function ChatContent({ sessionId }) {
   const [isRecording, setRecording] = useState(false);
 
   //code của anh Thiện
-  const socket = new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint');
-  const stompClient = Stomp.over(() => new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint'));
+  
 
   const [currentNodeIDNew, setCurrentNodeIDNew] = useState("_BEGIN")
 
-  const handleSendMessage = useCallback((text) => {
-    //debugger
+  const handleSendMessage = useCallback(() => {
     setShowTyping(true);
     setChatItems((citems) => [
       ...citems,
@@ -48,6 +45,7 @@ function ChatContent({ sessionId }) {
         msg: value,
       },
     ]);
+
     let body = {
       secret_key: getCookie("secret_key"),
       script_id: id,
@@ -56,29 +54,11 @@ function ChatContent({ sessionId }) {
       session_id: sessionId,
       is_trying: !isSaveHistory,
     };
-    POST(
-      process.env.REACT_APP_BASE_URL + "api/training/predict",
-      JSON.stringify(body)
-    )
+
+    POST(process.env.REACT_APP_BASE_URL + "api/training/predict", JSON.stringify(body))
       .then((res) => {
         if (res.http_status === "OK") {
-          console.log("curr note", res.current_node_id);
-          
-          
-          // setCurrentNode(res.current_node_id);
-          // if (res.message !== null && res.message.trim() !== "") {
-          //   var convertedString = res.message.replace(/\n/g, "<br>");
-          //   setChatItems((citems) => [
-          //     ...citems,
-          //     {
-          //       key: uniqueID(),
-          //       type: "other",
-          //       msg: convertedString,
-          //     },
-          //   ]);
-          // }
           if (isSpeech) {
-            // startListening();
             textToSpeech(res.message);
           }
         } else {
@@ -89,20 +69,18 @@ function ChatContent({ sessionId }) {
       .catch((err) => {
         console.log(err);
       });
-  });
-  console.log(sessionId)
-  useEffect(()=>{
+  }, [value, id, currentNodeIDNew, sessionId, isSaveHistory, isSpeech]);
+  useEffect(() => {
+    const socket = new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint');
+  const stompClient = Stomp.over(() => new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint'));
     const topic = `/chat/${sessionId}/receive-from-bot`;
-    
-     const onConnect = () => {
-       console.log('Connected to WebSocket');
-       stompClient.subscribe(topic, (message) => {
-        
+
+    const onConnect = () => {
+      stompClient.subscribe(topic, (message) => {
         const parsedMessage = JSON.parse(message.body);
         const messageReceive = parsedMessage.message;
-      
-        setCurrentNodeIDNew(parsedMessage.current_node_id) 
-        console.log("ass", parsedMessage);
+
+        setCurrentNodeIDNew(parsedMessage.current_node_id);
 
         if (messageReceive !== null && messageReceive.trim() !== "") {
           var convertedString = messageReceive.replace(/\n/g, "<br>");
@@ -114,25 +92,33 @@ function ChatContent({ sessionId }) {
               msg: convertedString,
             },
           ]);
-        }       
-       });
-     };
-     
-     const onError = (error) => {
-       console.error('Error during WebSocket connection:', error);
-       
-     };
-     stompClient.connect({}, onConnect, onError);
-  },[])
+        }
+      });
+    };
+
+    const onError = (error) => {
+      console.error('Error during WebSocket connection:', error);
+    };
+
+    stompClient.connect({}, onConnect, onError);
+
+    // Cleanup function to disconnect socket when the component unmounts
+    return () => {
+      stompClient.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatItems]);
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
+      e.preventDefault(); 
       setValue("");
       handleSendMessage();
     }
+  
   };
 
   const recognition = new window.webkitSpeechRecognition();
@@ -181,6 +167,10 @@ function ChatContent({ sessionId }) {
         console.error("Error:", error);
       });
   };
+  const handleOnChange = (e) => {
+    setValue(e.target.value);
+   
+  }
 
   return (
     <div className="main__chatcontent">
@@ -189,7 +179,6 @@ function ChatContent({ sessionId }) {
           <div className="current-chatting-user">
             <Avatar isOnline="active" />
             <p>Try your chatbot</p>
-            {console.log("re-renderchat", currentNodeIDNew)}
           </div>
         </div>
 
@@ -215,9 +204,7 @@ function ChatContent({ sessionId }) {
               <Input
                 type="checkbox"
                 defaultChecked={isSaveHistory}
-                onChange={(e) => {
-                  setSpeech(e.target.checked);
-                }}
+                
               />
             </div>
           </div>
@@ -260,11 +247,9 @@ function ChatContent({ sessionId }) {
             type="text"
             placeholder="Type a message here"
             id="msgText"
-            onChange={(e) => {
-              setValue(e.target.value);
-            }}
+            onChange={handleOnChange}
             value={value}
-            onKeyDown={(e) => handleKeyDown(e)}
+           onKeyDown={(e) => handleKeyDown(e)}
           />
           <button
             className="btnSendMsg"
