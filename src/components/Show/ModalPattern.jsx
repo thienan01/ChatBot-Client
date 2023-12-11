@@ -615,15 +615,20 @@ function ModalPattern({ open, toggle, value }) {
           </Button>
         </ModalFooter>
       </Modal>
-      <ModalUpdatePattern
-        open={openModal}
-        toggle={handleToggleModal}
-        value={currentPattern}
-        update={handleUpdate}
-        entityType={entityType}
-        loadEntityType={loadEntityType}
-        handleSearchEntityType={handleSearchEntityType}
-      />
+      {openModal ? (
+        <ModalUpdatePattern
+          open={openModal}
+          toggle={handleToggleModal}
+          value={currentPattern}
+          update={handleUpdate}
+          entityType={entityType}
+          loadEntityType={loadEntityType}
+          handleSearchEntityType={handleSearchEntityType}
+        />
+      ) : (
+        <></>
+      )}
+
       <GenPatternGTPModal
         open={isOpenGenerateGPT}
         toggle={handleToggleGenerateGPT}

@@ -143,7 +143,7 @@ function ModalUpdatePattern({
         style={{ maxWidth: "700px" }}
         className="modal-update-pattern"
       >
-        <ModalHeader>Update intent</ModalHeader>
+        <ModalHeader>Update pattern</ModalHeader>
         <ModalBody>
           <div className="createPatternSection" style={{ height: "50px" }}>
             <div
