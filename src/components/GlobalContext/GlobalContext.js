@@ -15,7 +15,7 @@ const GlobalProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const cookie = getCookie("token");
   const socket = new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint');
-  const stompClient = Stomp.over(socket);
+  const stompClient = Stomp.over(() => new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint'));
   const login = () => {
     if (`${cookie}` !== ``) {
 
@@ -26,20 +26,20 @@ const GlobalProvider = ({ children }) => {
         setGlobalPackage(res.current_service_pack)
         setGlobalUserID(res.id)
         const topic = `/chat-listener/${res.id}`;
-       // showModal(res.id, res.id, res.id)
+
         const onConnect = () => {
           console.log('Connected to WebSocket');
           stompClient.subscribe(topic, (message) => {
-            const sessionId = JSON.parse(message.body).session_id;
+            const receivedSessionId = JSON.parse(message.body).session_id;
             const scriptId = JSON.parse(message.body).script_id;
             const currentNodeId = JSON.parse(message.body).current_node_id;
-            showModal(sessionId, scriptId, currentNodeId);
+            showModal(receivedSessionId, scriptId, currentNodeId);
           });
         };
-        
+
         const onError = (error) => {
           console.error('Error during WebSocket connection:', error);
-          
+
         };
         stompClient.connect({}, onConnect, onError);
       })
@@ -57,21 +57,36 @@ const GlobalProvider = ({ children }) => {
     }
   };
   const isChatAppPage = window.location.pathname === '/receive-from-client';
-  
+
   const showModal = (sessionId, scriptId, currentNodeId) => {
-    if (!isChatAppPage)
-    {
-    Modal.confirm({
-      title: 'Notification',
-      content: 'You have a message that needs to be replied.',
-     onOk: () => openChatTab(sessionId, scriptId, currentNodeId),
-      okText: 'Reply now',
-    });
-  }
+    if (!isChatAppPage) {
+      Modal.confirm({
+        title: 'Notification',
+        content: `You have a message from Session: ${sessionId} needs to be replied.`,
+        onOk: () => openChatTab(sessionId, scriptId, currentNodeId),
+        okText: 'Reply now',
+        zIndex: 1001
+      });
+    }
   };
   const openChatTab = (sessionId, scriptId, currentNodeId) => {
     const url = `/receive-from-client?sessionId=${sessionId}&scriptId=${scriptId}&currentNodeId=${currentNodeId}`;
-    window.open(url, '_blank');
+   const storedData = JSON.parse(localStorage.getItem('chatData'));
+
+  if (storedData) {
+    const { sessionId: storedSessionId, scriptId: storedScriptId, currentNodeId: storedCurrentNodeId } = storedData;
+    
+    if (sessionId === storedSessionId && scriptId === storedScriptId && currentNodeId === storedCurrentNodeId) {
+      console.log('Data matches existing tab. Focusing on existing tab.');
+      window.focus(); 
+      return;
+    }
+  }
+
+  const dataToStore = { sessionId, scriptId, currentNodeId };
+  localStorage.setItem('chatData', JSON.stringify(dataToStore));
+
+  window.open(url, '_blank');
   };
   useEffect(() => logout(), []);
   useEffect(() => login(), []);

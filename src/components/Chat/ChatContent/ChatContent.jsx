@@ -5,6 +5,8 @@ import React, {
   useCallback,
   useContext,
 } from "react";
+import {  useParams } from "react-router-dom";
+
 import uniqueID from "../../../functionHelper/GenerateID";
 import "./chatContent.css";
 import Avatar from "../ChatList/Avatar";
@@ -15,18 +17,28 @@ import { getCookie } from "../../../functionHelper/GetSetCookie";
 import { ScriptContext } from "../../Context/ScriptContext";
 import typing from "../../../assets/Typing.gif";
 import { Input } from "reactstrap";
+import SockJS from 'sockjs-client';
+import { Stomp } from '@stomp/stompjs';
 function ChatContent({ sessionId }) {
   const context = useContext(ScriptContext);
-  console.log("id chat", sessionId);
+  const { id } = useParams();
+  console.log("id chat:", sessionId);
   const bottomRef = useRef(null);
   const [chatItems, setChatItems] = useState([]);
-  const [currentNode, setCurrentNode] = useState("_BEGIN");
   const [value, setValue] = useState("");
   const [isShowTyping, setShowTyping] = useState(false);
   const [isSaveHistory, setSaveHistory] = useState(false);
   const [isSpeech, setSpeech] = useState(false);
   const [isRecording, setRecording] = useState(false);
+
+  //code của anh Thiện
+  const socket = new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint');
+  const stompClient = Stomp.over(() => new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint'));
+
+  const [currentNodeIDNew, setCurrentNodeIDNew] = useState("_BEGIN")
+
   const handleSendMessage = useCallback((text) => {
+    //debugger
     setShowTyping(true);
     setChatItems((citems) => [
       ...citems,
@@ -36,11 +48,10 @@ function ChatContent({ sessionId }) {
         msg: value,
       },
     ]);
-    console.log("ass", currentNode);
     let body = {
       secret_key: getCookie("secret_key"),
-      script_id: context.value.id,
-      current_node_id: currentNode,
+      script_id: id,
+      current_node_id: currentNodeIDNew,
       message: value,
       session_id: sessionId,
       is_trying: !isSaveHistory,
@@ -52,18 +63,20 @@ function ChatContent({ sessionId }) {
       .then((res) => {
         if (res.http_status === "OK") {
           console.log("curr note", res.current_node_id);
-          setCurrentNode(res.current_node_id);
-          if (res.message !== null && res.message.trim() !== "") {
-            var convertedString = res.message.replace(/\n/g, "<br>");
-            setChatItems((citems) => [
-              ...citems,
-              {
-                key: uniqueID(),
-                type: "other",
-                msg: convertedString,
-              },
-            ]);
-          }
+          
+          
+          // setCurrentNode(res.current_node_id);
+          // if (res.message !== null && res.message.trim() !== "") {
+          //   var convertedString = res.message.replace(/\n/g, "<br>");
+          //   setChatItems((citems) => [
+          //     ...citems,
+          //     {
+          //       key: uniqueID(),
+          //       type: "other",
+          //       msg: convertedString,
+          //     },
+          //   ]);
+          // }
           if (isSpeech) {
             // startListening();
             textToSpeech(res.message);
@@ -77,6 +90,41 @@ function ChatContent({ sessionId }) {
         console.log(err);
       });
   });
+  console.log(sessionId)
+  useEffect(()=>{
+    const topic = `/chat/${sessionId}/receive-from-bot`;
+    
+     const onConnect = () => {
+       console.log('Connected to WebSocket');
+       stompClient.subscribe(topic, (message) => {
+        
+        const parsedMessage = JSON.parse(message.body);
+        const messageReceive = parsedMessage.message;
+      
+        setCurrentNodeIDNew(parsedMessage.current_node_id) 
+        console.log("ass", parsedMessage);
+
+        if (messageReceive !== null && messageReceive.trim() !== "") {
+          var convertedString = messageReceive.replace(/\n/g, "<br>");
+          setChatItems((citems) => [
+            ...citems,
+            {
+              key: uniqueID(),
+              type: "other",
+              msg: convertedString,
+            },
+          ]);
+        }       
+       });
+     };
+     
+     const onError = (error) => {
+       console.error('Error during WebSocket connection:', error);
+       
+     };
+     stompClient.connect({}, onConnect, onError);
+  },[])
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatItems]);
@@ -141,7 +189,7 @@ function ChatContent({ sessionId }) {
           <div className="current-chatting-user">
             <Avatar isOnline="active" />
             <p>Try your chatbot</p>
-            {console.log("re-renderchat", currentNode)}
+            {console.log("re-renderchat", currentNodeIDNew)}
           </div>
         </div>
 
