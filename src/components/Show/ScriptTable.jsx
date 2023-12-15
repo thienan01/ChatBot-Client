@@ -12,15 +12,17 @@ import Filter from "../Filter/Filter";
 import { Breadcrumb } from "antd";
 import LoadingAnt from "../Loading/LoadingAnt";
 import SearchBar from "../Filter/SearchBar";
+import ModalUpdateScriptName from "./ModalUpdateScriptName";
 
 function ScriptTable() {
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [pagination, setPagination] = useState({});
   const [openModalCode, setOpenModalCode] = useState(false);
-  const [currentID, setCurrentID] = useState("");
+  const [currentScript, setCurrentScript] = useState({});
   const [isLoading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [scripts, setScripts] = useState([]);
+  const [isOpenEditScriptModal, setOpenEditScriptModal] = useState(false);
   let context = useContext(ScriptContext);
   const loadScript = (page, pageSize) => {
     if (page === undefined) page = 1;
@@ -210,14 +212,21 @@ function ScriptTable() {
                   <td className="d-flex action-row">
                     <div
                       onClick={() => {
-                        alert("dang loi =)");
+                        setOpenEditScriptModal(!isOpenEditScriptModal);
+                        setCurrentScript({
+                          id: script.id,
+                          name: script.name,
+                        });
                       }}
                     >
                       <i className="fa-solid fa-pen-to-square text-primary"></i>
                     </div>
                     <div
                       onClick={() => {
-                        setCurrentID(script.id);
+                        setCurrentScript({
+                          id: script.id,
+                          name: script.name,
+                        });
                         handleToggleCode();
                       }}
                     >
@@ -254,8 +263,20 @@ function ScriptTable() {
         <ModalShowCode
           open={openModalCode}
           toggle={handleToggleCode}
-          scriptID={currentID}
+          scriptID={currentScript.id}
         />
+        {isOpenEditScriptModal ? (
+          <ModalUpdateScriptName
+            open={isOpenEditScriptModal}
+            toggle={() => {
+              setOpenEditScriptModal(!isOpenEditScriptModal);
+            }}
+            data={currentScript}
+            reload={loadScript}
+          />
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );
