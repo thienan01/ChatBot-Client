@@ -9,6 +9,7 @@ function ModalChatTrial({ openChat, closeModal }) {
         isOpen={openChat}
         style={{ width: "600px" }}
         className="modal-setting"
+        zIndex={1000}
       >
         <ModalBody style={{ padding: "0px" }}>
           <ChatContent sessionId={uniqueID()} />

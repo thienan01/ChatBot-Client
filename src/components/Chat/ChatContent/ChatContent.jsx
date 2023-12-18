@@ -5,6 +5,8 @@ import React, {
   useCallback,
   useContext,
 } from "react";
+import {  useParams } from "react-router-dom";
+
 import uniqueID from "../../../functionHelper/GenerateID";
 import "./chatContent.css";
 import Avatar from "../ChatList/Avatar";
@@ -15,17 +17,25 @@ import { getCookie } from "../../../functionHelper/GetSetCookie";
 import { ScriptContext } from "../../Context/ScriptContext";
 import typing from "../../../assets/Typing.gif";
 import { Input } from "reactstrap";
+import SockJS from 'sockjs-client';
+import { Stomp } from '@stomp/stompjs';
 function ChatContent({ sessionId }) {
   const context = useContext(ScriptContext);
+  const { id } = useParams();
   const bottomRef = useRef(null);
   const [chatItems, setChatItems] = useState([]);
-  const [currentNode, setCurrentNode] = useState("_BEGIN");
   const [value, setValue] = useState("");
   const [isShowTyping, setShowTyping] = useState(false);
   const [isSaveHistory, setSaveHistory] = useState(false);
   const [isSpeech, setSpeech] = useState(false);
   const [isRecording, setRecording] = useState(false);
-  const handleSendMessage = useCallback((text) => {
+
+  //code của anh Thiện
+  
+
+  const [currentNodeIDNew, setCurrentNodeIDNew] = useState("_BEGIN")
+
+  const handleSendMessage = useCallback(() => {
     setShowTyping(true);
     setChatItems((citems) => [
       ...citems,
@@ -35,34 +45,20 @@ function ChatContent({ sessionId }) {
         msg: value,
       },
     ]);
+
     let body = {
       secret_key: getCookie("secret_key"),
-      script_id: context.value.id,
-      current_node_id: currentNode,
+      script_id: id,
+      current_node_id: currentNodeIDNew,
       message: value,
       session_id: sessionId,
       is_trying: !isSaveHistory,
     };
-    POST(
-      process.env.REACT_APP_BASE_URL + "api/training/predict",
-      JSON.stringify(body)
-    )
+
+    POST(process.env.REACT_APP_BASE_URL + "api/training/predict", JSON.stringify(body))
       .then((res) => {
         if (res.http_status === "OK") {
-          setCurrentNode(res.current_node_id);
-          if (res.message !== null && res.message.trim() !== "") {
-            var convertedString = res.message.replace(/\n/g, "<br>");
-            setChatItems((citems) => [
-              ...citems,
-              {
-                key: uniqueID(),
-                type: "other",
-                msg: convertedString,
-              },
-            ]);
-          }
           if (isSpeech) {
-            // startListening();
             textToSpeech(res.message);
           }
         } else {
@@ -73,15 +69,56 @@ function ChatContent({ sessionId }) {
       .catch((err) => {
         console.log(err);
       });
-  });
+  }, [value, id, currentNodeIDNew, sessionId, isSaveHistory, isSpeech]);
+  useEffect(() => {
+    const socket = new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint');
+  const stompClient = Stomp.over(() => new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint'));
+    const topic = `/chat/${sessionId}/receive-from-bot`;
+
+    const onConnect = () => {
+      stompClient.subscribe(topic, (message) => {
+        const parsedMessage = JSON.parse(message.body);
+        const messageReceive = parsedMessage.message;
+
+        setCurrentNodeIDNew(parsedMessage.current_node_id);
+
+        if (messageReceive !== null && messageReceive.trim() !== "") {
+          var convertedString = messageReceive.replace(/\n/g, "<br>");
+          setChatItems((citems) => [
+            ...citems,
+            {
+              key: uniqueID(),
+              type: "other",
+              msg: convertedString,
+            },
+          ]);
+        }
+      });
+    };
+
+    const onError = (error) => {
+      console.error('Error during WebSocket connection:', error);
+    };
+
+    stompClient.connect({}, onConnect, onError);
+
+    // Cleanup function to disconnect socket when the component unmounts
+    return () => {
+      stompClient.disconnect();
+    };
+  }, []);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatItems]);
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
+      e.preventDefault(); 
       setValue("");
       handleSendMessage();
     }
+  
   };
 
   const recognition = new window.webkitSpeechRecognition();
@@ -130,6 +167,10 @@ function ChatContent({ sessionId }) {
         console.error("Error:", error);
       });
   };
+  const handleOnChange = (e) => {
+    setValue(e.target.value);
+   
+  }
 
   return (
     <div className="main__chatcontent">
@@ -163,9 +204,7 @@ function ChatContent({ sessionId }) {
               <Input
                 type="checkbox"
                 defaultChecked={isSaveHistory}
-                onChange={(e) => {
-                  setSpeech(e.target.checked);
-                }}
+                
               />
             </div>
           </div>
@@ -208,11 +247,9 @@ function ChatContent({ sessionId }) {
             type="text"
             placeholder="Type a message here"
             id="msgText"
-            onChange={(e) => {
-              setValue(e.target.value);
-            }}
+            onChange={handleOnChange}
             value={value}
-            onKeyDown={(e) => handleKeyDown(e)}
+           onKeyDown={(e) => handleKeyDown(e)}
           />
           <button
             className="btnSendMsg"

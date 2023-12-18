@@ -3,18 +3,18 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import ChatWindow from './ChatWindow';
 import { POST, Base } from '../../functionHelper/APIFunction';
+import Helmet from '../Helmet/Helmet';
 //const socket = io('http://localhost:3001');
 
 const ChatApp = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const bottomRef = useRef(null);
-  const socket = new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint');
-  const stompClient = Stomp.over(socket)
+  
   let sessionId = Base.getAllUrlParams().sessionId
   let scriptId = Base.getAllUrlParams().scriptId
-  let currentNodeID = Base.getAllUrlParams().current_node_id
-
+  let currentNodeID = Base.getAllUrlParams().currentNodeId
+  const [currentNodeIDState, setCurrentNodeState] = useState(currentNodeID)
   const loadMessage = () => {
     let body = {
       page: 1,
@@ -48,21 +48,23 @@ const ChatApp = () => {
   }, []);
 
   useEffect(() => {
+    const socket = new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint');
+  const stompClient = Stomp.over(() => new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint'));
     const onConnect = () => {
       console.log('Connected to WebSockettt');
       const topic = `/chat/${sessionId}/receive-from-client`;
       stompClient.subscribe(topic, (message) => {
         //handleReceivedMessage(JSON.parse(message.body));
 
-        const currentNodeIDNew = JSON.parse(message.body).current_node_id;
-        // const messageReceived = JSON.parse(message.body).message;
-        // const initialMessage = { text: "Xin chào!", user: 'Customer' };
-        // setMessages((prevMessages) => [
-        //   ...prevMessages,
-        //   initialMessage
-        // ]);
-       // console.log(initialMessage)
-        sendMessage(currentNodeIDNew)
+      const currentNodeIDNew = JSON.parse(message.body).current_node_id;
+       setCurrentNodeState(currentNodeIDNew)
+       // sendMessage(currentNodeIDNew)
+       const messageReceived = JSON.parse(message.body).message;
+        const initialMessage = { text: messageReceived, user: 'Customer' };
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          initialMessage
+        ]);
       });
     };
     const onError = (error) => {
@@ -79,7 +81,7 @@ const ChatApp = () => {
     let body =
     {
       message: message,
-      current_node_id: currentNodeID,
+      current_node_id: currentNodeIDState,
       script_id: scriptId
     };
 
@@ -99,6 +101,7 @@ const ChatApp = () => {
     if (newMessage.trim() !== '') {
       sendMessage(newMessage);
       setNewMessage('');
+      //window.close();
     }
   }
   const handleKeyDown = (e) => {
@@ -106,7 +109,11 @@ const ChatApp = () => {
       sendMessageSubmit();
     }
   };
+  const handleOnChange = (e) => {
+    setNewMessage(e.target.value)
+  }
   return (
+    <Helmet title={sessionId}>
     <div>
       <ChatWindow messages={messages} />
       <div className="sendNewMessage" style={{ margin: "0px 200px" }}>
@@ -118,7 +125,7 @@ const ChatApp = () => {
           placeholder="Type a message here"
           id="msgText"
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
+          onChange={handleOnChange}
           onKeyDown={(e) => handleKeyDown(e)}
         />
         <button
@@ -130,6 +137,7 @@ const ChatApp = () => {
         </button>
       </div>
     </div>
+    </Helmet>
   );
 };
 
