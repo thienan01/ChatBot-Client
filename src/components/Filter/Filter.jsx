@@ -9,8 +9,8 @@ import FilterUerModal from "../Modal/FilterUerModal";
 const InitFilter = () => {
   setCookie("filterUser", "", 0);
   var filterList = [
-    { name: "Created date", authorize: "ALL", type: "DateTime" },
-    { name: "Select user", authorize: "ADMIN", type: "Search" },
+    { id: 1, name: "Created date", authorize: "ALL", type: "DateTime" },
+    { id: 2, name: "Select user", authorize: "ADMIN", type: "Search" },
   ];
   return getCookie("role") === "ADMIN"
     ? filterList
@@ -78,20 +78,19 @@ function Filter({ func }) {
           {/* <span>Date created</span> */}
           {filterItems.map((item, idx) => {
             return (
-              <>
-                <div
-                  className="dateTime-picker"
-                  onClick={() => {
-                    handleToggleFilterModal({}, item.type);
-                  }}
-                >
-                  <span key={idx}>{item.name}</span>
-                  <i
-                    className="fa-solid fa-caret-down"
-                    style={{ marginLeft: "5px" }}
-                  ></i>
-                </div>
-              </>
+              <div
+                className="dateTime-picker"
+                onClick={() => {
+                  handleToggleFilterModal({}, item.type);
+                }}
+                key={item.id}
+              >
+                <span key={idx}>{item.name}</span>
+                <i
+                  className="fa-solid fa-caret-down"
+                  style={{ marginLeft: "5px" }}
+                ></i>
+              </div>
             );
           })}
         </div>
@@ -109,10 +108,14 @@ function Filter({ func }) {
         open={isOpenFilterDateModal}
         toggle={handleToggleFilterModal}
       />
-      <FilterUerModal
-        open={isOpenFilterSearchUserModal}
-        toggle={handleToggleFilterModal}
-      />
+      {isOpenFilterSearchUserModal ? (
+        <FilterUerModal
+          open={isOpenFilterSearchUserModal}
+          toggle={handleToggleFilterModal}
+        />
+      ) : (
+        <></>
+      )}
     </>
   );
 }

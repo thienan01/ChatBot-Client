@@ -22,7 +22,6 @@ const Plan = () => {
       process.env.REACT_APP_BASE_URL + apiURL, JSON.stringify()
     ).then((res) => {
       if (res.http_status === "OK") {
-        console.log("success")
         setLoading(false);
 
         // setTimeout(()=>{
@@ -44,7 +43,6 @@ const Plan = () => {
     setLoading(true);
 
   }
-  console.log(`${globalPackage}`)
 
   return (
     <div id="generic_price_table">

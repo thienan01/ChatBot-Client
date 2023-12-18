@@ -17,6 +17,8 @@ import SearchBar from "../Filter/SearchBar";
 import "./css/ModalPattern.css";
 import InputTitle from "../Input/InputTitle";
 import uniqueID from "../../functionHelper/GenerateID";
+import GenPatternGTPModal from "../Modal/GenPatternGTPModal";
+import PendingModal from "../Modal/PendingModal";
 import {
   TabContent,
   TabPane,
@@ -40,7 +42,8 @@ function ModalPattern({ open, toggle, value }) {
   const [isShowEntityTypeSelection, setShowEntityTypeSelection] =
     useState(false);
   const [searchEntityTypeValue, setSearchEntityTypeValue] = useState("");
-
+  const [isOpenGenerateGPT, setOpenGenerateGPT] = useState(false);
+  const [isOpenPending, setPending] = useState(false);
   useEffect(() => {
     value.patterns.items.map((item) => {
       const createdDate = new Date(item.created_date);
@@ -68,14 +71,13 @@ function ModalPattern({ open, toggle, value }) {
       .then((res) => {
         if (res.http_status !== "OK") throw res;
         setEntityType(res.items);
-        console.log("entype", res.items);
       })
       .catch((e) => {
         console.log(e);
       });
   };
   useEffect(() => {
-    loadEntityType(1, 100);
+    loadEntityType(1, 1000);
   }, []);
 
   const toggleTab = (tab) => {
@@ -84,7 +86,6 @@ function ModalPattern({ open, toggle, value }) {
     }
   };
   const handleCreatePattern = () => {
-    console.log("value of", entities);
     if (content !== "") {
       let body = {
         content: content,
@@ -222,7 +223,7 @@ function ModalPattern({ open, toggle, value }) {
         .then((res) => {
           if (res.http_status !== "OK") throw res;
           NotificationManager.success("Created successfully", "Success");
-          loadEntityType(1, 12);
+          loadEntityType(1, 1000);
           setEntityValue("");
         })
         .catch((e) => {
@@ -240,7 +241,6 @@ function ModalPattern({ open, toggle, value }) {
       text.selectionEnd - text.selectionStart
     );
 
-    console.log("rrrr", text);
     if (selection !== "") {
       setShowEntityTypeSelection(true);
       setCurrentEntityValue({
@@ -299,7 +299,6 @@ function ModalPattern({ open, toggle, value }) {
   };
 
   const handleSearchEntityType = (value) => {
-    console.log("search", value);
     let body = {
       page: 1,
       size: 100,
@@ -317,16 +316,37 @@ function ModalPattern({ open, toggle, value }) {
         console.log(e);
       });
   };
-  const handleDivTag = (value) => {
-    let divValue = document.querySelector(".background-highlight");
-    divValue.innerHTML = value;
-  };
   const handleHighlightText = (text) => {
     if (text) {
       let divValue = document.querySelector(".background-highlight");
-
-      console.log("hihg", entities);
     }
+  };
+  const handleCreatePatternByGPT = (data) => {
+    handleToggleGenerateGPT();
+    setPending(true);
+    var body = {
+      intent_id: value.intentID,
+      num_of_patterns: data.numOfPattern,
+      example_pattern: data.examplePattern,
+    };
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/intent/suggest_pattern",
+      JSON.stringify(body)
+    )
+      .then((res) => {
+        if (res.http_status === "OK") {
+          NotificationManager.success("Generate succeed!", "success");
+          reloadPattern();
+          loadEntityType(1, 1000);
+        } else NotificationManager.error("Something went wrong!", "Error");
+        setPending(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const handleToggleGenerateGPT = () => {
+    setOpenGenerateGPT(!isOpenGenerateGPT);
   };
   return (
     <>
@@ -364,9 +384,29 @@ function ModalPattern({ open, toggle, value }) {
                   <div className="shadow-sm table-area">
                     <div className="header-Table">
                       <SearchBar func={handleFilter} />
-                      <span className="total-script">
-                        Total:{pagination.totalItem} Patterns
-                      </span>
+                      <div
+                        className="gpt-generate-section"
+                        style={{ alignItems: "center" }}
+                      >
+                        <span className="total-script">
+                          Total:{pagination.totalItem} Patterns
+                        </span>
+                        <Button
+                          className="btn-table"
+                          style={{
+                            background: "#56cc6e",
+                            border: "none",
+                            marginRight: "0px",
+                          }}
+                          onClick={handleToggleGenerateGPT}
+                        >
+                          <i
+                            className="fa-solid fa-plus"
+                            style={{ marginRight: "4px" }}
+                          ></i>
+                          Create by GPT
+                        </Button>
+                      </div>
                     </div>
                     <Table borderless hover responsive className="tableData">
                       <thead style={{ background: "#f6f9fc" }}>
@@ -575,14 +615,30 @@ function ModalPattern({ open, toggle, value }) {
           </Button>
         </ModalFooter>
       </Modal>
-      <ModalUpdatePattern
-        open={openModal}
-        toggle={handleToggleModal}
-        value={currentPattern}
-        update={handleUpdate}
-        entityType={entityType}
-        loadEntityType={loadEntityType}
-        handleSearchEntityType={handleSearchEntityType}
+      {openModal ? (
+        <ModalUpdatePattern
+          open={openModal}
+          toggle={handleToggleModal}
+          value={currentPattern}
+          update={handleUpdate}
+          entityType={entityType}
+          loadEntityType={loadEntityType}
+          handleSearchEntityType={handleSearchEntityType}
+        />
+      ) : (
+        <></>
+      )}
+
+      <GenPatternGTPModal
+        open={isOpenGenerateGPT}
+        toggle={handleToggleGenerateGPT}
+        handleSave={handleCreatePatternByGPT}
+      />
+      <PendingModal
+        open={isOpenPending}
+        toggle={() => {
+          setPending(!isOpenPending);
+        }}
       />
     </>
   );

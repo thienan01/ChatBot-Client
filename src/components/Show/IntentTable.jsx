@@ -191,13 +191,11 @@ function IntentTable() {
       });
   };
   const handleImportExcel = () => {
-    console.log("import");
     var input = document.createElement("input");
     input.type = "file";
 
     input.onchange = (e) => {
       var file = e.target.files[0];
-      console.log("this file", file);
       UPLOAD(process.env.REACT_APP_BASE_URL + "api/pattern/import/excel", file)
         .then((res) => {
           if (res.http_status === "OK") {
@@ -245,6 +243,10 @@ function IntentTable() {
               clearInterval(checking);
             }
             if (res.http_status === "OK" && res.status === "CRASHED") {
+              setLoadingExport(false);
+              clearInterval(checking);
+            }
+            if (res.http_status === "OK" && res.status === "ERROR") {
               setLoadingExport(false);
               clearInterval(checking);
             }
