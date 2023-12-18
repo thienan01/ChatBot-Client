@@ -3,7 +3,6 @@ import { Modal, ModalBody } from "reactstrap";
 import ChatContent from "../Chat/ChatContent/ChatContent";
 import uniqueID from "../../functionHelper/GenerateID";
 function ModalChatTrial({ openChat, closeModal }) {
-  console.log("re-render");
   return (
     <div>
       <Modal

@@ -18,7 +18,6 @@ const ConfirmPayment = () => {
     POST(
       BASE_URL + apiURL, JSON.stringify(body)
     ).then((res) => {
-      console.log(res)
       if (res.http_status === "OK") {
         window.location.href = "/payment/paypal/success"
       }

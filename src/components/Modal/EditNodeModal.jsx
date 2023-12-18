@@ -26,7 +26,7 @@ function EditNodeModal({ open, toggle, nodeData }) {
   const [isOpenEditIntent, setOpenEditIntent] = useState(false);
   const [isOpenModalPattern, setOpenModalPattern] = useState(false);
   const [currentIntent, setCurrentIntent] = useState("");
-
+  const [intents, setIntents] = useState([]);
   useEffect(() => {
     setConditionMapping(nodeData.conditions);
     setEntityType(nodeData.entityType);
@@ -42,10 +42,7 @@ function EditNodeModal({ open, toggle, nodeData }) {
   };
   const handleSelected = (id) => {
     clearSelected();
-    console.log("selected", id);
     let item = document.querySelector(".conditionId-" + id);
-    console.log("selected item", item);
-
     item.classList.add("selected-condition-item");
     setCurrentSelectedCondition({
       id: id,
@@ -68,13 +65,13 @@ function EditNodeModal({ open, toggle, nodeData }) {
   };
 
   const getIntentName = (id) => {
-    return nodeData.intents.filter((intent) => intent.id === id).length !== 0
-      ? nodeData.intents.filter((intent) => intent.id === id)[0].name
+    return intents.filter((intent) => intent.id === id).length !== 0
+      ? intents.filter((intent) => intent.id === id)[0].name
       : "Choose intent";
   };
   const getIntentCode = (id) => {
-    return nodeData.intents.filter((intent) => intent.id === id).length !== 0
-      ? nodeData.intents.filter((intent) => intent.id === id)[0].code
+    return intents.filter((intent) => intent.id === id).length !== 0
+      ? intents.filter((intent) => intent.id === id)[0].code
       : "Choose_intent";
   };
 
@@ -138,10 +135,11 @@ function EditNodeModal({ open, toggle, nodeData }) {
       JSON.stringify({})
     )
       .then((res) => {
-        nodeData.reloadIntents(res.intents);
+        let intentsResult = res.intents === undefined ? [] : res.intents;
+        nodeData.reloadIntents(intentsResult);
+        setIntents(intentsResult);
         setCurrentIntent(intent.id);
         handleOpenAddPattern();
-
         nodeData.setIntent({
           conditionId: currentSelectedCondition.id,
           intentId: intent.id,
@@ -150,7 +148,22 @@ function EditNodeModal({ open, toggle, nodeData }) {
       })
       .catch((err) => console.log(err));
   };
+  const getIntents = () => {
+    GET(
+      process.env.REACT_APP_BASE_URL + `api/intent/get_all/by_user_id`,
+      JSON.stringify({})
+    ).then((res) => {
+      if (res.http_status === "OK") {
+        let intentsResult = res.intents === undefined ? [] : res.intents;
 
+        setIntents(intentsResult);
+        nodeData.reloadIntents(intentsResult);
+      }
+    });
+  };
+  useEffect(() => {
+    getIntents();
+  }, []);
   const handleOpenAddPattern = () => {
     setOpenModalPattern(!isOpenModalPattern);
   };
@@ -393,7 +406,7 @@ function EditNodeModal({ open, toggle, nodeData }) {
                           </div>
                         </DropdownToggle>
                         <DropdownMenu className="dropdown-menu shadow">
-                          {nodeData.intents.map((intent, idx) => {
+                          {intents.map((intent, idx) => {
                             return (
                               <>
                                 <DropdownItem

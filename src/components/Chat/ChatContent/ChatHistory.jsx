@@ -8,7 +8,6 @@ function ChatContent({ messageData }) {
   const [chatItems, setChatItems] = useState([]);
 
   const handleSetMessage = () => {
-    console.log("mess data", messageData);
     if (messageData) {
       let lstMessage = messageData.map((item) => {
         if (item.from === "CUSTOMER") {

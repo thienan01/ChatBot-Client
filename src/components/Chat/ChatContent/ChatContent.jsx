@@ -17,7 +17,6 @@ import typing from "../../../assets/Typing.gif";
 import { Input } from "reactstrap";
 function ChatContent({ sessionId }) {
   const context = useContext(ScriptContext);
-  console.log("id chat", sessionId);
   const bottomRef = useRef(null);
   const [chatItems, setChatItems] = useState([]);
   const [currentNode, setCurrentNode] = useState("_BEGIN");
@@ -36,7 +35,6 @@ function ChatContent({ sessionId }) {
         msg: value,
       },
     ]);
-    console.log("ass", currentNode);
     let body = {
       secret_key: getCookie("secret_key"),
       script_id: context.value.id,
@@ -51,7 +49,6 @@ function ChatContent({ sessionId }) {
     )
       .then((res) => {
         if (res.http_status === "OK") {
-          console.log("curr note", res.current_node_id);
           setCurrentNode(res.current_node_id);
           if (res.message !== null && res.message.trim() !== "") {
             var convertedString = res.message.replace(/\n/g, "<br>");
@@ -141,7 +138,6 @@ function ChatContent({ sessionId }) {
           <div className="current-chatting-user">
             <Avatar isOnline="active" />
             <p>Try your chatbot</p>
-            {console.log("re-renderchat", currentNode)}
           </div>
         </div>
 
@@ -175,7 +171,7 @@ function ChatContent({ sessionId }) {
           </div>
         </div>
       </div>
-      <div className="content__body" style={{ height: "70vh" }}>
+      <div className="content__body">
         <div className="chat__items">
           {chatItems.map((itm, index) => {
             return (
@@ -195,7 +191,7 @@ function ChatContent({ sessionId }) {
         className="recognition"
         style={{ display: isRecording ? "flex" : "none" }}
       >
-        <button class="Rec btn-rec">Recording</button>
+        <button className="Rec btn-rec">Recording</button>
       </div>
       <div className="content__footer">
         <img
@@ -206,7 +202,7 @@ function ChatContent({ sessionId }) {
         />
         <div className="sendNewMessage">
           <button className="addFiles" onClick={startListening}>
-            <i class="fa-solid fa-microphone"></i>
+            <i className="fa-solid fa-microphone"></i>
           </button>
           <input
             type="text"

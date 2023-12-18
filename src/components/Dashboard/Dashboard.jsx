@@ -41,7 +41,7 @@ const items2 = [
 ];
 const checkRole = (items) => {
   return getCookie("role") === "ADMIN"
-    ? items
+    ? items.filter((item) => item.key !== "PREMIUM")
     : items.filter((item) => item.key !== "USER_MANAGEMENT");
 };
 const App = () => {
