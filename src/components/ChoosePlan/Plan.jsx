@@ -177,7 +177,7 @@ const Plan = () => {
 
                 {`${globalPackage}` === "PREMIUM" ? (
                   <div className="generic_price_btn clearfix p-b-37"
-                    onClick={navigateToDashboard}
+                    
                   >
                     
                   </div>

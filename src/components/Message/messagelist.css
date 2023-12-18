@@ -1,0 +1,68 @@
+.message-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 10px;
+    flex-direction: column;
+    max-height: 77vh;
+    height: 77vh;
+    overflow-y: auto;
+    margin: 10px 200px;
+    border-radius: 20px;
+    border: 1px solid #52c8ff;
+
+    background-color: #f5f6fa;
+
+  }
+  
+  .message {
+    background-color: #f5f6fa;
+    border-radius: 15px 15px 0px 15px;
+    padding: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+  }
+  
+  .user-message {
+    margin-right: 20px;
+    background-color: #fff;
+    text-align: right;
+    align-self: flex-end;
+    max-width: 400px;
+    width: max-content;
+    margin-left: auto;
+    overflow: hidden;
+    word-break: break-all;
+    flex-grow: 1;
+    margin-top: 10px;
+
+  }
+  .client-message {
+    margin-left: 20px;
+    background-color: #fff;
+    text-align: left;
+    align-self: flex-end;
+    max-width: 400px;
+    overflow: hidden;
+    width: max-content;
+    margin-top: 10px;
+    word-break: break-all;
+    flex-grow: 1;
+  }
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  .avatar1 {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-left: 10px;
+  }
+  .message-content {
+    flex-grow: 1; /* Đảm bảo nội dung tin nhắn mở rộng để lấp đầy phần còn trống */
+    overflow: hidden;
+    margin: 3px 7px;
+  }
