@@ -75,7 +75,7 @@
 
 }
 
-.content1 a
+.content1 span
 {
     padding-top: 10px;
     width:200px;
@@ -88,9 +88,10 @@
     transition:all ease-in-out 0.3s;
     justify-content: center;
     text-decoration: none;
+    cursor: pointer;
 }
 
-.content1 a:hover
+.content1 span:hover
 {
     text-decoration:none;
     background:#fff;
