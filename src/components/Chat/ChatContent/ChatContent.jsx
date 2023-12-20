@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useContext,
 } from "react";
-import {  useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import uniqueID from "../../../functionHelper/GenerateID";
 import "./chatContent.css";
@@ -17,8 +17,8 @@ import { getCookie } from "../../../functionHelper/GetSetCookie";
 import { ScriptContext } from "../../Context/ScriptContext";
 import typing from "../../../assets/Typing.gif";
 import { Input } from "reactstrap";
-import SockJS from 'sockjs-client';
-import { Stomp } from '@stomp/stompjs';
+import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
 function ChatContent({ sessionId }) {
   const context = useContext(ScriptContext);
   const { id } = useParams();
@@ -31,7 +31,7 @@ function ChatContent({ sessionId }) {
   const [isRecording, setRecording] = useState(false);
 
   //code của anh Thiện
-  
+
 
   const [currentNodeIDNew, setCurrentNodeIDNew] = useState("_BEGIN")
 
@@ -55,7 +55,10 @@ function ChatContent({ sessionId }) {
       is_trying: !isSaveHistory,
     };
 
-    POST(process.env.REACT_APP_BASE_URL + "api/training/predict", JSON.stringify(body))
+    POST(
+      process.env.REACT_APP_BASE_URL + "api/training/predict",
+      JSON.stringify(body)
+    )
       .then((res) => {
         if (res.http_status === "OK") {
           if (isSpeech) {
@@ -71,8 +74,12 @@ function ChatContent({ sessionId }) {
       });
   }, [value, id, currentNodeIDNew, sessionId, isSaveHistory, isSpeech]);
   useEffect(() => {
-    const socket = new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint');
-  const stompClient = Stomp.over(() => new SockJS(process.env.REACT_APP_BASE_URL + 'api/ws_endpoint'));
+    const socket = new SockJS(
+      process.env.REACT_APP_BASE_URL + "api/ws_endpoint"
+    );
+    const stompClient = Stomp.over(
+      () => new SockJS(process.env.REACT_APP_BASE_URL + "api/ws_endpoint")
+    );
     const topic = `/chat/${sessionId}/receive-from-bot`;
 
     const onConnect = () => {
@@ -97,7 +104,7 @@ function ChatContent({ sessionId }) {
     };
 
     const onError = (error) => {
-      console.error('Error during WebSocket connection:', error);
+      console.error("Error during WebSocket connection:", error);
     };
 
     stompClient.connect({}, onConnect, onError);
@@ -114,11 +121,10 @@ function ChatContent({ sessionId }) {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      e.preventDefault(); 
+      e.preventDefault();
       setValue("");
       handleSendMessage();
     }
-  
   };
 
   const recognition = new window.webkitSpeechRecognition();
@@ -169,8 +175,7 @@ function ChatContent({ sessionId }) {
   };
   const handleOnChange = (e) => {
     setValue(e.target.value);
-   
-  }
+  };
 
   return (
     <div className="main__chatcontent">
@@ -201,11 +206,7 @@ function ChatContent({ sessionId }) {
             </div>
             <div className="settings">
               <span>Speech: </span>
-              <Input
-                type="checkbox"
-                defaultChecked={isSaveHistory}
-                
-              />
+              <Input type="checkbox" defaultChecked={isSaveHistory} />
             </div>
           </div>
         </div>
@@ -249,7 +250,7 @@ function ChatContent({ sessionId }) {
             id="msgText"
             onChange={handleOnChange}
             value={value}
-           onKeyDown={(e) => handleKeyDown(e)}
+            onKeyDown={(e) => handleKeyDown(e)}
           />
           <button
             className="btnSendMsg"
@@ -259,7 +260,7 @@ function ChatContent({ sessionId }) {
               handleSendMessage();
             }}
           >
-            <i className="ri-send-plane-fill"></i>
+            <i class="fa-solid fa-paper-plane"></i>
           </button>
         </div>
       </div>

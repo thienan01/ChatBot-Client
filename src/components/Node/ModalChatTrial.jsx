@@ -11,7 +11,7 @@ function ModalChatTrial({ openChat, closeModal }) {
         className="modal-setting"
         zIndex={1000}
       >
-        <ModalBody style={{ padding: "0px" }}>
+        <ModalBody style={{ padding: "0px", height: "inherit" }}>
           <ChatContent sessionId={uniqueID()} />
         </ModalBody>
         <div className="close-button" onClick={closeModal}>
