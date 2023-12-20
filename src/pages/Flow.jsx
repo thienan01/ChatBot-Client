@@ -82,19 +82,22 @@ function Flow() {
         ),
       ])
         .then((res) => {
+          let intentsResult =
+            res[0].intents === undefined ? [] : res[0].intents;
           isLoading(false);
-          setIntents(res[0].intents);
+          setIntents(intentsResult);
           setEntityType(res[2].items);
           setWrongMsg(res[1].wrong_message);
           setEndMessage(res[1].end_message);
           setScriptName(res[1].name);
-          let data = nodeObject(res[1].nodes, res[0].intents, res[2].items);
+          let data = nodeObject(res[1].nodes, intentsResult, res[2].items);
           setNodes((nodes) => [...nodes, ...data.lstNode]);
           setEdges(data.lstEdge);
         })
         .catch((err) => {
+          navigate("/home");
           NotificationManager.error(
-            "Error occur when loading script!",
+            "Error occur when loading script or script can not be found",
             "Error"
           );
         });
@@ -111,7 +114,9 @@ function Flow() {
           if (res[0].http_status !== "OK" || res[1].http_status !== "OK") {
             throw res.exception_code;
           }
-          setIntents(res[0].intents);
+          let intentsResult =
+            res[0].intents === undefined ? [] : res[0].intents;
+          setIntents(intentsResult);
           setEntityType(res[1].items);
         })
         .catch((err) => {
@@ -358,7 +363,6 @@ function Flow() {
     [intents]
   );
   const handleEditScriptName = (value) => {
-    console.log("log name", value);
     setScriptName(value);
   };
   const handleToggleChatHistory = () => {

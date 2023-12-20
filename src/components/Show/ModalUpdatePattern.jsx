@@ -24,10 +24,10 @@ function ModalUpdatePattern({
   useEffect(() => {
     handleLoadPattern();
   }, [value]);
+
   const handleLoadPattern = () => {
     GET(process.env.REACT_APP_BASE_URL + "api/pattern/get/" + value.id)
       .then((res) => {
-        console.log("pattern", res);
         setPatternDetail(res);
         setContent(res.content);
         if (res.hasOwnProperty("entities")) {
@@ -39,7 +39,6 @@ function ModalUpdatePattern({
             });
             return entity;
           });
-          console.log("asdasd", entities);
           setEntities(entities);
         }
       })
@@ -135,7 +134,6 @@ function ModalUpdatePattern({
       content: content,
       entities: entities,
     };
-    console.log("data", pattern);
     update(pattern);
   };
   return (
@@ -145,7 +143,7 @@ function ModalUpdatePattern({
         style={{ maxWidth: "700px" }}
         className="modal-update-pattern"
       >
-        <ModalHeader>Update intent</ModalHeader>
+        <ModalHeader>Update pattern</ModalHeader>
         <ModalBody>
           <div className="createPatternSection" style={{ height: "50px" }}>
             <div
