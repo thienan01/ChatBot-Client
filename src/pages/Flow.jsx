@@ -188,7 +188,11 @@ function Flow() {
             sourceHandle: condition.id,
             target: condition.next_node_ids[0],
             type: "buttonedge",
-            data: { delete: handleDeleteEdge },
+            data: {
+              nodeID: node.node_id,
+              sourceHandle: condition.id,
+              delete: handleDeleteEdge,
+            },
           });
         }
       });
@@ -270,7 +274,7 @@ function Flow() {
       nds.map((node) => {
         if (node.id === nodeID) {
           node.data.conditionMapping.forEach((condition) => {
-            if (condition.sourceHandle === sourceHandle) {
+            if (condition.id === sourceHandle) {
               delete condition.source;
               delete condition.sourceHandle;
               delete condition.target;
@@ -294,6 +298,7 @@ function Flow() {
     setEndMessage(endMsg);
   };
   const onConnect = useCallback((params) => {
+    console.log(params);
     connecting.state = true;
     setEdges((eds) =>
       addEdge(
