@@ -32,8 +32,7 @@ function ChatContent({ sessionId }) {
 
   //code của anh Thiện
 
-
-  const [currentNodeIDNew, setCurrentNodeIDNew] = useState("_BEGIN")
+  const [currentNodeIDNew, setCurrentNodeIDNew] = useState("_BEGIN");
 
   const handleSendMessage = useCallback(() => {
     setShowTyping(true);
@@ -80,15 +79,15 @@ function ChatContent({ sessionId }) {
     const stompClient = Stomp.over(
       () => new SockJS(process.env.REACT_APP_BASE_URL + "api/ws_endpoint")
     );
+    console.log("Sesion:", sessionId);
     const topic = `/chat/${sessionId}/receive-from-bot`;
 
     const onConnect = () => {
       stompClient.subscribe(topic, (message) => {
         const parsedMessage = JSON.parse(message.body);
         const messageReceive = parsedMessage.message;
-
+        console.log("socket", parsedMessage);
         setCurrentNodeIDNew(parsedMessage.current_node_id);
-
         if (messageReceive !== null && messageReceive.trim() !== "") {
           var convertedString = messageReceive.replace(/\n/g, "<br>");
           setChatItems((citems) => [
