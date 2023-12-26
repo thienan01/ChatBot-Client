@@ -8,7 +8,7 @@ const Layout = () => {
   const { pathname } = useLocation();
   return (
     <div>
-      {pathname !== "/login" && pathname !== "/register" && <Header />}
+      {pathname !== "/login" && pathname !== "/register" && pathname !== "/payment/paypal/success" && <Header />}
       {/* <Header/> */}
       <div>
         <Routes />

@@ -1,7 +1,12 @@
 import React from 'react'
 import "./success.css"
 import Helmet from '../../components/Helmet/Helmet'
+import { deleteAllCookies } from '../../functionHelper/GetSetCookie'
 const Success = () => {
+   const logout = () => {
+      deleteAllCookies();
+      window.location.href = "/login";
+    };
   return (
     <>
     <Helmet title='Success'>
@@ -15,9 +20,9 @@ const Success = () => {
             <div class="content1">
                <h1>Payment Success !</h1>
                <p>I just wanted to drop you a quick note and let you know that I received your payment. Thank you so much. I really appreciate it.</p>
-               <p>Have a great day!</p>
+               <p>Please log in again to access Premium services!</p>
                <p>[Chatbot-Service]</p>
-               <a href="/home">Go to Home</a>
+               <span onClick={logout}>Login Again</span>
             </div>
             
          </div>

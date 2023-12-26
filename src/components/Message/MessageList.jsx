@@ -8,7 +8,7 @@ const MessageList = ({ messages }) => {
     <ul className="message-list">
     {messages.map((message, index) => (
         
-      <li key={index} className={`message ${message.user === 'Bot'  ? 'user-message' : 'client-message'}`}>
+      <li key={index} className={`messageRecei ${message.user === 'Bot'  ? 'user-message' : 'client-message'}`}>
       <div className="message-content">
          <strong>
          {message.user === 'Customer' && <img className="avatar" src={AvtClient} alt="Your Avatar" />}

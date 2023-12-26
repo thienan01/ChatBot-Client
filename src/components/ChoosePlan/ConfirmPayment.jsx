@@ -2,7 +2,6 @@ import { React, useEffect, useState } from 'react'
 import Footer from '../Footer/Footer'
 import { GET, POST, Base } from '../../functionHelper/APIFunction'
 const ConfirmPayment = () => {
-  const BASE_URL = process.env.REACT_APP_API_URL
 
   let paymentId = Base.getAllUrlParams().paymentId
   let PayerID = Base.getAllUrlParams().PayerID
@@ -16,7 +15,7 @@ const ConfirmPayment = () => {
       payer_id: PayerID
     };
     POST(
-      BASE_URL + apiURL, JSON.stringify(body)
+      process.env.REACT_APP_BASE_URL + apiURL, JSON.stringify(body)
     ).then((res) => {
       if (res.http_status === "OK") {
         window.location.href = "/payment/paypal/success"
