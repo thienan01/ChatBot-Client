@@ -433,7 +433,7 @@ function ModalPattern({ open, toggle, value }) {
                               <td>{++idx}</td>
                               <td>{pattern.content}</td>
                               <td>{pattern.created_date}</td>
-                              <td className="d-flex action-row">
+                              <td className="action-row">
                                 <div>
                                   <i
                                     className="fa-solid fa-pen-to-square text-primary"
