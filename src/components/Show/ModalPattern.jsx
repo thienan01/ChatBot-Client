@@ -44,6 +44,7 @@ function ModalPattern({ open, toggle, value }) {
   const [searchEntityTypeValue, setSearchEntityTypeValue] = useState("");
   const [isOpenGenerateGPT, setOpenGenerateGPT] = useState(false);
   const [isOpenPending, setPending] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
     value.patterns.items.map((item) => {
       const createdDate = new Date(item.created_date);
@@ -107,7 +108,7 @@ function ModalPattern({ open, toggle, value }) {
   };
 
   const reloadPattern = (page, pageSize = 10) => {
-    if (page === undefined) page = 1;
+    if (page === undefined) page = currentPage;
     GET(
       process.env.REACT_APP_BASE_URL +
         "api/pattern/get_pagination/by_intent_id/" +
@@ -206,6 +207,7 @@ function ModalPattern({ open, toggle, value }) {
     });
   };
   const handleJumpPagination = (page, pageSize) => {
+    setCurrentPage(page);
     reloadPattern(page, pageSize);
   };
   const onChangeEntityTypeValue = (val) => {

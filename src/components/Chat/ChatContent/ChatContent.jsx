@@ -32,8 +32,7 @@ function ChatContent({ sessionId }) {
 
   //code của anh Thiện
 
-
-  const [currentNodeIDNew, setCurrentNodeIDNew] = useState("_BEGIN")
+  const [currentNodeIDNew, setCurrentNodeIDNew] = useState("_BEGIN");
 
   const handleSendMessage = useCallback(() => {
     setShowTyping(true);
