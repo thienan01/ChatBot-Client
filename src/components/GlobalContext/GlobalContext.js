@@ -44,10 +44,6 @@ const GlobalProvider = ({ children }) => {
       setIsLoggedIn(true);
     }
   };
-  setInterval(() => {
-    checkTabIsOpened("sds", "Sds", "currentNodeId");
-    console.log("new message");
-  }, 5000);
   const logout = () => {
     if (`${cookie}` === ``) {
       console.log("chua login");
@@ -73,20 +69,21 @@ const GlobalProvider = ({ children }) => {
   };
   const checkTabIsOpened = (sessionId, scriptId, currentNodeId) => {
     const url = `/receive-from-client?sessionId=${sessionId}&scriptId=${scriptId}&currentNodeId=${currentNodeId}`;
+    const urlCheckTab = `/receive-from-client?sessionId=${sessionId}&scriptId=${scriptId}`;
     let lstTabs = localStorage.getItem("chatTabs")
       ? JSON.parse(localStorage.getItem("chatTabs"))
       : [];
     let isOpened = false;
     if (lstTabs.length > 0) {
       lstTabs.forEach((tab) => {
-        if (tab.url === url) {
+        if (tab.url === urlCheckTab) {
           isOpened = true;
         }
       });
     }
     if (!isOpened) {
       lstTabs.push({
-        url: url,
+        url: urlCheckTab,
       });
       showModal(url, lstTabs);
     }
