@@ -1,13 +1,13 @@
 version: '3'
 
 services:
-  # Development Environment
-  chatbot-fe:
-    image: node:16-alpine
+  nginx:
+    image: nginx:latest
     container_name: chatbot-fe
-    working_dir: /app
-    volumes:
-      - ./:/app
     ports:
-      - "3001:3001"
-    command: sh -c "npm install && npm start"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./build-config/nginx-config:/etc/nginx/conf.d
+      - ./build-config/cetificate:/etc/letsencrypt/live
+      - ./build:/usr/share/nginx/html
