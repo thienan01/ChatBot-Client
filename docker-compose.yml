@@ -9,5 +9,6 @@ services:
       - "443:443"
     volumes:
       - ./build-config/nginx-config:/etc/nginx/conf.d
-      - ./build-config/certificate:/etc/letsencrypt/live
+      - ./build-config/letsencrypt:/etc/letsencrypt
       - ./build:/usr/share/nginx/html
+      
