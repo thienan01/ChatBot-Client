@@ -171,6 +171,7 @@ function ModalPattern({ open, toggle, value }) {
     let body = {
       page: 1,
       size: 12,
+      intent_id: value.intentID
       // keyword: val,
     };
     if (date) {
