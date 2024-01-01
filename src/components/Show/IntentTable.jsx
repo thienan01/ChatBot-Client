@@ -34,8 +34,9 @@ function IntentTable() {
   const [pagination, setPagination] = useState({});
   const [isToggleImport, setToggleImport] = useState(false);
   const [exportSessionId, setExportSessionId] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const getIntent = (page, pageSize) => {
-    if (page === undefined) page = 1;
+    if (page === undefined) page = currentPage;
     let body = {
       page: page,
       size: pageSize,
@@ -170,6 +171,7 @@ function IntentTable() {
     ).then((res) => {});
   };
   const handleJumpPagination = (page, pageSize) => {
+    setCurrentPage(page);
     getIntent(page, pageSize);
   };
 
