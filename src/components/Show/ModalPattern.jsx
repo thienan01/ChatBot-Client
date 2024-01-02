@@ -172,6 +172,7 @@ function ModalPattern({ open, toggle, value }) {
     let body = {
       page: 1,
       size: 12,
+      intent_id: value.intentID
       // keyword: val,
     };
     if (date) {
@@ -435,7 +436,7 @@ function ModalPattern({ open, toggle, value }) {
                               <td>{++idx}</td>
                               <td>{pattern.content}</td>
                               <td>{pattern.created_date}</td>
-                              <td className="d-flex action-row">
+                              <td className="action-row">
                                 <div>
                                   <i
                                     className="fa-solid fa-pen-to-square text-primary"

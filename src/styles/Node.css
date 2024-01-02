@@ -156,3 +156,8 @@
 .btn-export-excel {
   width: 165px !important;
 }
+.action-row > div {
+  display: inline-block;
+  margin-right: 7px; 
+  cursor: pointer; 
+}
