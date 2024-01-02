@@ -6,10 +6,6 @@ export default class ChatItem extends Component {
     super(props);
   }
   render() {
-    let today = new Date();
-    let time =
-      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-
     return (
       <div className={`chat__item ${this.props.user ? this.props.user : ""}`}>
         <div className="chat__item__content">
@@ -22,9 +18,7 @@ export default class ChatItem extends Component {
               className={
                 this.props.user === "other" ? "text-black" : "text-white"
               }
-            >
-              {time}
-            </span>
+            ></span>
           </div>
         </div>
         <Avatar isOnline="active" image={this.props.image} />
