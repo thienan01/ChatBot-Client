@@ -140,8 +140,9 @@ function Flow() {
         .then((res) => {
           isLoading(false);
           if (res.http_status === "OK") {
-            setScriptId(res.script.id);
-            setScriptName(res.script.name);
+            // setScriptId(res.script.id);
+            // setScriptName(res.script.name);
+            navigate("/script-detail/"+res.script.id)
             NotificationManager.success("Update successfully", "Success");
           } else {
             throw res.exception_code;
