@@ -7,7 +7,15 @@ const checkFilterUser = (url) => {
     ? JSON.parse(user).id
     : getCookie("userId");
 };
-
+const checkBodyApi = (url, body) => {
+  var user = getCookie("filterUser");
+  if (user && url.includes("predict")) {
+    var bodyEdited = JSON.parse(body);
+    bodyEdited.secret_key = JSON.parse(user).secret_key;
+    body = JSON.stringify(bodyEdited);
+  }
+  return body;
+};
 const GET = async (_url) => {
   let res = await $.get({
     url: _url,
@@ -25,7 +33,7 @@ const POST = async (_url, _body) => {
   let res = await $.ajax({
     type: "POST",
     url: _url,
-    data: _body,
+    data: checkBodyApi(_url, _body),
     dataType: "json",
     headers: {
       Authorization: "Token " + getCookie("token"),
@@ -40,7 +48,7 @@ const DELETE = async (_url, _body) => {
   let res = await $.ajax({
     type: "DELETE",
     url: _url,
-    data: _body,
+    data: checkBodyApi(_url, _body),
     dataType: "json",
     headers: {
       Authorization: "Token " + getCookie("token"),
@@ -78,7 +86,7 @@ const VOICE = async (_url, _body) => {
   let res = await $.ajax({
     type: "POST",
     url: _url,
-    data: _body,
+    data: checkBodyApi(_url, _body),
     dataType: "json",
     headers: {
       api_key: "8Q5DtBjxVwSAvgUymtivQP5e9TnRVBlU ",

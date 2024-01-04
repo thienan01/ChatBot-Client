@@ -142,7 +142,7 @@ function Flow() {
           if (res.http_status === "OK") {
             // setScriptId(res.script.id);
             // setScriptName(res.script.name);
-            navigate("/script-detail/"+res.script.id)
+            navigate("/script-detail/" + res.script.id);
             NotificationManager.success("Update successfully", "Success");
           } else {
             throw res.exception_code;
@@ -444,7 +444,8 @@ function Flow() {
               className="btn-save"
               disabled={loading}
             >
-              <i className="fa-regular fa-floppy-disk"></i> Update
+              <i className="fa-regular fa-floppy-disk"></i>{" "}
+              {id === "new" ? "Save" : "Update"}
             </Button>
           </div>
         </div>
@@ -475,7 +476,7 @@ function Flow() {
         <ChatHistoryModal
           open={openChatHistory}
           toggle={handleToggleChatHistory}
-          scriptId={scriptId}
+          scriptId={id}
           entityType={entityType}
         />
       ) : (
